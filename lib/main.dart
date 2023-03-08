@@ -46,9 +46,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    TextStyle style = TextStyle(
-        fontSize: MediaQuery.of(context).size.height / 2,
-        fontWeight: FontWeight.bold);
+    double fontSize = MediaQuery.of(context).size.height / 2;
+    TextSpan text = TextSpan(text: '99', style: TextStyle(fontSize: fontSize));
+    TextPainter tp = TextPainter(text: text, textDirection: TextDirection.ltr);
+    tp.layout();
+    while (tp.width + 20 > MediaQuery.of(context).size.width) {
+      fontSize -= 10;
+      text = TextSpan(text: '99', style: TextStyle(fontSize: fontSize));
+      tp = TextPainter(text: text, textDirection: TextDirection.ltr);
+      tp.layout();
+    }
+    TextStyle style =
+        TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
