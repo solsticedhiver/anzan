@@ -113,10 +113,18 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     TextStyle style =
         TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold);
+    double buttonSize = 48.0;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
+      appBar: AppBar(title: Text(widget.title), actions: [
+        IconButton(
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => const SettingsRoute(),
+              ));
+            },
+            icon: const Icon(Icons.settings))
+      ]),
+      /*
       drawer: Drawer(
           child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -160,6 +168,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   leading: const Icon(Icons.settings),
                   title: const Text('Settings'),
                   onTap: () {
+                    Navigator.pop(context); // close the drawer, first
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => const SettingsRoute(),
@@ -170,6 +179,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ])),
         ],
       )),
+      */
       body: Center(
         child: Stack(
           children: <Widget>[
@@ -200,9 +210,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 const SizedBox(width: 8),
                 ClipOval(
                     child: Container(
-                        width: 56,
-                        height: 56,
-                        color: const Color.fromARGB(255, 22, 131, 98),
+                        width: buttonSize,
+                        height: buttonSize,
+                        color: green,
                         child: IconButton(
                           color: Colors.white,
                           icon: const Icon(Icons.check),
@@ -211,9 +221,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 const SizedBox(width: 8),
                 ClipOval(
                     child: Container(
-                        width: 56,
-                        height: 56,
-                        color: const Color.fromARGB(255, 22, 131, 98),
+                        width: buttonSize,
+                        height: buttonSize,
+                        color: green,
                         child: IconButton(
                           color: Colors.white,
                           icon: const Icon(Icons.replay),
@@ -229,9 +239,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 const SizedBox(width: 8),
                 ClipOval(
                     child: Container(
-                        width: 56,
-                        height: 56,
-                        color: const Color.fromARGB(255, 22, 131, 98),
+                        width: buttonSize,
+                        height: buttonSize,
+                        color: green,
                         child: IconButton(
                           color: Colors.white,
                           icon: isPlaying
