@@ -14,10 +14,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const Map<int, Color> swatch = {
+      50: Color(0xffffffff),
+      100: Color(0xfffff0e6),
+      200: Color(0xFFFFE1CD),
+      300: Color(0xFFE6CBB8),
+      400: Color(0xFFCCB4A4),
+      500: lightBrown,
+      600: Color(0xFF99877B),
+      700: Color(0xFF807166),
+      800: Color(0xFF665A52),
+      900: Color(0xFF4D443D)
+    };
+    const primarySwatch = MaterialColor(0xFFB39E8F, swatch);
+
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Mental Calculation',
       theme: ThemeData(
-        primarySwatch: Colors.brown,
+        primarySwatch: primarySwatch,
       ),
       home: const MyHomePage(title: 'Anzan'),
     );
@@ -113,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     TextStyle style =
         TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold);
-    double buttonSize = 48.0;
+    double buttonSize = 40.0;
     return Scaffold(
       appBar: AppBar(title: Text(widget.title), actions: [
         IconButton(
@@ -124,7 +138,6 @@ class _MyHomePageState extends State<MyHomePage> {
             },
             icon: const Icon(Icons.settings))
       ]),
-      /*
       drawer: Drawer(
           child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -144,7 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     const SizedBox(width: 15),
                     Text('Flash Anzan',
                         style: TextStyle(
-                            color: Colors.white,
+                            color: Colors.black,
                             fontSize: Theme.of(context)
                                 .textTheme
                                 .headlineMedium!
@@ -157,7 +170,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       flex: 1,
                       child: Text(
                         'https://www.sorobanexam.org',
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: Colors.black),
                       )),
                 ]),
           ),
@@ -179,7 +192,6 @@ class _MyHomePageState extends State<MyHomePage> {
               ])),
         ],
       )),
-      */
       body: Center(
         child: Stack(
           children: <Widget>[
@@ -194,17 +206,25 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       bottomSheet: BottomSheet(
-        backgroundColor: Colors.brown[100],
+        backgroundColor: lightBrown,
         builder: (context) {
           return Container(
               margin: const EdgeInsets.all(5),
               child: Row(children: [
                 const Expanded(
                     child: TextField(
+                  cursorColor: Colors.black,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black)),
+                    enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black)),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black)),
                     labelText: 'Your answer',
+                    labelStyle: TextStyle(color: Colors.black),
+                    hintStyle: TextStyle(color: Colors.black),
                   ),
                 )),
                 const SizedBox(width: 8),

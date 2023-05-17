@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
 
-const green = Color.fromARGB(255, 22, 131, 98);
+const green = Color(0xFF168362);
+const lightBrown = Color(0xFFB39E8F);
 
 class SettingsRoute extends StatelessWidget {
   const SettingsRoute({super.key});
