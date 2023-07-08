@@ -15,6 +15,7 @@ class SettingsRoute extends StatefulWidget {
 
 class _SettingsRouteState extends State<SettingsRoute> {
   String _ttsLocale = AppConfig.ttsLocale;
+  int _numDigit = AppConfig.numDigit;
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +25,41 @@ class _SettingsRouteState extends State<SettingsRoute> {
         SettingsSection(
             title: const Text('Numbers', style: TextStyle(color: green)),
             tiles: [
-              SettingsTile(
-                  leading: const Icon(Icons.numbers),
-                  title: const Text('Digits'),
-                  value: Text('${AppConfig.numDigit}')),
+              SettingsTile.navigation(
+                leading: const Icon(Icons.numbers),
+                title: const Text('Digits'),
+                value: Text('$_numDigit'),
+                onPressed: (context) async {
+                  await showDialog<String>(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(content:
+                            StatefulBuilder(builder: (context, setState) {
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text('Digits'),
+                              Slider(
+                                value: _numDigit.toDouble(),
+                                label: _numDigit.toString(),
+                                min: 1.0,
+                                max: 10.0,
+                                divisions: 10,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _numDigit = value.toInt();
+                                  });
+                                },
+                              ),
+                            ],
+                          );
+                        }));
+                      });
+                  setState(() {
+                    AppConfig.numDigit = _numDigit;
+                  });
+                },
+              ),
               SettingsTile(
                   leading: const Icon(Icons.table_rows),
                   title: const Text('Rows'),
