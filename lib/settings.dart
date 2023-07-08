@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
 
+import 'config.dart';
+
 const green = Color(0xFF168362);
 const lightBrown = Color(0xFFB39E8F);
 
-class SettingsRoute extends StatelessWidget {
+class SettingsRoute extends StatefulWidget {
   const SettingsRoute({super.key});
+
+  @override
+  State<SettingsRoute> createState() => _SettingsRouteState();
+}
+
+class _SettingsRouteState extends State<SettingsRoute> {
+  String _ttsLocale = AppConfig.ttsLocale;
 
   @override
   Widget build(BuildContext context) {
@@ -18,11 +27,11 @@ class SettingsRoute extends StatelessWidget {
               SettingsTile(
                   leading: const Icon(Icons.numbers),
                   title: const Text('Digits'),
-                  value: const Text('1')),
+                  value: Text('${AppConfig.numDigit}')),
               SettingsTile(
                   leading: const Icon(Icons.table_rows),
                   title: const Text('Rows'),
-                  value: const Text('5')),
+                  value: Text('${AppConfig.numRowInt}')),
             ]),
         SettingsSection(
             title: const Text('Timing', style: TextStyle(color: green)),
@@ -30,34 +39,75 @@ class SettingsRoute extends StatelessWidget {
               SettingsTile(
                   leading: const Icon(Icons.flash_on),
                   title: const Text('Flash'),
-                  value: const Text('500')),
+                  value: Text('${AppConfig.timeFlash}')),
               SettingsTile(
                   leading: const Icon(Icons.timelapse),
                   title: const Text('Timeout'),
-                  value: const Text('5')),
+                  value: Text('${AppConfig.timeout}')),
             ]),
         SettingsSection(
             title:
                 const Text('Mode of operation', style: TextStyle(color: green)),
             tiles: [
               SettingsTile.switchTile(
-                initialValue: false,
+                initialValue: AppConfig.useNegNumber,
+                activeSwitchColor: green,
                 leading: const Icon(Icons.exposure_minus_1),
                 title: const Text('Subtraction'),
-                onToggle: (value) {},
-              ),
-              SettingsTile.switchTile(
-                leading: const Icon(Icons.voice_chat),
-                title: const Text('TTS'),
-                initialValue: false,
-                onToggle: (value) {},
+                description: const Text('Allow negative numbers'),
+                onToggle: (value) {
+                  setState(() {
+                    AppConfig.useNegNumber = value;
+                  });
+                },
               ),
               SettingsTile.switchTile(
                 leading: const Icon(Icons.waving_hand),
                 title: const Text('Continuous mode'),
-                initialValue: false,
-                onToggle: (value) {},
-              )
+                description:
+                    const Text('Continue without pause to enter answer'),
+                initialValue: AppConfig.useContinuousMode,
+                activeSwitchColor: green,
+                onToggle: (value) {
+                  setState(() {
+                    AppConfig.useContinuousMode = value;
+                  });
+                },
+              ),
+              SettingsTile.navigation(
+                leading: const Icon(Icons.voice_chat),
+                title: const Text('TTS Voice '),
+                value: Text(AppConfig.ttsLocale),
+                onPressed: (context) async {
+                  final languages = ['No sound'] + AppConfig.languages;
+                  await showDialog<String>(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(content:
+                            StatefulBuilder(builder: (context, setState) {
+                          return SingleChildScrollView(
+                              child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: languages.map((l) {
+                                    return ListTile(
+                                        title: Text(l),
+                                        leading: Radio<String>(
+                                          value: l,
+                                          groupValue: _ttsLocale,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _ttsLocale = value!;
+                                            });
+                                          },
+                                        ));
+                                  }).toList()));
+                        }));
+                      });
+                  setState(() {
+                    AppConfig.ttsLocale = _ttsLocale;
+                  });
+                },
+              ),
             ]),
       ]),
     );

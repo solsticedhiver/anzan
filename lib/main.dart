@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
+import 'config.dart';
 import 'settings.dart';
 
 void main() {
@@ -48,23 +51,36 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _number = 0;
+  String _number = '';
   int _indx = 0;
   Timer? _timer;
   bool isReplayable = false;
   bool isPlaying = false;
   bool isVisible = false;
   List<int> numbers = [];
+  int numRowInt = 5;
+  int numDigit = 1;
+  List<List<int>> history = [];
 
   @override
   void initState() {
     super.initState();
+    Future.microtask(() async {
+      final req = await http
+          .get(Uri.parse('https://www.sorobanexam.org/tools/tts?lang_list'));
+      if (req.statusCode == 200) {
+        for (var l in json.decode(req.body)) {
+          AppConfig.languages.add(l);
+        }
+        //debugPrint(AppConfig.languages.toString());
+      }
+    });
   }
 
   void _generateNumbers(int length, int digits) {
     int startInt = pow(10, digits - 1).toInt();
     int maxInt = pow(10, digits).toInt() - startInt;
-    debugPrint('maxInt=$maxInt, startInt=$startInt');
+    debugPrint('startInt=$startInt, maxInt=$maxInt');
     numbers =
         List.generate(length, (index) => Random().nextInt(maxInt) + startInt);
     debugPrint(numbers.toString());
@@ -73,15 +89,23 @@ class _MyHomePageState extends State<MyHomePage> {
   void _nextRandomNumber() {
     setState(() {
       isVisible = true;
-      _number = numbers[_indx];
+      _number = numbers[_indx].toString();
       _indx++;
     });
-    Future.delayed(const Duration(milliseconds: 500), () {
+    Future.delayed(Duration(milliseconds: AppConfig.timeFlash), () {
       setState(() {
         isVisible = false;
         if (_indx >= numbers.length) {
           isPlaying = false;
           _timer!.cancel();
+          Future.delayed(Duration(milliseconds: AppConfig.timeout), () {
+            setState(() {
+              _number = '?';
+              isVisible = true;
+            });
+          });
+          isReplayable = true;
+          history.add(numbers);
         }
       });
     });
@@ -89,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _replay() {
     _indx = 0;
-    _timer = Timer.periodic(const Duration(milliseconds: 1000), (timer) {
+    _timer = Timer.periodic(Duration(milliseconds: AppConfig.timeout), (timer) {
       if (!isPlaying) {
         timer.cancel();
       } else {
@@ -100,16 +124,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _startPlay() {
     _indx = 0;
-    _generateNumbers(5, 2);
-    _timer = Timer.periodic(const Duration(milliseconds: 1000), (timer) {
+    _generateNumbers(numRowInt, numDigit);
+    _timer = Timer.periodic(
+        Duration(milliseconds: AppConfig.timeFlash + AppConfig.timeout),
+        (timer) {
       if (!isPlaying) {
         timer.cancel();
       } else {
         _nextRandomNumber();
       }
-    });
-    setState(() {
-      isReplayable = true;
     });
   }
 
@@ -127,7 +150,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     TextStyle style =
         TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold);
-    double buttonSize = 40.0;
     return Scaffold(
       appBar: AppBar(title: Text(widget.title), actions: [
         IconButton(
@@ -199,7 +221,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 replacement: const SizedBox(height: 300),
                 visible: isVisible,
                 child: Text(
-                  '$_number',
+                  _number,
                   style: style,
                 )),
           ],
@@ -211,6 +233,52 @@ class _MyHomePageState extends State<MyHomePage> {
           return Container(
               margin: const EdgeInsets.all(5),
               child: Row(children: [
+                const SizedBox(width: 10),
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(green),
+                    padding:
+                        MaterialStateProperty.all(const EdgeInsets.all(15)),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      isPlaying = !isPlaying;
+                    });
+                    if (!isPlaying && _timer != null) {
+                      _timer!.cancel();
+                      isVisible = false;
+                    }
+                    if (isPlaying) {
+                      _startPlay();
+                    }
+                  },
+                  child: Text(isPlaying ? 'Stop' : 'Play',
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold)),
+                ),
+                const SizedBox(width: 10),
+                ElevatedButton(
+                  style: ButtonStyle(
+                      padding:
+                          MaterialStateProperty.all(const EdgeInsets.all(15)),
+                      backgroundColor: MaterialStateProperty.all(
+                          isReplayable ? green : Colors.grey[300])),
+                  onPressed: isReplayable
+                      ? () {
+                          setState(() {
+                            isPlaying = true;
+                          });
+                          _replay();
+                        }
+                      : () {},
+                  child: Text('Replay',
+                      style: TextStyle(
+                          color: isReplayable ? Colors.white : Colors.black,
+                          fontSize: 18)),
+                ),
+                const SizedBox(width: 10),
                 const Expanded(
                     child: TextField(
                   cursorColor: Colors.black,
@@ -227,59 +295,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     hintStyle: TextStyle(color: Colors.black),
                   ),
                 )),
-                const SizedBox(width: 8),
-                ClipOval(
-                    child: Container(
-                        width: buttonSize,
-                        height: buttonSize,
-                        color: green,
-                        child: IconButton(
-                          color: Colors.white,
-                          icon: const Icon(Icons.check),
-                          onPressed: () {},
-                        ))),
-                const SizedBox(width: 8),
-                ClipOval(
-                    child: Container(
-                        width: buttonSize,
-                        height: buttonSize,
-                        color: green,
-                        child: IconButton(
-                          color: Colors.white,
-                          icon: const Icon(Icons.replay),
-                          onPressed: isReplayable
-                              ? () {
-                                  setState(() {
-                                    isPlaying = true;
-                                  });
-                                  _replay();
-                                }
-                              : null,
-                        ))),
-                const SizedBox(width: 8),
-                ClipOval(
-                    child: Container(
-                        width: buttonSize,
-                        height: buttonSize,
-                        color: green,
-                        child: IconButton(
-                          color: Colors.white,
-                          icon: isPlaying
-                              ? const Icon(Icons.stop)
-                              : const Icon(Icons.play_arrow),
-                          onPressed: () {
-                            setState(() {
-                              isPlaying = !isPlaying;
-                            });
-                            if (!isPlaying && _timer != null) {
-                              _timer!.cancel();
-                              isVisible = false;
-                            }
-                            if (isPlaying) {
-                              _startPlay();
-                            }
-                          },
-                        ))),
+                const SizedBox(width: 10),
+                ElevatedButton(
+                  style: ButtonStyle(
+                      padding:
+                          MaterialStateProperty.all(const EdgeInsets.all(15)),
+                      backgroundColor: MaterialStateProperty.all(Colors.white)),
+                  onPressed: () {},
+                  child: const Text('Check',
+                      style: TextStyle(color: Colors.black, fontSize: 18)),
+                ),
               ]));
         },
         onClosing: () {},
