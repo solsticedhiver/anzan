@@ -37,6 +37,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   settings_ui: ^2.0.2
   http: ^1.1.0
+  media_kit: ^1.1.7
+  media_kit_libs_audio: ^1.0.1
 
 dev_dependencies:
   flutter_test:

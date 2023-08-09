@@ -2,13 +2,22 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:media_kit/media_kit.dart';
 
 import 'config.dart';
 import 'settings.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  MediaKit.ensureInitialized();
+
+  if (kReleaseMode) {
+    debugPrint = (String? message, {int? wrapWidth}) {};
+  }
+
   runApp(const MyApp());
 }
 
@@ -65,13 +74,17 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     Future.microtask(() async {
-      final req = await http
-          .get(Uri.parse('https://www.sorobanexam.org/tools/tts?lang_list'));
-      if (req.statusCode == 200) {
-        for (var l in json.decode(req.body)) {
-          AppConfig.languages.add(l);
+      try {
+        final req = await http.get(
+            Uri.parse('https://www.sorobanexam.org/tools/tts?lang_list=1'));
+        if (req.statusCode == 200) {
+          for (var l in json.decode(req.body)) {
+            AppConfig.languages.add(l);
+          }
+          //debugPrint(AppConfig.languages.toString());
         }
-        //debugPrint(AppConfig.languages.toString());
+      } catch (e) {
+        debugPrint(e.toString());
       }
     });
   }
@@ -148,7 +161,7 @@ class _MyHomePageState extends State<MyHomePage> {
       tp = TextPainter(text: text, textDirection: TextDirection.ltr);
       tp.layout();
     }
-    debugPrint(fontSize.toString());
+    //debugPrint(fontSize.toString());
     return TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold);
   }
 
