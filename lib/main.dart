@@ -58,9 +58,8 @@ class _MyHomePageState extends State<MyHomePage> {
   bool isPlaying = false;
   bool isVisible = false;
   List<int> numbers = [];
-  int numRowInt = 5;
-  int numDigit = 1;
   List<List<int>> history = [];
+  late TextStyle style;
 
   @override
   void initState() {
@@ -124,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _startPlay() {
     _indx = 0;
-    _generateNumbers(numRowInt, numDigit);
+    _generateNumbers(AppConfig.numRowInt, AppConfig.numDigit);
     _timer = Timer.periodic(
         Duration(milliseconds: AppConfig.timeFlash + AppConfig.timeout),
         (timer) {
@@ -136,20 +135,26 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
+  TextStyle _optimizeFontSize() {
     double fontSize = MediaQuery.of(context).size.height / 2;
-    TextSpan text = TextSpan(text: '99', style: TextStyle(fontSize: fontSize));
+    final testString = '9' * AppConfig.numDigit;
+    TextSpan text =
+        TextSpan(text: testString, style: TextStyle(fontSize: fontSize));
     TextPainter tp = TextPainter(text: text, textDirection: TextDirection.ltr);
     tp.layout();
     while (tp.width + 20 > MediaQuery.of(context).size.width) {
       fontSize -= 10;
-      text = TextSpan(text: '99', style: TextStyle(fontSize: fontSize));
+      text = TextSpan(text: testString, style: TextStyle(fontSize: fontSize));
       tp = TextPainter(text: text, textDirection: TextDirection.ltr);
       tp.layout();
     }
-    TextStyle style =
-        TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold);
+    debugPrint(fontSize.toString());
+    return TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    style = _optimizeFontSize();
     return Scaffold(
       appBar: AppBar(title: Text(widget.title), actions: [
         IconButton(
@@ -157,6 +162,9 @@ class _MyHomePageState extends State<MyHomePage> {
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => const SettingsRoute(),
               ));
+              setState(() {
+                style = _optimizeFontSize();
+              });
             },
             icon: const Icon(Icons.settings))
       ]),
@@ -202,13 +210,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 ListTile(
                   leading: const Icon(Icons.settings),
                   title: const Text('Settings'),
-                  onTap: () {
+                  onTap: () async {
                     Navigator.pop(context); // close the drawer, first
-                    Navigator.of(context).push(
+                    await Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => const SettingsRoute(),
                       ),
                     );
+                    setState(() {
+                      style = _optimizeFontSize();
+                    });
                   },
                 ),
               ])),

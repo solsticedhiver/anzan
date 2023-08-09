@@ -43,8 +43,8 @@ class _SettingsRouteState extends State<SettingsRoute> {
                                 value: _numDigit.toDouble(),
                                 label: _numDigit.toString(),
                                 min: 1.0,
-                                max: 10.0,
-                                divisions: 10,
+                                max: 9.0,
+                                divisions: 9,
                                 onChanged: (value) {
                                   setState(() {
                                     _numDigit = value.toInt();
