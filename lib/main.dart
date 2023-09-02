@@ -255,9 +255,10 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: lightBrown,
         builder: (context) {
           return Container(
-              margin: const EdgeInsets.all(5),
+              margin:
+                  const EdgeInsets.only(top: 5, bottom: 5, left: 10, right: 10),
               child: Row(children: [
-                const SizedBox(width: 10),
+                //const Expanded(child: SizedBox.shrink()),
                 ElevatedButton(
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(green),
@@ -282,7 +283,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           fontSize: 18,
                           fontWeight: FontWeight.bold)),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 15),
                 ElevatedButton(
                   style: ButtonStyle(
                       padding:
@@ -302,12 +303,14 @@ class _MyHomePageState extends State<MyHomePage> {
                           color: isReplayable ? Colors.white : Colors.black,
                           fontSize: 18)),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 15),
                 const Expanded(
                     child: TextField(
                   cursorColor: Colors.black,
                   keyboardType: TextInputType.number,
+                  maxLines: 1,
                   decoration: InputDecoration(
+                    isDense: true,
                     border: OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.black)),
                     enabledBorder: OutlineInputBorder(
@@ -319,7 +322,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     hintStyle: TextStyle(color: Colors.black),
                   ),
                 )),
-                const SizedBox(width: 10),
+                const SizedBox(width: 15),
                 ElevatedButton(
                   style: ButtonStyle(
                       padding:
@@ -329,6 +332,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: const Text('Check',
                       style: TextStyle(color: Colors.black, fontSize: 18)),
                 ),
+                //const Expanded(child: SizedBox.shrink()),
               ]));
         },
         onClosing: () {},
