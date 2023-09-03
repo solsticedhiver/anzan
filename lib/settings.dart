@@ -34,17 +34,20 @@ class _SettingsRouteState extends State<SettingsRoute> {
                     Container(
                         margin: const EdgeInsets.only(left: 24, right: 24),
                         child: const Icon(Icons.numbers)),
-                    Container(
-                        //margin: const EdgeInsets.only(left: 15, right: 15),
-                        child: const Column(
+                    const Expanded(
+                        flex: 2,
+                        child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                          Text(
-                            'Digits',
-                            style: TextStyle(fontSize: 20),
-                          ),
-                          Text('at most for each number in the operation'),
-                        ])),
+                              Text(
+                                'Digits',
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              Text(
+                                'at most for each number in the operation',
+                              ),
+                            ])),
                     const Expanded(child: SizedBox.shrink()),
                     Container(
                         width: 200,
@@ -84,17 +87,20 @@ class _SettingsRouteState extends State<SettingsRoute> {
                     Container(
                         margin: const EdgeInsets.only(left: 24, right: 24),
                         child: const Icon(Icons.table_rows)),
-                    Container(
-                        //margin: const EdgeInsets.only(left: 15, right: 15),
-                        child: const Column(
+                    const Expanded(
+                        flex: 2,
+                        child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                          Text(
-                            'Rows',
-                            style: TextStyle(fontSize: 20),
-                          ),
-                          Text('length of the operation')
-                        ])),
+                              Text(
+                                'Rows',
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              Text(
+                                'length of the operation',
+                              )
+                            ])),
                     const Expanded(child: SizedBox.shrink()),
                     Container(
                         width: 200,
@@ -138,17 +144,15 @@ class _SettingsRouteState extends State<SettingsRoute> {
                     Container(
                         margin: const EdgeInsets.only(left: 24, right: 24),
                         child: const Icon(Icons.flash_on)),
-                    Container(
-                        //margin: const EdgeInsets.only(left: 15, right: 15),
-                        child: const Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
+                    const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Text(
                             'Flash',
                             style: TextStyle(fontSize: 20),
                           ),
                           Text('in ms')
-                        ])),
+                        ]),
                     const Expanded(child: SizedBox.shrink()),
                     Container(
                         width: 200,
@@ -190,17 +194,15 @@ class _SettingsRouteState extends State<SettingsRoute> {
                     Container(
                         margin: const EdgeInsets.only(left: 24, right: 24),
                         child: const Icon(Icons.timelapse)),
-                    Container(
-                        //margin: const EdgeInsets.only(left: 15, right: 15),
-                        child: const Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
+                    const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Text(
                             'Timeout',
                             style: TextStyle(fontSize: 20),
                           ),
                           Text('in ms')
-                        ])),
+                        ]),
                     const Expanded(child: SizedBox.shrink()),
                     Container(
                         width: 200,
@@ -208,6 +210,8 @@ class _SettingsRouteState extends State<SettingsRoute> {
                           readOnly: true,
                           min: 100,
                           max: 5000,
+                          step: 50,
+                          pageStep: 100,
                           value: AppConfig.timeout.toDouble(),
                           iconColor:
                               MaterialStateProperty.resolveWith((states) {
