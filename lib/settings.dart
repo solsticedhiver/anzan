@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:flutter_spinbox/flutter_spinbox.dart';
 
 import 'config.dart';
 
@@ -25,57 +26,212 @@ class _SettingsRouteState extends State<SettingsRoute> {
         SettingsSection(
             title: const Text('Numbers', style: TextStyle(color: green)),
             tiles: [
-              SettingsTile.navigation(
-                leading: const Icon(Icons.numbers),
-                title: const Text('Digits'),
-                value: Text('$_numDigit'),
-                onPressed: (context) async {
-                  await showDialog<String>(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(content:
-                            StatefulBuilder(builder: (context, setState) {
-                          return Column(
-                            mainAxisSize: MainAxisSize.min,
+              CustomSettingsTile(
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                    Container(
+                        margin: const EdgeInsets.only(left: 24, right: 24),
+                        child: const Icon(Icons.numbers)),
+                    Container(
+                        //margin: const EdgeInsets.only(left: 15, right: 15),
+                        child: const Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('Digits'),
-                              Slider(
-                                value: _numDigit.toDouble(),
-                                label: _numDigit.toString(),
-                                min: 1.0,
-                                max: 9.0,
-                                divisions: 9,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _numDigit = value.toInt();
-                                  });
-                                },
-                              ),
-                            ],
-                          );
-                        }));
-                      });
-                  setState(() {
-                    AppConfig.numDigit = _numDigit;
-                  });
-                },
-              ),
-              SettingsTile(
-                  leading: const Icon(Icons.table_rows),
-                  title: const Text('Rows'),
-                  value: Text('${AppConfig.numRowInt}')),
+                          Text(
+                            'Digits',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          Text('at most for each number in the operation'),
+                        ])),
+                    const Expanded(child: SizedBox.shrink()),
+                    Container(
+                        width: 200,
+                        child: SpinBox(
+                          readOnly: true,
+                          min: 1,
+                          max: 10,
+                          value: AppConfig.numDigit.toDouble(),
+                          iconColor:
+                              MaterialStateProperty.resolveWith((states) {
+                            if (states.contains(MaterialState.disabled)) {
+                              return Colors.grey;
+                            }
+                            if (states.contains(MaterialState.error)) {
+                              return Colors.red;
+                            }
+                            if (states.contains(MaterialState.focused)) {
+                              return Colors.blue;
+                            }
+                            return Colors.black;
+                          }),
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              AppConfig.numDigit = value.toInt();
+                            });
+                          },
+                        ))
+                  ])),
+              CustomSettingsTile(
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                    Container(
+                        margin: const EdgeInsets.only(left: 24, right: 24),
+                        child: const Icon(Icons.table_rows)),
+                    Container(
+                        //margin: const EdgeInsets.only(left: 15, right: 15),
+                        child: const Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                          Text(
+                            'Rows',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          Text('length of the operation')
+                        ])),
+                    const Expanded(child: SizedBox.shrink()),
+                    Container(
+                        width: 200,
+                        child: SpinBox(
+                          readOnly: true,
+                          min: 1,
+                          max: 10,
+                          value: AppConfig.numRowInt.toDouble(),
+                          iconColor:
+                              MaterialStateProperty.resolveWith((states) {
+                            if (states.contains(MaterialState.disabled)) {
+                              return Colors.grey;
+                            }
+                            if (states.contains(MaterialState.error)) {
+                              return Colors.red;
+                            }
+                            if (states.contains(MaterialState.focused)) {
+                              return Colors.blue;
+                            }
+                            return Colors.black;
+                          }),
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              AppConfig.numRowInt = value.toInt();
+                            });
+                          },
+                        ))
+                  ])),
             ]),
         SettingsSection(
             title: const Text('Timing', style: TextStyle(color: green)),
             tiles: [
-              SettingsTile(
-                  leading: const Icon(Icons.flash_on),
-                  title: const Text('Flash'),
-                  value: Text('${AppConfig.timeFlash}')),
-              SettingsTile(
-                  leading: const Icon(Icons.timelapse),
-                  title: const Text('Timeout'),
-                  value: Text('${AppConfig.timeout}')),
+              CustomSettingsTile(
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                    Container(
+                        margin: const EdgeInsets.only(left: 24, right: 24),
+                        child: const Icon(Icons.flash_on)),
+                    Container(
+                        //margin: const EdgeInsets.only(left: 15, right: 15),
+                        child: const Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                          Text(
+                            'Flash',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          Text('in ms')
+                        ])),
+                    const Expanded(child: SizedBox.shrink()),
+                    Container(
+                        width: 200,
+                        child: SpinBox(
+                          readOnly: true,
+                          min: 50,
+                          max: 1000,
+                          step: 50,
+                          pageStep: 100,
+                          value: AppConfig.timeFlash.toDouble(),
+                          iconColor:
+                              MaterialStateProperty.resolveWith((states) {
+                            if (states.contains(MaterialState.disabled)) {
+                              return Colors.grey;
+                            }
+                            if (states.contains(MaterialState.error)) {
+                              return Colors.red;
+                            }
+                            if (states.contains(MaterialState.focused)) {
+                              return Colors.blue;
+                            }
+                            return Colors.black;
+                          }),
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              AppConfig.timeFlash = value.toInt();
+                            });
+                          },
+                        ))
+                  ])),
+              CustomSettingsTile(
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                    Container(
+                        margin: const EdgeInsets.only(left: 24, right: 24),
+                        child: const Icon(Icons.timelapse)),
+                    Container(
+                        //margin: const EdgeInsets.only(left: 15, right: 15),
+                        child: const Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                          Text(
+                            'Timeout',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          Text('in ms')
+                        ])),
+                    const Expanded(child: SizedBox.shrink()),
+                    Container(
+                        width: 200,
+                        child: SpinBox(
+                          readOnly: true,
+                          min: 100,
+                          max: 5000,
+                          value: AppConfig.timeout.toDouble(),
+                          iconColor:
+                              MaterialStateProperty.resolveWith((states) {
+                            if (states.contains(MaterialState.disabled)) {
+                              return Colors.grey;
+                            }
+                            if (states.contains(MaterialState.error)) {
+                              return Colors.red;
+                            }
+                            if (states.contains(MaterialState.focused)) {
+                              return Colors.blue;
+                            }
+                            return Colors.black;
+                          }),
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              AppConfig.timeout = value.toInt();
+                            });
+                          },
+                        ))
+                  ])),
             ]),
         SettingsSection(
             title:
