@@ -77,8 +77,8 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     Future.microtask(() async {
       try {
-        final req = await http.get(
-            Uri.parse('https://www.sorobanexam.org/tools/tts?lang_list=1'));
+        final req = await http
+            .get(Uri.parse('${AppConfig.host}/tools/tts?lang_list=1'));
         if (req.statusCode == 200) {
           for (var l in json.decode(req.body)) {
             AppConfig.languages.add(l);
