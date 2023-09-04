@@ -89,12 +89,29 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _generateNumbers(int length, int digits) {
+  void _generateNumbers(int length, int digits, bool allowNegative) {
+    debugPrint(allowNegative.toString());
+    final random = Random();
+    // dart Random.nextInt() can't handle int bigger than 2^32
+    assert(digits < 9);
     int startInt = pow(10, digits - 1).toInt();
     int maxInt = pow(10, digits).toInt() - startInt;
+    int range = maxInt - startInt + 1;
     debugPrint('startInt=$startInt, maxInt=$maxInt');
-    numbers =
-        List.generate(length, (index) => Random().nextInt(maxInt) + startInt);
+    numbers = [];
+    int sum = 0;
+    for (int i = 0; i < length; i++) {
+      int nextNum = random.nextInt(range) + startInt;
+      if (allowNegative && sum > startInt) {
+        bool isNegative = random.nextInt(2).toInt() == 1 ? true : false;
+        if (isNegative) {
+          nextNum = -1 *
+              (random.nextInt(min(sum - startInt, range)).toInt() + startInt);
+        }
+      }
+      sum += nextNum;
+      numbers.add(nextNum);
+    }
     debugPrint(numbers.toString());
   }
 
@@ -136,7 +153,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _startPlay() {
     _indx = 0;
-    _generateNumbers(AppConfig.numRowInt, AppConfig.numDigit);
+    _generateNumbers(
+        AppConfig.numRowInt, AppConfig.numDigit, AppConfig.useNegNumber);
     _timer = Timer.periodic(
         Duration(milliseconds: AppConfig.timeFlash + AppConfig.timeout),
         (timer) {
