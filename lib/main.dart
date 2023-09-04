@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:media_kit/media_kit.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'config.dart';
 import 'settings.dart';
@@ -232,11 +233,15 @@ class _MyHomePageState extends State<MyHomePage> {
                   const SizedBox(
                     height: 15,
                   ),
-                  const Expanded(
+                  Expanded(
                       flex: 1,
-                      child: Text(
-                        'https://www.sorobanexam.org',
-                        style: TextStyle(color: Colors.black),
+                      child: InkWell(
+                        onTap: () async {
+                          await launchUrl(
+                              Uri.parse('https://www.sorobanexam.org'));
+                        },
+                        child: const Text('www.sorobanexam.org',
+                            style: TextStyle(color: Colors.black)),
                       )),
                 ]),
           ),
