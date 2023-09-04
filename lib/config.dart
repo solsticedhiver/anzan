@@ -5,6 +5,8 @@ class AppConfig {
   static int timeout = 1000;
   static bool useNegNumber = false;
   static bool useContinuousMode = false;
+  static int maxHistoryLength = 20;
+  static List<List<int>> history = [];
   static String ttsLocale = 'en-US';
   static List<String> languages = [];
 }

@@ -90,14 +90,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _generateNumbers(int length, int digits, bool allowNegative) {
-    debugPrint(allowNegative.toString());
     final random = Random();
     // dart Random.nextInt() can't handle int bigger than 2^32
     assert(digits < 9);
     int startInt = pow(10, digits - 1).toInt();
     int maxInt = pow(10, digits).toInt() - startInt;
     int range = maxInt - startInt + 1;
-    debugPrint('startInt=$startInt, maxInt=$maxInt');
+    //debugPrint('startInt=$startInt, maxInt=$maxInt');
     numbers = [];
     int sum = 0;
     for (int i = 0; i < length; i++) {
@@ -113,6 +112,11 @@ class _MyHomePageState extends State<MyHomePage> {
       numbers.add(nextNum);
     }
     debugPrint(numbers.toString());
+    AppConfig.history.add(numbers);
+    if (AppConfig.history.length > AppConfig.maxHistoryLength) {
+      AppConfig.history.removeRange(
+          0, AppConfig.history.length - AppConfig.maxHistoryLength);
+    }
   }
 
   void _nextRandomNumber() {
@@ -270,6 +274,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       bottomSheet: BottomSheet(
+        enableDrag: false,
         backgroundColor: lightBrown,
         builder: (context) {
           return Container(
