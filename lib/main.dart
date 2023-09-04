@@ -69,6 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<int> numbers = [];
   List<List<int>> history = [];
   late TextStyle style;
+  bool isExpanded = false;
 
   @override
   void initState() {
@@ -242,6 +243,34 @@ class _MyHomePageState extends State<MyHomePage> {
           Expanded(
               flex: 1,
               child: ListView(children: [
+                ExpansionPanelList(
+                  children: [
+                    ExpansionPanel(
+                        isExpanded: isExpanded,
+                        headerBuilder: (context, isExpanded) {
+                          return const ListTile(
+                            leading: const Icon(Icons.history),
+                            title: const Text('History'),
+                          );
+                        },
+                        body: SizedBox(
+                            height: 200,
+                            child: ListView.builder(
+                                reverse: true,
+                                itemCount: AppConfig.history.length,
+                                itemBuilder: ((context, index) {
+                                  StringBuffer operation = StringBuffer('');
+                                  for (var n in AppConfig.history[index]) {
+                                    operation.write(
+                                        n > 0 ? ' + $n' : ' - ${n.abs()}');
+                                  }
+                                  return ListTile(
+                                      title: Text(operation
+                                          .toString()
+                                          .replaceFirst(' + ', '')));
+                                }))))
+                  ],
+                ),
                 ListTile(
                   leading: const Icon(Icons.settings),
                   title: const Text('Settings'),
