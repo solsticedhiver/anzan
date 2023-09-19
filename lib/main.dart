@@ -161,6 +161,9 @@ class _MyHomePageState extends State<MyHomePage> {
     _indx = 0;
     _generateNumbers(
         AppConfig.numRowInt, AppConfig.numDigit, AppConfig.useNegNumber);
+    setState(() {
+      _number = '';
+    });
     _timer = Timer.periodic(
         Duration(milliseconds: AppConfig.timeFlash + AppConfig.timeout),
         (timer) {
@@ -295,17 +298,13 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       )),
       body: Center(
-        child: Stack(
-          children: <Widget>[
-            Visibility(
-                replacement: const SizedBox(height: 300),
-                visible: isVisible,
-                child: Text(
-                  _number,
-                  style: style,
-                )),
-          ],
-        ),
+        child: Visibility(
+            replacement: const SizedBox(height: 300),
+            visible: isVisible,
+            child: Text(
+              _number,
+              style: style,
+            )),
       ),
       bottomSheet: BottomSheet(
         enableDrag: false,
