@@ -2,11 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:anzan/display.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:media_kit/media_kit.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:provider/provider.dart';
 
 import 'config.dart';
 import 'settings.dart';
@@ -19,7 +21,10 @@ void main() {
     debugPrint = (String? message, {int? wrapWidth}) {};
   }
 
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(
+    create: (context) => NumberModel(),
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -61,7 +66,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String _number = '';
   int _indx = 0;
   Timer? _timer;
   bool isReplayable = false;
@@ -71,6 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<List<int>> history = [];
   late TextStyle style;
   bool isExpanded = false;
+  late MyDisplay myDisplay;
 
   @override
   void initState() {
@@ -122,21 +127,20 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _nextRandomNumber() {
-    setState(() {
-      isVisible = true;
-      _number = numbers[_indx].toString();
-      _indx++;
-    });
+    NumberModel numberModel = Provider.of<NumberModel>(context, listen: false);
+    numberModel.setNumber(numbers[_indx].toString());
+    numberModel.setVisible(true);
+    _indx++;
     Future.delayed(Duration(milliseconds: AppConfig.timeFlash), () {
       setState(() {
-        isVisible = false;
+        numberModel.setVisible(false);
         if (_indx >= numbers.length) {
           isPlaying = false;
           _timer!.cancel();
           Future.delayed(Duration(milliseconds: AppConfig.timeout), () {
             setState(() {
-              _number = '?';
-              isVisible = true;
+              numberModel.setNumber('?');
+              numberModel.setVisible(true);
             });
           });
           isReplayable = true;
@@ -162,7 +166,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _generateNumbers(
         AppConfig.numRowInt, AppConfig.numDigit, AppConfig.useNegNumber);
     setState(() {
-      _number = '';
+      Provider.of<NumberModel>(context, listen: false).setNumber('');
     });
     _timer = Timer.periodic(
         Duration(milliseconds: AppConfig.timeFlash + AppConfig.timeout),
@@ -195,6 +199,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     style = _optimizeFontSize();
+    myDisplay = MyDisplay(style: style);
     return Scaffold(
       appBar: AppBar(title: Text(widget.title), actions: [
         IconButton(
@@ -298,13 +303,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       )),
       body: Center(
-        child: Visibility(
-            replacement: const SizedBox(height: 300),
-            visible: isVisible,
-            child: Text(
-              _number,
-              style: style,
-            )),
+        child: myDisplay,
       ),
       bottomSheet: BottomSheet(
         enableDrag: false,
