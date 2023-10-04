@@ -72,10 +72,12 @@ class _MyHomePageState extends State<MyHomePage> {
   bool isPlaying = false;
   bool isVisible = false;
   List<int> numbers = [];
+  List<Uint8List> sounds = [];
   List<List<int>> history = [];
   late TextStyle style;
   bool isExpanded = false;
   late MyDisplay myDisplay;
+  final player = Player();
 
   @override
   void initState() {
@@ -126,12 +128,18 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void _nextRandomNumber() {
+  void _nextRandomNumber() async {
     NumberModel numberModel = Provider.of<NumberModel>(context, listen: false);
     numberModel.setNumber(numbers[_indx].toString());
     numberModel.setVisible(true);
+    int delay = AppConfig.timeFlash;
+    if (sounds.isNotEmpty) {
+      final media = await Media.memory(sounds[_indx], type: 'audio/mpeg');
+      await player.open(media);
+    }
     _indx++;
-    Future.delayed(Duration(milliseconds: AppConfig.timeFlash), () {
+
+    Future.delayed(Duration(milliseconds: delay), () {
       setState(() {
         numberModel.setVisible(false);
         if (_indx >= numbers.length) {
@@ -161,10 +169,27 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  Future<void> _getSounds() async {
+    http.Response req;
+    sounds = [];
+    for (var i = 0; i < numbers.length; i++) {
+      final n = numbers[i];
+      final uri =
+          '${AppConfig.host}/tools/tts?lang=${AppConfig.ttsLocale}&number=$n';
+      req = await http.get(Uri.parse(uri));
+      if (req.statusCode == 200) {
+        sounds.add(req.bodyBytes);
+      }
+    }
+  }
+
   void _startPlay() {
     _indx = 0;
     _generateNumbers(
         AppConfig.numRowInt, AppConfig.numDigit, AppConfig.useNegNumber);
+    if (AppConfig.languages.contains(AppConfig.ttsLocale)) {
+      _getSounds();
+    }
     setState(() {
       Provider.of<NumberModel>(context, listen: false).setNumber('');
     });
