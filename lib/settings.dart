@@ -58,7 +58,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
                                 child: SpinBox(
                                   readOnly: true,
                                   min: 1,
-                                  max: 10,
+                                  max: 9,
                                   value: AppConfig.numDigit.toDouble(),
                                   iconColor: MaterialStateProperty.resolveWith(
                                       (states) {

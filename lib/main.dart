@@ -99,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _generateNumbers(int length, int digits, bool allowNegative) {
     final random = Random();
     // dart Random.nextInt() can't handle int bigger than 2^32
-    assert(digits < 9);
+    assert(digits <= 9);
     int startInt = pow(10, digits - 1).toInt();
     int maxInt = pow(10, digits).toInt() - startInt;
     int range = maxInt - startInt + 1;
