@@ -126,6 +126,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _nextRandomNumber() async {
+    if (!isPlaying) return;
+
     final numberModel = Provider.of<NumberModel>(context, listen: false);
     //debugPrint(_indx.toString());
     if (_indx >= numbers.length) {
@@ -334,6 +336,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     });
                     if (!isPlaying) {
                       isVisible = false;
+                      isReplayable = true;
+                      player.stop();
                     } else {
                       _startPlay();
                     }
