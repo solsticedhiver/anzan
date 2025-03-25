@@ -10,5 +10,4 @@ class AppConfig {
   static String ttsLocale = 'en-US';
   static List<String> languages = [];
   static String host = 'https://www.sorobanexam.org';
-  //static String host = 'http://127.0.0.1:5000';
 }
