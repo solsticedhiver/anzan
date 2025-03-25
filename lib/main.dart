@@ -67,7 +67,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _indx = 0;
-  Timer? _timer;
   bool isReplayable = false;
   bool isPlaying = false;
   bool isVisible = false;
@@ -84,8 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     Future.microtask(() async {
       try {
-        final req = await http
-            .get(Uri.parse('${AppConfig.host}/tools/tts?lang_list=1'));
+        final req = await http.get(Uri.parse('${AppConfig.host}/tools/tts?lang_list=1'));
         if (req.statusCode == 200) {
           for (var l in json.decode(req.body)) {
             AppConfig.languages.add(l);
@@ -101,6 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _generateNumbers(int length, int digits, bool allowNegative) {
     final random = Random();
     // dart Random.nextInt() can't handle int bigger than 2^32
+    // TODO: work-around for length >= 10
     assert(digits <= 9);
     int startInt = pow(10, digits - 1).toInt();
     int maxInt = pow(10, digits).toInt() - startInt;
@@ -113,8 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (allowNegative && sum > startInt) {
         bool isNegative = random.nextInt(2).toInt() == 1 ? true : false;
         if (isNegative) {
-          nextNum = -1 *
-              (random.nextInt(min(sum - startInt, range)).toInt() + startInt);
+          nextNum = -1 * (random.nextInt(min(sum - startInt, range)).toInt() + startInt);
         }
       }
       sum += nextNum;
@@ -123,59 +121,66 @@ class _MyHomePageState extends State<MyHomePage> {
     debugPrint(numbers.toString());
     AppConfig.history.add(numbers);
     if (AppConfig.history.length > AppConfig.maxHistoryLength) {
-      AppConfig.history.removeRange(
-          0, AppConfig.history.length - AppConfig.maxHistoryLength);
+      AppConfig.history.removeRange(0, AppConfig.history.length - AppConfig.maxHistoryLength);
     }
   }
 
-  void _nextRandomNumber() async {
-    NumberModel numberModel = Provider.of<NumberModel>(context, listen: false);
+  Future<void> _nextRandomNumber() async {
+    final numberModel = Provider.of<NumberModel>(context, listen: false);
+    //debugPrint(_indx.toString());
+    if (_indx >= numbers.length) {
+      player.stop();
+      setState(() {
+        isPlaying = false;
+      });
+      Future.delayed(Duration(milliseconds: AppConfig.timeout), () {
+        setState(() {
+          numberModel.setNumber('?');
+          numberModel.setVisible(true);
+        });
+      });
+      isReplayable = true;
+      history.add(numbers);
+      return;
+    }
     numberModel.setNumber(numbers[_indx].toString());
     numberModel.setVisible(true);
-    int delay = AppConfig.timeFlash;
     if (sounds.isNotEmpty) {
       final media = await Media.memory(sounds[_indx], type: 'audio/mpeg');
+      await player.seek(const Duration(minutes: 0, seconds: 0, milliseconds: 0));
       await player.open(media);
-    }
-    _indx++;
-
-    Future.delayed(Duration(milliseconds: delay), () {
-      setState(() {
+      await Future.delayed(Duration(milliseconds: AppConfig.timeFlash), () async {
         numberModel.setVisible(false);
-        if (_indx >= numbers.length) {
-          isPlaying = false;
-          _timer!.cancel();
-          Future.delayed(Duration(milliseconds: AppConfig.timeout), () {
-            setState(() {
-              numberModel.setNumber('?');
-              numberModel.setVisible(true);
-            });
-          });
-          isReplayable = true;
-          history.add(numbers);
-        }
+        _indx++;
+        await Future.delayed(Duration(milliseconds: AppConfig.timeout), () async {
+          await _nextRandomNumber();
+        });
       });
-    });
+    } else {
+      debugPrint('no sound');
+      Future.delayed(Duration(milliseconds: AppConfig.timeFlash), () async {
+        numberModel.setVisible(false);
+        _indx++;
+        Future.delayed(Duration(milliseconds: AppConfig.timeout), () async {
+          await _nextRandomNumber();
+        });
+      });
+    }
   }
 
   void _replay() {
     _indx = 0;
-    _timer = Timer.periodic(Duration(milliseconds: AppConfig.timeout), (timer) {
-      if (!isPlaying) {
-        timer.cancel();
-      } else {
-        _nextRandomNumber();
-      }
-    });
+    if (isPlaying) {
+      _nextRandomNumber();
+    }
   }
 
   Future<void> _getSounds() async {
     http.Response req;
-    sounds = [];
+    sounds.clear();
     for (var i = 0; i < numbers.length; i++) {
       final n = numbers[i];
-      final uri =
-          '${AppConfig.host}/tools/tts?lang=${AppConfig.ttsLocale}&number=$n';
+      final uri = '${AppConfig.host}/tools/tts?lang=${AppConfig.ttsLocale}&number=$n';
       req = await http.get(Uri.parse(uri));
       if (req.statusCode == 200) {
         sounds.add(req.bodyBytes);
@@ -183,32 +188,22 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void _startPlay() {
+  void _startPlay() async {
     _indx = 0;
-    _generateNumbers(
-        AppConfig.numRowInt, AppConfig.numDigit, AppConfig.useNegNumber);
+    _generateNumbers(AppConfig.numRowInt, AppConfig.numDigit, AppConfig.useNegNumber);
     if (AppConfig.languages.contains(AppConfig.ttsLocale)) {
-      _getSounds();
+      await _getSounds();
+    } else {
+      sounds.clear();
     }
-    setState(() {
-      Provider.of<NumberModel>(context, listen: false).setNumber('');
-    });
-    _timer = Timer.periodic(
-        Duration(milliseconds: AppConfig.timeFlash + AppConfig.timeout),
-        (timer) {
-      if (!isPlaying) {
-        timer.cancel();
-      } else {
-        _nextRandomNumber();
-      }
-    });
+    Provider.of<NumberModel>(context, listen: false).setNumber('');
+    await _nextRandomNumber();
   }
 
   TextStyle _optimizeFontSize() {
     double fontSize = MediaQuery.of(context).size.height / 2;
     final testString = '9' * AppConfig.numDigit;
-    TextSpan text =
-        TextSpan(text: testString, style: TextStyle(fontSize: fontSize));
+    TextSpan text = TextSpan(text: testString, style: TextStyle(fontSize: fontSize));
     TextPainter tp = TextPainter(text: text, textDirection: TextDirection.ltr);
     tp.layout();
     while (tp.width + 20 > MediaQuery.of(context).size.width) {
@@ -257,11 +252,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     const SizedBox(width: 15),
                     Text('Flash Anzan',
                         style: TextStyle(
-                            color: Colors.black,
-                            fontSize: Theme.of(context)
-                                .textTheme
-                                .headlineMedium!
-                                .fontSize)),
+                            color: Colors.black, fontSize: Theme.of(context).textTheme.headlineMedium!.fontSize)),
                   ]),
                   const SizedBox(
                     height: 15,
@@ -270,11 +261,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       flex: 1,
                       child: InkWell(
                         onTap: () async {
-                          await launchUrl(
-                              Uri.parse('https://www.sorobanexam.org'));
+                          await launchUrl(Uri.parse('https://www.sorobanexam.org'));
                         },
-                        child: const Text('www.sorobanexam.org',
-                            style: TextStyle(color: Colors.black)),
+                        child: const Text('www.sorobanexam.org', style: TextStyle(color: Colors.black)),
                       )),
                 ]),
           ),
@@ -287,8 +276,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         isExpanded: isExpanded,
                         headerBuilder: (context, isExpanded) {
                           return const ListTile(
-                            leading: const Icon(Icons.history),
-                            title: const Text('History'),
+                            leading: Icon(Icons.history),
+                            title: Text('History'),
                           );
                         },
                         body: SizedBox(
@@ -299,13 +288,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                 itemBuilder: ((context, index) {
                                   StringBuffer operation = StringBuffer('');
                                   for (var n in AppConfig.history[index]) {
-                                    operation.write(
-                                        n > 0 ? ' + $n' : ' - ${n.abs()}');
+                                    operation.write(n > 0 ? ' + $n' : ' - ${n.abs()}');
                                   }
-                                  return ListTile(
-                                      title: Text(operation
-                                          .toString()
-                                          .replaceFirst(' + ', '')));
+                                  return ListTile(title: Text(operation.toString().replaceFirst(' + ', '')));
                                 }))))
                   ],
                 ),
@@ -335,41 +320,32 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: lightBrown,
         builder: (context) {
           return Container(
-              margin:
-                  const EdgeInsets.only(top: 5, bottom: 5, left: 10, right: 10),
+              margin: const EdgeInsets.only(top: 5, bottom: 5, left: 10, right: 10),
               child: Row(children: [
                 //const Expanded(child: SizedBox.shrink()),
                 ElevatedButton(
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(green),
-                    padding:
-                        MaterialStateProperty.all(const EdgeInsets.all(15)),
+                    backgroundColor: WidgetStateProperty.all(green),
+                    padding: WidgetStateProperty.all(const EdgeInsets.all(15)),
                   ),
                   onPressed: () {
                     setState(() {
                       isPlaying = !isPlaying;
                     });
-                    if (!isPlaying && _timer != null) {
-                      _timer!.cancel();
+                    if (!isPlaying) {
                       isVisible = false;
-                    }
-                    if (isPlaying) {
+                    } else {
                       _startPlay();
                     }
                   },
                   child: Text(isPlaying ? 'Stop' : 'Play',
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold)),
+                      style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
                 ),
                 const SizedBox(width: 15),
                 ElevatedButton(
                   style: ButtonStyle(
-                      padding:
-                          MaterialStateProperty.all(const EdgeInsets.all(15)),
-                      backgroundColor: MaterialStateProperty.all(
-                          isReplayable ? green : Colors.grey[300])),
+                      padding: WidgetStateProperty.all(const EdgeInsets.all(15)),
+                      backgroundColor: WidgetStateProperty.all(isReplayable ? green : Colors.grey[300])),
                   onPressed: isReplayable
                       ? () {
                           setState(() {
@@ -378,10 +354,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           _replay();
                         }
                       : () {},
-                  child: Text('Replay',
-                      style: TextStyle(
-                          color: isReplayable ? Colors.white : Colors.black,
-                          fontSize: 18)),
+                  child:
+                      Text('Replay', style: TextStyle(color: isReplayable ? Colors.white : Colors.black, fontSize: 18)),
                 ),
                 const SizedBox(width: 15),
                 const Expanded(
@@ -391,12 +365,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   maxLines: 1,
                   decoration: InputDecoration(
                     isDense: true,
-                    border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black)),
-                    enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black)),
-                    focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black)),
+                    border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
+                    enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
+                    focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
                     labelText: 'Your answer',
                     labelStyle: TextStyle(color: Colors.black),
                     hintStyle: TextStyle(color: Colors.black),
@@ -405,12 +376,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 const SizedBox(width: 15),
                 ElevatedButton(
                   style: ButtonStyle(
-                      padding:
-                          MaterialStateProperty.all(const EdgeInsets.all(15)),
-                      backgroundColor: MaterialStateProperty.all(Colors.white)),
+                      padding: WidgetStateProperty.all(const EdgeInsets.all(15)),
+                      backgroundColor: WidgetStateProperty.all(Colors.white)),
                   onPressed: () {},
-                  child: const Text('Check',
-                      style: TextStyle(color: Colors.black, fontSize: 18)),
+                  child: const Text('Check', style: TextStyle(color: Colors.black, fontSize: 18)),
                 ),
                 //const Expanded(child: SizedBox.shrink()),
               ]));
