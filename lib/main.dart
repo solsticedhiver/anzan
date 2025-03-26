@@ -79,6 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _isExpanded = false;
   late MyDisplay myDisplay;
   final player = Player();
+  TextEditingController textEditingController = TextEditingController();
 
   @override
   void initState() {
@@ -96,6 +97,12 @@ class _MyHomePageState extends State<MyHomePage> {
         debugPrint(e.toString());
       }
     });
+  }
+
+  @override
+  void dispose() {
+    textEditingController.dispose();
+    super.dispose();
   }
 
   void _generateNumbers(int length, int digits, bool allowNegative) {
@@ -193,6 +200,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _startPlay() async {
     _indx = 0;
+    textEditingController.clear();
     _generateNumbers(AppConfig.numRowInt, AppConfig.numDigit, AppConfig.useNegNumber);
     if (AppConfig.languages.contains(AppConfig.ttsLocale)) {
       await _getSounds();
@@ -350,6 +358,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       isReplayable = true;
                       player.stop();
                     } else {
+                      Provider.of<NumberModel>(context, listen: false).setVisible(false);
                       _startPlay();
                     }
                   },
@@ -364,6 +373,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           setState(() {
                             isPlaying = true;
                           });
+                          Provider.of<NumberModel>(context, listen: false).setVisible(false);
                           _replay();
                         }
                       : () {},
@@ -371,12 +381,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       Text('Replay', style: TextStyle(color: isReplayable ? Colors.white : Colors.black, fontSize: 18)),
                 ),
                 const SizedBox(width: 15),
-                const Expanded(
+                Expanded(
                     child: TextField(
                   cursorColor: Colors.black,
                   keyboardType: TextInputType.number,
                   maxLines: 1,
-                  decoration: InputDecoration(
+                  controller: textEditingController,
+                  decoration: const InputDecoration(
                     isDense: true,
                     border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
                     enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
@@ -389,7 +400,21 @@ class _MyHomePageState extends State<MyHomePage> {
                 const SizedBox(width: 15),
                 ElevatedButton(
                   style: ButtonStyle(backgroundColor: WidgetStateProperty.all(Colors.white)),
-                  onPressed: () {},
+                  onPressed: () {
+                    if (isPlaying) return;
+                    var sum = numbers.fold<int>(0, (p, c) => p + c);
+                    final numberModel = Provider.of<NumberModel>(context, listen: false);
+                    try {
+                      final sol = int.parse(textEditingController.text);
+                      if (sol == sum) {
+                        numberModel.setNumber('✔️');
+                      } else {
+                        numberModel.setNumber('❌');
+                      }
+                    } catch (e) {
+                      Provider.of<NumberModel>(context, listen: false).setNumber('⚠️');
+                    }
+                  },
                   child: const Text('Check', style: TextStyle(color: Colors.black, fontSize: 18)),
                 ),
                 //const Expanded(child: SizedBox.shrink()),
