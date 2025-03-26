@@ -74,9 +74,9 @@ class _MyHomePageState extends State<MyHomePage> {
   bool isVisible = false;
   List<int> numbers = [];
   List<Uint8List> sounds = [];
-  List<List<int>> history = [];
+  //List<List<int>> history = [];
   late TextStyle style;
-  bool isExpanded = false;
+  bool _isExpanded = false;
   late MyDisplay myDisplay;
   final player = Player();
 
@@ -121,10 +121,6 @@ class _MyHomePageState extends State<MyHomePage> {
       numbers.add(nextNum);
     }
     debugPrint(numbers.toString());
-    AppConfig.history.add(numbers);
-    if (AppConfig.history.length > AppConfig.maxHistoryLength) {
-      AppConfig.history.removeRange(0, AppConfig.history.length - AppConfig.maxHistoryLength);
-    }
   }
 
   Future<void> _nextRandomNumber() async {
@@ -144,7 +140,10 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       });
       isReplayable = true;
-      history.add(numbers);
+      AppConfig.history.add(numbers);
+      if (AppConfig.history.length > AppConfig.maxHistoryLength) {
+        AppConfig.history.removeRange(0, AppConfig.history.length - AppConfig.maxHistoryLength);
+      }
       return;
     }
     numberModel.setNumber(numbers[_indx].toString());
@@ -275,27 +274,38 @@ class _MyHomePageState extends State<MyHomePage> {
               flex: 1,
               child: ListView(children: [
                 ExpansionPanelList(
+                  expansionCallback: (int index, bool isExpanded) {
+                    setState(() {
+                      if (index == 0) {
+                        _isExpanded = isExpanded;
+                      }
+                    });
+                  },
                   children: [
                     ExpansionPanel(
-                        isExpanded: isExpanded,
+                        isExpanded: _isExpanded,
                         headerBuilder: (context, isExpanded) {
                           return const ListTile(
                             leading: Icon(Icons.history),
                             title: Text('History'),
                           );
                         },
-                        body: SizedBox(
-                            height: 200,
-                            child: ListView.builder(
-                                reverse: true,
-                                itemCount: AppConfig.history.length,
-                                itemBuilder: ((context, index) {
-                                  StringBuffer operation = StringBuffer('');
-                                  for (var n in AppConfig.history[index]) {
-                                    operation.write(n > 0 ? ' + $n' : ' - ${n.abs()}');
-                                  }
-                                  return ListTile(title: Text(operation.toString().replaceFirst(' + ', '')));
-                                }))))
+                        body: AppConfig.history.isEmpty
+                            ? const ListTile(title: Text('History is empty'))
+                            : SizedBox(
+                                height: 48.0 * AppConfig.history.length,
+                                child: ListView.builder(
+                                    prototypeItem: const ListTile(title: Text("0123456789")),
+                                    itemCount: AppConfig.history.length,
+                                    itemBuilder: ((context, index) {
+                                      StringBuffer operation = StringBuffer('');
+                                      for (var n in AppConfig.history[index]) {
+                                        operation.write(n > 0 ? ' + $n' : ' - ${n.abs()}');
+                                      }
+                                      return ListTile(
+                                        title: Text(operation.toString().replaceFirst(' + ', '')),
+                                      );
+                                    }))))
                   ],
                 ),
                 ListTile(
@@ -330,7 +340,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 ElevatedButton(
                   style: ButtonStyle(
                     backgroundColor: WidgetStateProperty.all(green),
-                    padding: WidgetStateProperty.all(const EdgeInsets.all(15)),
                   ),
                   onPressed: () {
                     setState(() {
@@ -349,9 +358,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 const SizedBox(width: 15),
                 ElevatedButton(
-                  style: ButtonStyle(
-                      padding: WidgetStateProperty.all(const EdgeInsets.all(15)),
-                      backgroundColor: WidgetStateProperty.all(isReplayable ? green : Colors.grey[300])),
+                  style: ButtonStyle(backgroundColor: WidgetStateProperty.all(isReplayable ? green : Colors.grey[300])),
                   onPressed: isReplayable
                       ? () {
                           setState(() {
@@ -381,9 +388,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 )),
                 const SizedBox(width: 15),
                 ElevatedButton(
-                  style: ButtonStyle(
-                      padding: WidgetStateProperty.all(const EdgeInsets.all(15)),
-                      backgroundColor: WidgetStateProperty.all(Colors.white)),
+                  style: ButtonStyle(backgroundColor: WidgetStateProperty.all(Colors.white)),
                   onPressed: () {},
                   child: const Text('Check', style: TextStyle(color: Colors.black, fontSize: 18)),
                 ),
