@@ -34,24 +34,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const Map<int, Color> swatch = {
-      50: Color(0xffffffff),
-      100: Color(0xfffff0e6),
-      200: Color(0xFFFFE1CD),
-      300: Color(0xFFE6CBB8),
-      400: Color(0xFFCCB4A4),
-      500: lightBrown,
-      600: Color(0xFF99877B),
-      700: Color(0xFF807166),
-      800: Color(0xFF665A52),
-      900: Color(0xFF4D443D)
-    };
-    const primarySwatch = MaterialColor(0xFFB39E8F, swatch);
-
     return MaterialApp(
       title: 'Mental Calculation',
       theme: ThemeData(
-        primarySwatch: primarySwatch,
+        colorScheme: const ColorScheme.light(primary: green, secondary: lightBrown),
+        //colorScheme: ColorScheme.fromSeed(seedColor: green),
       ),
       home: const MyHomePage(title: 'Anzan'),
     );
@@ -80,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
   late MyDisplay myDisplay;
   final player = Player();
   TextEditingController textEditingController = TextEditingController();
-  bool got_list = false;
+  bool _gotList = false;
 
   @override
   void initState() {
@@ -89,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
       try {
         final req = await http.get(Uri.parse('${AppConfig.host}/tools/tts?lang_list=1'));
         if (req.statusCode == 200) {
-          got_list = true;
+          _gotList = true;
           for (var l in json.decode(req.body)) {
             AppConfig.languages.add(l);
           }
@@ -99,7 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
         debugPrint(e.toString());
       }
 
-      if (!got_list) {
+      if (!_gotList) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('There was an error retrieving the language TTS list. TTS is disabled'),
@@ -147,6 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
     //debugPrint(_indx.toString());
     if (_indx >= numbers.length) {
       player.stop();
+      textEditingController.clear();
       setState(() {
         isPlaying = false;
       });
@@ -242,7 +230,7 @@ class _MyHomePageState extends State<MyHomePage> {
     style = _optimizeFontSize();
     myDisplay = MyDisplay(style: style);
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title), actions: [
+      appBar: AppBar(backgroundColor: lightBrown, title: Text(widget.title), actions: [
         IconButton(
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(
@@ -259,7 +247,7 @@ class _MyHomePageState extends State<MyHomePage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           DrawerHeader(
-            decoration: BoxDecoration(color: Theme.of(context).primaryColor),
+            decoration: const BoxDecoration(color: lightBrown),
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -347,52 +335,27 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: myDisplay,
       ),
-      bottomSheet: BottomSheet(
-        enableDrag: false,
-        backgroundColor: lightBrown,
-        builder: (context) {
-          return Container(
-              margin: const EdgeInsets.only(top: 5, bottom: 5, left: 10, right: 10),
-              child: Row(children: [
-                //const Expanded(child: SizedBox.shrink()),
-                FilledButton(
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(green),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      isPlaying = !isPlaying;
-                    });
-                    if (!isPlaying) {
-                      isVisible = false;
-                      isReplayable = true;
-                      player.stop();
-                    } else {
+      bottomNavigationBar: BottomAppBar(
+          color: lightBrown,
+          child: Row(spacing: 10.0, mainAxisAlignment: MainAxisAlignment.center, children: [
+            IconButton(
+              iconSize: 32.0,
+              icon: Icon(Icons.replay, color: isReplayable ? Colors.white : Colors.black),
+              style: IconButton.styleFrom(
+                  backgroundColor: green, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0))),
+              onPressed: isReplayable
+                  ? () {
+                      setState(() {
+                        isPlaying = true;
+                      });
                       Provider.of<NumberModel>(context, listen: false).setVisible(false);
-                      _startPlay();
+                      _replay();
                     }
-                  },
-                  child: Text(isPlaying ? 'Stop' : 'Play',
-                      style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-                ),
-                const SizedBox(width: 15),
-                FilledButton(
-                  style: ButtonStyle(backgroundColor: WidgetStateProperty.all(isReplayable ? green : Colors.grey[300])),
-                  onPressed: isReplayable
-                      ? () {
-                          setState(() {
-                            isPlaying = true;
-                          });
-                          Provider.of<NumberModel>(context, listen: false).setVisible(false);
-                          _replay();
-                        }
-                      : () {},
-                  child:
-                      Text('Replay', style: TextStyle(color: isReplayable ? Colors.white : Colors.black, fontSize: 18)),
-                ),
-                const SizedBox(width: 15),
-                Expanded(
-                    child: TextField(
+                  : () {},
+            ),
+            SizedBox(
+                width: 200,
+                child: TextField(
                   cursorColor: Colors.black,
                   keyboardType: TextInputType.number,
                   maxLines: 1,
@@ -407,43 +370,58 @@ class _MyHomePageState extends State<MyHomePage> {
                     hintStyle: TextStyle(color: Colors.black),
                   ),
                 )),
-                const SizedBox(width: 15),
-                FilledButton(
-                  style: ButtonStyle(backgroundColor: WidgetStateProperty.all(Colors.white)),
-                  onPressed: () {
-                    if (isPlaying) return;
-                    var sum = numbers.fold<int>(0, (p, c) => p + c);
-                    String msg;
-                    Icon icon = const Icon(null);
-                    try {
-                      final sol = int.parse(textEditingController.text);
-                      if (sol == sum) {
-                        msg = 'The answer is correct';
-                        icon = const Icon(Icons.check_box_rounded, color: Colors.green);
-                      } else {
-                        msg = 'The answer is incorrect';
-                        icon = const Icon(Icons.close, color: Colors.red);
-                      }
-                    } catch (e) {
-                      msg = 'The answer is not a number';
-                      icon = const Icon(Icons.error, color: Colors.red);
-                    }
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Center(
-                            child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [Text(msg), const SizedBox(width: 15), icon])),
-                        showCloseIcon: true,
-                      ),
-                    );
-                  },
-                  child: const Text('Check', style: TextStyle(color: Colors.black, fontSize: 18)),
-                ),
-                //const Expanded(child: SizedBox.shrink()),
-              ]));
+            IconButton(
+              iconSize: 32.0,
+              icon: Icon(Icons.input, color: isReplayable ? Colors.white : Colors.black),
+              style: IconButton.styleFrom(
+                  backgroundColor: green, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0))),
+              onPressed: () {
+                if (isPlaying) return;
+                var sum = numbers.fold<int>(0, (p, c) => p + c);
+                String msg;
+                Icon icon = const Icon(null);
+                try {
+                  final sol = int.parse(textEditingController.text);
+                  if (sol == sum) {
+                    msg = 'The answer is correct';
+                    icon = const Icon(Icons.check_box_rounded, color: Colors.green);
+                  } else {
+                    msg = 'The answer is incorrect';
+                    icon = const Icon(Icons.close, color: Colors.red);
+                  }
+                } catch (e) {
+                  msg = 'The answer is not a number';
+                  icon = const Icon(Icons.error, color: Colors.red);
+                }
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Center(
+                        child: Row(
+                            mainAxisSize: MainAxisSize.min, children: [Text(msg), const SizedBox(width: 15), icon])),
+                    showCloseIcon: true,
+                  ),
+                );
+              },
+            ),
+          ])),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: FloatingActionButton(
+        //backgroundColor: green,
+        //foregroundColor: Colors.white,
+        onPressed: () {
+          setState(() {
+            isPlaying = !isPlaying;
+          });
+          if (!isPlaying) {
+            isVisible = false;
+            isReplayable = true;
+            player.stop();
+          } else {
+            Provider.of<NumberModel>(context, listen: false).setVisible(false);
+            _startPlay();
+          }
         },
-        onClosing: () {},
+        child: Icon(isPlaying ? Icons.stop : Icons.play_arrow),
       ),
     );
   }

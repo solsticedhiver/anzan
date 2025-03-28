@@ -21,7 +21,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: AppBar(backgroundColor: lightBrown, title: const Text('Settings')),
       body: SettingsList(sections: [
         SettingsSection(title: const Text('Numbers', style: TextStyle(color: green)), tiles: [
           CustomSettingsTile(
