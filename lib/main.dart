@@ -80,6 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
   late MyDisplay myDisplay;
   final player = Player();
   TextEditingController textEditingController = TextEditingController();
+  bool got_list = false;
 
   @override
   void initState() {
@@ -88,6 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
       try {
         final req = await http.get(Uri.parse('${AppConfig.host}/tools/tts?lang_list=1'));
         if (req.statusCode == 200) {
+          got_list = true;
           for (var l in json.decode(req.body)) {
             AppConfig.languages.add(l);
           }
@@ -95,6 +97,14 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       } catch (e) {
         debugPrint(e.toString());
+      }
+
+      if (!got_list) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('There was an error retrieving the language TTS list. TTS is disabled'),
+          ),
+        );
       }
     });
   }
@@ -345,7 +355,7 @@ class _MyHomePageState extends State<MyHomePage> {
               margin: const EdgeInsets.only(top: 5, bottom: 5, left: 10, right: 10),
               child: Row(children: [
                 //const Expanded(child: SizedBox.shrink()),
-                ElevatedButton(
+                FilledButton(
                   style: ButtonStyle(
                     backgroundColor: WidgetStateProperty.all(green),
                   ),
@@ -366,7 +376,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
                 ),
                 const SizedBox(width: 15),
-                ElevatedButton(
+                FilledButton(
                   style: ButtonStyle(backgroundColor: WidgetStateProperty.all(isReplayable ? green : Colors.grey[300])),
                   onPressed: isReplayable
                       ? () {
@@ -398,7 +408,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 )),
                 const SizedBox(width: 15),
-                ElevatedButton(
+                FilledButton(
                   style: ButtonStyle(backgroundColor: WidgetStateProperty.all(Colors.white)),
                   onPressed: () {
                     if (isPlaying) return;
