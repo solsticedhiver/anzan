@@ -7,6 +7,7 @@ class AppConfig {
   static bool useContinuousMode = false;
   static int maxHistoryLength = 20;
   static List<List<int>> history = [];
+  static List<bool?> success = [];
   static String ttsLocale = 'en-US';
   static List<String> languages = [];
   static String host = 'https://www.sorobanexam.org';

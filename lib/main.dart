@@ -9,6 +9,8 @@ import 'package:http/http.dart' as http;
 import 'package:media_kit/media_kit.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
+import 'dart:ui' as ui;
 
 import 'config.dart';
 import 'settings.dart';
@@ -61,7 +63,6 @@ class _MyHomePageState extends State<MyHomePage> {
   bool isVisible = false;
   List<int> numbers = [];
   List<Uint8List> sounds = [];
-  //List<List<int>> history = [];
   late TextStyle style;
   bool _isExpanded = false;
   late MyDisplay myDisplay;
@@ -146,12 +147,14 @@ class _MyHomePageState extends State<MyHomePage> {
       });
       isReplayable = true;
       AppConfig.history.add(numbers);
+      AppConfig.success.add(null);
       if (AppConfig.history.length > AppConfig.maxHistoryLength) {
         AppConfig.history.removeRange(0, AppConfig.history.length - AppConfig.maxHistoryLength);
+        AppConfig.success.removeRange(0, AppConfig.history.length - AppConfig.maxHistoryLength);
       }
       return;
     }
-    numberModel.setNumber(numbers[_indx].toString());
+    numberModel.setNumber(NumberFormat.decimalPattern(AppConfig.ttsLocale).format(numbers[_indx]));
     numberModel.setVisible(true);
     if (sounds.isNotEmpty) {
       final media = await Media.memory(sounds[_indx], type: 'audio/mpeg');
@@ -211,14 +214,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   TextStyle _optimizeFontSize() {
     double fontSize = MediaQuery.of(context).size.height / 2;
-    final testString = '9' * AppConfig.numDigit;
+    final testString = '9' * (AppConfig.numDigit + 2);
     TextSpan text = TextSpan(text: testString, style: TextStyle(fontSize: fontSize));
-    TextPainter tp = TextPainter(text: text, textDirection: TextDirection.ltr);
+    TextPainter tp = TextPainter(text: text, textDirection: ui.TextDirection.ltr);
     tp.layout();
     while (tp.width + 20 > MediaQuery.of(context).size.width) {
       fontSize -= 10;
       text = TextSpan(text: testString, style: TextStyle(fontSize: fontSize));
-      tp = TextPainter(text: text, textDirection: TextDirection.ltr);
+      tp = TextPainter(text: text, textDirection: ui.TextDirection.ltr);
       tp.layout();
     }
     //debugPrint(fontSize.toString());
@@ -229,6 +232,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     style = _optimizeFontSize();
     myDisplay = MyDisplay(style: style);
+
     return Scaffold(
       appBar: AppBar(backgroundColor: lightBrown, title: Text(widget.title), actions: [
         IconButton(
@@ -299,17 +303,39 @@ class _MyHomePageState extends State<MyHomePage> {
                         body: AppConfig.history.isEmpty
                             ? const ListTile(title: Text('History is empty'))
                             : SizedBox(
-                                height: 48.0 * AppConfig.history.length,
+                                height: 58.0 * AppConfig.history.length,
                                 child: ListView.builder(
-                                    prototypeItem: const ListTile(title: Text("0123456789")),
                                     itemCount: AppConfig.history.length,
                                     itemBuilder: ((context, index) {
-                                      StringBuffer operation = StringBuffer('');
-                                      for (var n in AppConfig.history[index]) {
-                                        operation.write(n > 0 ? ' + $n' : ' - ${n.abs()}');
+                                      List<TextSpan> textSpans = [];
+                                      int n;
+                                      for (var i = 1; i < AppConfig.history[index].length; i++) {
+                                        n = AppConfig.history[index][i];
+                                        textSpans.add(TextSpan(
+                                            text: n > 0 ? '+' : '-',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: n > 0 ? Colors.grey[500] : Colors.grey[700])));
+                                        textSpans.add(TextSpan(
+                                            text: NumberFormat.decimalPattern(AppConfig.ttsLocale).format(n.abs())));
+                                      }
+                                      Icon icon = const Icon(null);
+                                      if (AppConfig.success[index] != null) {
+                                        if (AppConfig.success[index]!) {
+                                          icon = const Icon(Icons.check, color: Colors.green);
+                                        } else {
+                                          icon = const Icon(Icons.close, color: Colors.red);
+                                        }
                                       }
                                       return ListTile(
-                                        title: Text(operation.toString().replaceFirst(' + ', '')),
+                                        title: RichText(
+                                            text: TextSpan(
+                                          text: NumberFormat.decimalPattern(AppConfig.ttsLocale)
+                                              .format(AppConfig.history[index][0]),
+                                          style: Theme.of(context).textTheme.labelLarge,
+                                          children: textSpans,
+                                        )),
+                                        trailing: icon,
                                       );
                                     }))))
                   ],
@@ -385,9 +411,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   if (sol == sum) {
                     msg = 'The answer is correct';
                     icon = const Icon(Icons.check_box_rounded, color: Colors.green);
+                    AppConfig.success[AppConfig.history.length - 1] = true;
                   } else {
                     msg = 'The answer is incorrect';
                     icon = const Icon(Icons.close, color: Colors.red);
+                    AppConfig.success[AppConfig.history.length - 1] = false;
                   }
                 } catch (e) {
                   msg = 'The answer is not a number';
