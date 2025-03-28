@@ -413,17 +413,30 @@ class _MyHomePageState extends State<MyHomePage> {
                   onPressed: () {
                     if (isPlaying) return;
                     var sum = numbers.fold<int>(0, (p, c) => p + c);
-                    final numberModel = Provider.of<NumberModel>(context, listen: false);
+                    String msg;
+                    Icon icon = const Icon(null);
                     try {
                       final sol = int.parse(textEditingController.text);
                       if (sol == sum) {
-                        numberModel.setNumber('✔️');
+                        msg = 'The answer is correct';
+                        icon = const Icon(Icons.check_box_rounded, color: Colors.green);
                       } else {
-                        numberModel.setNumber('❌');
+                        msg = 'The answer is incorrect';
+                        icon = const Icon(Icons.close, color: Colors.red);
                       }
                     } catch (e) {
-                      Provider.of<NumberModel>(context, listen: false).setNumber('⚠️');
+                      msg = 'The answer is not a number';
+                      icon = const Icon(Icons.error, color: Colors.red);
                     }
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Center(
+                            child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [Text(msg), const SizedBox(width: 15), icon])),
+                        showCloseIcon: true,
+                      ),
+                    );
                   },
                   child: const Text('Check', style: TextStyle(color: Colors.black, fontSize: 18)),
                 ),
