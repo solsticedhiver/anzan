@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:anzan/display.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:media_kit/media_kit.dart';
@@ -235,6 +236,46 @@ class _MyHomePageState extends State<MyHomePage> {
     style = _optimizeFontSize();
     myDisplay = MyDisplay(style: style);
 
+    final ThemeData theme = Theme.of(context);
+    final TextStyle textStyle = theme.textTheme.bodyLarge!;
+    final List<Widget> aboutBoxChildren = <Widget>[
+      const SizedBox(height: 24),
+      SizedBox(
+          width: 400,
+          child: RichText(
+            text: TextSpan(
+              children: <TextSpan>[
+                TextSpan(text: 'Flash Anzan', style: textStyle.copyWith(fontWeight: FontWeight.bold)),
+                TextSpan(text: ' is a ', style: textStyle),
+                TextSpan(text: 'flutter', style: textStyle.copyWith(fontStyle: FontStyle.italic)),
+                TextSpan(text: ' based GUI made to help you practice ', style: textStyle),
+                TextSpan(text: 'anzan', style: textStyle.copyWith(fontStyle: FontStyle.italic)),
+                TextSpan(text: ', a.k.a mental calculation while visualising a ', style: textStyle),
+                TextSpan(text: 'soroban', style: textStyle.copyWith(fontStyle: FontStyle.italic)),
+                TextSpan(text: ' or an ', style: textStyle),
+                TextSpan(text: 'abacus', style: textStyle.copyWith(fontStyle: FontStyle.italic)),
+                TextSpan(
+                    text:
+                        '. You can also just practice mental calculation, or practice with a real soroban, if you like.\n\n'
+                        'Check our website at ',
+                    style: textStyle),
+                TextSpan(
+                    style: textStyle.copyWith(color: theme.colorScheme.primary),
+                    text: 'https://www.sorobanexam.org',
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () async {
+                        await launchUrl(Uri.parse('https://www.sorobanexam.org'));
+                      }),
+                TextSpan(style: textStyle, text: ' for more information and '),
+                TextSpan(
+                    text: 'exercices exam',
+                    style: textStyle.copyWith(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold)),
+                TextSpan(text: ' to help you improve on using the soroban.', style: textStyle),
+              ],
+            ),
+          )),
+    ];
+
     return Scaffold(
       appBar: AppBar(backgroundColor: lightBrown, title: Text(widget.title), actions: [
         IconButton(
@@ -357,6 +398,18 @@ class _MyHomePageState extends State<MyHomePage> {
                     });
                   },
                 ),
+                AboutListTile(
+                  icon: const Icon(Icons.info),
+                  applicationIcon: Image.asset(
+                    'assets/soroban_logo_rounded.png',
+                    height: 64,
+                    width: 64,
+                  ),
+                  applicationName: 'Flash Anzan',
+                  applicationVersion: AppVersion,
+                  applicationLegalese: "\u{a9} 2025 solsTiCe d'Hiver <solstice.dhiver@sorobanexam.org>",
+                  aboutBoxChildren: aboutBoxChildren,
+                )
               ])),
         ],
       )),
