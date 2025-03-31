@@ -90,7 +90,9 @@ class _MyHomePageState extends State<MyHomePage> {
       if (!_gotList) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('There was an error retrieving the language TTS list. TTS is disabled'),
+            showCloseIcon: true,
+            duration: Duration(minutes: 1),
+            content: Text('There was an error retrieving the language TTS list. TTS is disabled.'),
           ),
         );
       }
@@ -168,7 +170,7 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       });
     } else {
-      debugPrint('no sound');
+      //debugPrint('no sound');
       Future.delayed(Duration(milliseconds: AppConfig.timeFlash), () async {
         numberModel.setVisible(false);
         _indx++;
