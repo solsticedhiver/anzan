@@ -121,7 +121,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
                         ))
                   ]))),
         ]),
-        SettingsSection(title: const Text('Timing', style: TextStyle(color: green)), tiles: [
+        SettingsSection(title: const Text('Timings', style: TextStyle(color: green)), tiles: [
           CustomSettingsTile(
               child: Container(
                   padding: const EdgeInsets.only(top: 10, bottom: 10),
@@ -236,9 +236,11 @@ class _SettingsRouteState extends State<SettingsRoute> {
               });
             },
           ),
+        ]),
+        SettingsSection(title: const Text('Text To Speech', style: TextStyle(color: green)), tiles: [
           SettingsTile.navigation(
             leading: const Icon(Icons.voice_chat),
-            title: const Text('TTS Voice '),
+            title: const Text('Language Voice'),
             value: Text(AppConfig.ttsLocale),
             onPressed: (context) async {
               final languages = ['No sound'] + AppConfig.languages;
@@ -250,7 +252,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
                           child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: languages.map((l) {
-                                return RadioListTile(
+                                return RadioListTile<String>(
                                   activeColor: green,
                                   selectedTileColor: green.withAlpha(31),
                                   selected: _ttsLocale == l,
