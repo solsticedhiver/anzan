@@ -250,22 +250,28 @@ class _SettingsRouteState extends State<SettingsRoute> {
                           child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: languages.map((l) {
-                                return ListTile(
-                                    title: Text(l),
-                                    leading: Radio<String>(
-                                      value: l,
-                                      groupValue: _ttsLocale,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _ttsLocale = value!;
-                                        });
-                                      },
-                                    ));
+                                return RadioListTile(
+                                  activeColor: green,
+                                  selectedTileColor: green.withAlpha(31),
+                                  selected: _ttsLocale == l,
+                                  title: Text(l),
+                                  value: l,
+                                  groupValue: _ttsLocale,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _ttsLocale = value!;
+                                    });
+                                  },
+                                );
                               }).toList()));
                     }));
                   });
               setState(() {
                 AppConfig.ttsLocale = _ttsLocale;
+                AppConfig.locale = AppConfig.ttsLocale;
+                if (AppConfig.locale == 'No sound') {
+                  AppConfig.locale = 'en_US';
+                }
               });
             },
           ),

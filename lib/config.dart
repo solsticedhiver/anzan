@@ -11,6 +11,7 @@ class AppConfig {
   static List<List<int>> history = [];
   static List<bool?> success = [];
   static String ttsLocale = 'No sound';
+  static String locale = 'en_US';
   static List<String> languages = [];
   static String host = 'https://www.sorobanexam.org';
 }

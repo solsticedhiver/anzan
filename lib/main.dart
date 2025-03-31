@@ -158,7 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }
       return;
     }
-    numberModel.setNumber(NumberFormat.decimalPattern(AppConfig.ttsLocale).format(numbers[_indx]));
+    numberModel.setNumber(NumberFormat.decimalPattern(AppConfig.locale).format(numbers[_indx]));
     numberModel.setVisible(true);
     if (sounds.isNotEmpty) {
       final media = await Media.memory(sounds[_indx], type: 'audio/mpeg');
@@ -369,7 +369,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 fontWeight: FontWeight.bold,
                                                 color: n > 0 ? Colors.grey[500] : Colors.grey[700])));
                                         textSpans.add(TextSpan(
-                                            text: NumberFormat.decimalPattern(AppConfig.ttsLocale).format(n.abs())));
+                                            text: NumberFormat.decimalPattern(AppConfig.locale).format(n.abs())));
                                       }
                                       Icon icon = const Icon(null);
                                       if (AppConfig.success[index] != null) {
@@ -382,7 +382,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       return ListTile(
                                         title: RichText(
                                             text: TextSpan(
-                                          text: NumberFormat.decimalPattern(AppConfig.ttsLocale)
+                                          text: NumberFormat.decimalPattern(AppConfig.locale)
                                               .format(AppConfig.history[index][0]),
                                           style: Theme.of(context).textTheme.labelLarge,
                                           children: textSpans,
