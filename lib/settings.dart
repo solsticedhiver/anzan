@@ -4,9 +4,6 @@ import 'package:flutter_spinbox/flutter_spinbox.dart';
 
 import 'config.dart';
 
-const green = Color(0xFF168362);
-const lightBrown = Color(0xFFB39E8F);
-
 class SettingsRoute extends StatefulWidget {
   const SettingsRoute({super.key});
 
@@ -22,7 +19,8 @@ class _SettingsRouteState extends State<SettingsRoute> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(backgroundColor: lightBrown, title: const Text('Settings')),
-      body: SettingsList(sections: [
+      body: Center(
+          child: SettingsList(contentPadding: const EdgeInsets.only(left: 100, right: 100), sections: [
         SettingsSection(title: const Text('Numbers', style: TextStyle(color: green)), tiles: [
           CustomSettingsTile(
               child: Container(
@@ -272,7 +270,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
             },
           ),
         ]),
-      ]),
+      ])),
     );
   }
 }
