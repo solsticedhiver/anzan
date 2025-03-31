@@ -6,6 +6,7 @@ import 'package:anzan/display.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:media_kit/media_kit.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -241,7 +242,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final List<Widget> aboutBoxChildren = <Widget>[
       const SizedBox(height: 24),
       SizedBox(
-          width: 400,
+          width: 550,
           child: RichText(
             text: TextSpan(
               children: <TextSpan>[
@@ -274,6 +275,13 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
           )),
+      const SizedBox(height: 24),
+      SizedBox(
+          width: 550,
+          child: RichText(
+              text: TextSpan(
+                  text: GPL3,
+                  style: textStyle.copyWith(fontFamily: 'NerdFont', fontSize: 12, fontWeight: FontWeight.w600)))),
     ];
 
     return Scaffold(
@@ -336,6 +344,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   },
                   children: [
                     ExpansionPanel(
+                        canTapOnHeader: true,
                         isExpanded: _isExpanded,
                         headerBuilder: (context, isExpanded) {
                           return const ListTile(
@@ -407,7 +416,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   applicationName: 'Flash Anzan',
                   applicationVersion: AppVersion,
-                  applicationLegalese: "\u{a9} 2025 solsTiCe d'Hiver <solstice.dhiver@sorobanexam.org>",
+                  applicationLegalese:
+                      "Copyright © 2025\nsolsTiCe d'Hiver <solstice.dhiver@sorobanexam.org>\nGPL-3.0-or-later",
                   aboutBoxChildren: aboutBoxChildren,
                 )
               ])),
