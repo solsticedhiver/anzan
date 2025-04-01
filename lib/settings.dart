@@ -42,7 +42,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
                               ),
                             ])),
                     const Expanded(child: SizedBox.shrink()),
-                    Container(
+                    SizedBox(
                         width: 200,
                         child: SpinBox(
                           readOnly: true,
@@ -91,7 +91,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
                               )
                             ])),
                     const Expanded(child: SizedBox.shrink()),
-                    Container(
+                    SizedBox(
                         width: 200,
                         child: SpinBox(
                           readOnly: true,
@@ -135,7 +135,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
                       Text('in ms')
                     ]),
                     const Expanded(child: SizedBox.shrink()),
-                    Container(
+                    SizedBox(
                         width: 200,
                         child: SpinBox(
                           readOnly: true,
@@ -179,7 +179,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
                       Text('in ms')
                     ]),
                     const Expanded(child: SizedBox.shrink()),
-                    Container(
+                    SizedBox(
                         width: 200,
                         child: SpinBox(
                           readOnly: true,
