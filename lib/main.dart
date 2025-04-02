@@ -17,6 +17,8 @@ import 'dart:ui' as ui;
 import 'config.dart';
 import 'settings.dart';
 
+bool _hasSnackbarBeenShown = false;
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
@@ -70,7 +72,6 @@ class _MyHomePageState extends State<MyHomePage> {
   late MyDisplay myDisplay;
   final player = Player();
   TextEditingController textEditingController = TextEditingController();
-  bool _gotList = false;
 
   @override
   void initState() {
@@ -79,7 +80,6 @@ class _MyHomePageState extends State<MyHomePage> {
       try {
         final req = await http.get(Uri.parse('${AppConfig.host}/tools/tts?lang_list=1'));
         if (req.statusCode == 200) {
-          _gotList = true;
           for (var l in json.decode(req.body)) {
             AppConfig.languages.add(l);
           }
@@ -89,15 +89,18 @@ class _MyHomePageState extends State<MyHomePage> {
         debugPrint(e.toString());
       }
 
-      if (!_gotList) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            showCloseIcon: true,
-            duration: Duration(minutes: 1),
-            content: Text('There was an error retrieving the language TTS list. TTS is disabled.'),
-          ),
-        );
-      }
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!_hasSnackbarBeenShown && AppConfig.languages.isEmpty) {
+          _hasSnackbarBeenShown = true;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              showCloseIcon: true,
+              duration: Duration(minutes: 1),
+              content: Text('There was an error retrieving the language TTS list. TTS is disabled.'),
+            ),
+          );
+        }
+      });
     });
   }
 
@@ -212,7 +215,9 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       sounds.clear();
     }
-    Provider.of<NumberModel>(context, listen: false).setNumber('');
+    if (context.mounted) {
+      Provider.of<NumberModel>(context, listen: false).setNumber('');
+    }
     await _nextRandomNumber();
   }
 
