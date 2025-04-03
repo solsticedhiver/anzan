@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:anzan/display.dart';
+import 'package:anzan/history.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -68,7 +69,6 @@ class _MyHomePageState extends State<MyHomePage> {
   List<int> numbers = [];
   List<Uint8List> sounds = [];
   late TextStyle style;
-  bool _isExpanded = false;
   late MyDisplay myDisplay;
   final player = Player();
   TextEditingController textEditingController = TextEditingController();
@@ -292,6 +292,13 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(backgroundColor: lightBrown, title: Text(widget.title), actions: [
         IconButton(
+            onPressed: AppConfig.history.isEmpty
+                ? null
+                : () {
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => const HistoryRoute()));
+                  },
+            icon: const Icon(Icons.history)),
+        IconButton(
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => const SettingsRoute(),
@@ -339,63 +346,17 @@ class _MyHomePageState extends State<MyHomePage> {
           Expanded(
               flex: 1,
               child: ListView(children: [
-                ExpansionPanelList(
-                  expansionCallback: (int index, bool isExpanded) {
-                    setState(() {
-                      if (index == 0) {
-                        _isExpanded = isExpanded;
-                      }
-                    });
+                ListTile(
+                  leading: const Icon(Icons.history),
+                  title: const Text('History'),
+                  onTap: () async {
+                    Navigator.pop(context); // close the drawer, first
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const HistoryRoute(),
+                      ),
+                    );
                   },
-                  children: [
-                    ExpansionPanel(
-                        canTapOnHeader: true,
-                        isExpanded: _isExpanded,
-                        headerBuilder: (context, isExpanded) {
-                          return const ListTile(
-                            leading: Icon(Icons.history),
-                            title: Text('History'),
-                          );
-                        },
-                        body: AppConfig.history.isEmpty
-                            ? const ListTile(title: Text('History is empty'))
-                            : SizedBox(
-                                height: 58.0 * AppConfig.history.length,
-                                child: ListView.builder(
-                                    itemCount: AppConfig.history.length,
-                                    itemBuilder: ((context, index) {
-                                      List<TextSpan> textSpans = [];
-                                      int n;
-                                      for (var i = 1; i < AppConfig.history[index].length; i++) {
-                                        n = AppConfig.history[index][i];
-                                        textSpans.add(TextSpan(
-                                            text: n > 0 ? '+' : '-',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: n > 0 ? Colors.grey[500] : Colors.grey[700])));
-                                        textSpans.add(TextSpan(
-                                            text: NumberFormat.decimalPattern(AppConfig.locale).format(n.abs())));
-                                      }
-                                      Icon icon = const Icon(null);
-                                      if (AppConfig.success[index] != null) {
-                                        if (AppConfig.success[index]!) {
-                                          icon = const Icon(Icons.check, color: Colors.green);
-                                        } else {
-                                          icon = const Icon(Icons.close, color: Colors.red);
-                                        }
-                                      }
-                                      return ListTile(
-                                        title: RichText(
-                                            text: TextSpan(
-                                          text: NumberFormat.decimalPattern(AppConfig.locale)
-                                              .format(AppConfig.history[index][0]),
-                                          style: Theme.of(context).textTheme.labelLarge,
-                                          children: textSpans,
-                                        )),
-                                        trailing: icon,
-                                      );
-                                    }))))
-                  ],
                 ),
                 ListTile(
                   leading: const Icon(Icons.settings),
