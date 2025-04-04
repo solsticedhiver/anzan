@@ -347,6 +347,7 @@ class _MyHomePageState extends State<MyHomePage> {
               flex: 1,
               child: ListView(children: [
                 ListTile(
+                  enabled: AppConfig.languages.isNotEmpty,
                   leading: const Icon(Icons.history),
                   title: const Text('History'),
                   onTap: () async {
