@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:anzan/display.dart';
@@ -18,7 +19,7 @@ import 'dart:ui' as ui;
 import 'config.dart';
 import 'settings.dart';
 
-bool _hasSnackbarBeenShown = false;
+bool _hasTTSWarningBeenShown = false;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,6 +30,8 @@ void main() {
   } else {
     AppConfig.host = 'http://127.0.0.1:5000';
   }
+
+  AppConfig.locale = Intl.canonicalizedLocale(Platform.localeName);
 
   runApp(ChangeNotifierProvider(
     create: (context) => NumberModel(),
@@ -90,15 +93,28 @@ class _MyHomePageState extends State<MyHomePage> {
       }
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!_hasSnackbarBeenShown && AppConfig.languages.isEmpty) {
-          _hasSnackbarBeenShown = true;
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              showCloseIcon: true,
-              duration: Duration(minutes: 1),
-              content: Text('There was an error retrieving the language TTS list. TTS is disabled.'),
-            ),
-          );
+        if (!_hasTTSWarningBeenShown && AppConfig.languages.isEmpty) {
+          _hasTTSWarningBeenShown = true;
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: const Text('TTS languages list not fetched'),
+                  content: const Text(
+                    'There was a network error retrieving the language TTS list. TTS is disabled.\n'
+                    'Relaunch/reload the app to retry.',
+                  ),
+                  actions: <Widget>[
+                    TextButton(
+                      style: TextButton.styleFrom(textStyle: Theme.of(context).textTheme.labelLarge),
+                      child: const Text('OK'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              });
         }
       });
     });
@@ -142,7 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
       } else {
         nextNum = random.nextInt(range) + startInt;
       }
-      if (allowNegative && sum > startInt) {
+      if (allowNegative && sum > 0) {
         bool isNegative = random.nextInt(2).toInt() == 1 ? true : false;
         if (isNegative) {
           nextNum = -1 * (random.nextInt(min(sum - startInt, range)).toInt() + startInt);

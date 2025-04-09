@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 
@@ -272,12 +275,19 @@ class _SettingsRouteState extends State<SettingsRoute> {
                 AppConfig.ttsLocale = _ttsLocale;
                 AppConfig.locale = AppConfig.ttsLocale;
                 if (AppConfig.locale == 'No sound') {
-                  AppConfig.locale = 'en_US';
+                  AppConfig.locale = Intl.canonicalizedLocale(Platform.localeName);
                 }
               });
             },
           ),
         ]),
+        SettingsSection(title: const Text('Misc.', style: TextStyle(color: green)), tiles: [
+          SettingsTile(
+              leading: const Icon(Icons.language),
+              description: const Text('used when displaying numbers'),
+              title: const Text('App locale'),
+              value: Text(AppConfig.locale))
+        ])
       ])),
     );
   }
