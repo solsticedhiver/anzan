@@ -18,6 +18,7 @@ import 'dart:ui' as ui;
 
 import 'config.dart';
 import 'settings.dart';
+import 'locale_web.dart' if (dart.library.io) 'locale_platform.dart';
 
 bool _hasTTSWarningBeenShown = false;
 
@@ -31,7 +32,7 @@ void main() {
     AppConfig.host = 'http://127.0.0.1:5000';
   }
 
-  AppConfig.locale = Intl.canonicalizedLocale(Platform.localeName);
+  AppConfig.locale = detectedSystemLocale;
 
   runApp(ChangeNotifierProvider(
     create: (context) => NumberModel(),
