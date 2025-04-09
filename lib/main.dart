@@ -110,19 +110,38 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
+  // dart Random.nextInt() can't handle int bigger than 2^32
+  String _generateRandomInteger(int minLength, int maxLength) {
+    if (minLength < 1 || maxLength < minLength) {
+      throw ArgumentError('Invalid length parameters');
+    }
+
+    final randomLength = Random().nextInt(maxLength - minLength + 1) + minLength;
+
+    StringBuffer randomNumber = StringBuffer();
+    randomNumber.write(Random().nextInt(9) + 1);
+    for (int i = 1; i < randomLength; i++) {
+      randomNumber.write(Random().nextInt(10));
+    }
+
+    return randomNumber.toString();
+  }
+
   void _generateNumbers(int length, int digits, bool allowNegative) {
     final random = Random();
-    // dart Random.nextInt() can't handle int bigger than 2^32
-    // TODO: work-around for length >= 10
-    assert(digits <= 9);
+    bool isSizeTooBig = digits > 9; // or 2^32
     int startInt = pow(10, digits - 1).toInt();
     int maxInt = pow(10, digits).toInt() - startInt;
     int range = maxInt - startInt + 1;
     //debugPrint('startInt=$startInt, maxInt=$maxInt');
     numbers = [];
-    int sum = 0;
+    int sum = 0, nextNum;
     for (int i = 0; i < length; i++) {
-      int nextNum = random.nextInt(range) + startInt;
+      if (isSizeTooBig) {
+        nextNum = int.parse(_generateRandomInteger(startInt.toString().length, maxInt.toString().length));
+      } else {
+        nextNum = random.nextInt(range) + startInt;
+      }
       if (allowNegative && sum > startInt) {
         bool isNegative = random.nextInt(2).toInt() == 1 ? true : false;
         if (isNegative) {
