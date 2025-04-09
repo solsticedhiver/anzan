@@ -44,8 +44,7 @@ class _HistoryRouteState extends State<HistoryRoute> {
                         }
                       }
                       return ListTile(
-                        title: RichText(
-                            text: TextSpan(
+                        title: SelectableText.rich(TextSpan(
                           text: NumberFormat.decimalPattern(AppConfig.locale).format(AppConfig.history[index][0]),
                           style: textStyle,
                           children: textSpans,
