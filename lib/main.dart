@@ -291,7 +291,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 TextSpan(text: 'flutter', style: textStyle.copyWith(fontStyle: FontStyle.italic)),
                 TextSpan(text: ' based GUI made to help you practice ', style: textStyle),
                 TextSpan(text: 'anzan', style: textStyle.copyWith(fontStyle: FontStyle.italic)),
-                TextSpan(text: ', a.k.a mental calculation while visualising a ', style: textStyle),
+                TextSpan(text: ', i.e. mental calculation while visualising a ', style: textStyle),
                 TextSpan(text: 'soroban', style: textStyle.copyWith(fontStyle: FontStyle.italic)),
                 TextSpan(text: ' or an ', style: textStyle),
                 TextSpan(text: 'abacus', style: textStyle.copyWith(fontStyle: FontStyle.italic)),

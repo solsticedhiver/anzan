@@ -20,7 +20,7 @@ class AppConfig {
 const green = Color(0xFF168362);
 const lightBrown = Color(0xFFB39E8F);
 
-const AppVersion = '0.0.1';
+const AppVersion = '0.6.1';
 
 const String GPL3 = '''
 GNU GENERAL PUBLIC LICENSE
