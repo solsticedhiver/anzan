@@ -1,0 +1,51 @@
+name: App Windows Release
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  windows:
+    name: Build and create windows release
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Create version
+      id: version
+      #run: |
+      #  'Select-String -Path .\pubspec.yaml -Pattern "^version: (\d+.\d+.\d+)\+\d+"|%{"version=$($_.matches.groups[1].value)"}' >> $env:GITHUB_OUTPUT
+      run: echo "version=$(grep ^version pubspec.yaml |cut -f 2 -d ' '|cut -f 1 -d '+')" >> $GITHUB_OUTPUT
+      shell: bash
+    - name: Get HEAD short sha
+      id: short_sha
+      run: echo "short_sha=$(echo ${{ github.sha }}|head -c 7)" >> $GITHUB_OUTPUT
+      shell: bash
+    - name: set HEAD git short sha in config.dart
+      run: sed -i "/commit/s/HEAD/${{ steps.short_sha.outputs.short_sha }}/" lib/config.dart
+      shell: bash
+    - uses: subosito/flutter-action@v2
+      with:
+        channel : 'stable'
+        cache: true
+    - run: flutter pub get
+    #- run: flutter test
+    - run: flutter config --enable-windows-desktop
+    - run: flutter build windows --release
+    - name: Rename main folder
+      run: mv build/windows/x64/runner/Release build/windows/x64/runner/anzan-${{ steps.version.outputs.version }}
+      shell: bash
+    - name: Archive Release
+      uses: thedoctor0/zip-release@0.7.5
+      with:
+        type: 'zip'
+        directory: 'build/windows/x64/runner/'
+        path: 'anzan-${{ steps.version.outputs.version }}'
+        filename: 'anzan-windows_x64.zip'
+    - name: Create a release on GitHub
+      uses: ncipollo/release-action@v1
+      with:
+        allowUpdates: true
+        artifacts: "build/windows/x64/runner/anzan-windows_x64.zip"
+        token: "${{ secrets.GH_TOKEN }}"
+        tag: "v${{ steps.version.outputs.version }}"
+        commit: "${{ github.sha }}"

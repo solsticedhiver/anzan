@@ -1,0 +1,130 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/flatpak/flatpak-builder/main/data/flatpak-manifest.schema.json
+
+---
+app-id: org.sorobanexam.anzan
+runtime: org.freedesktop.Platform
+runtime-version: "24.08"
+sdk: org.freedesktop.Sdk
+command: anzan
+separate-locales: false
+finish-args:
+  - --share=ipc
+  - --socket=fallback-x11
+  - --socket=wayland
+  - --device=dri
+  - --socket=pulseaudio
+  - --share=network
+  - --filesystem=xdg-download
+modules:
+  - name: ffmpeg
+    config-opts:
+      - --enable-shared
+      - --disable-static
+      - --enable-gpl
+      - --disable-debug
+      - --enable-gnutls
+      - --disable-doc
+      - --enable-encoder=png
+      - --disable-libv4l2
+      - --enable-libdav1d
+    sources:
+      - type: archive
+        url: https://ffmpeg.org/releases/ffmpeg-7.1.tar.gz
+        sha256: 42a7dc0d1583885d1b8f6559fa7ce28f97acafea6803de6a8f73e3ba229348bd
+    cleanup:
+      - '/lib/*.a'
+      - '/share/name'
+      - '/share/ffmpeg/examples'
+  - name: libass
+    config-opts:
+      - --enable-shared
+      - --disable-static
+      - --with-pic
+    sources:
+      - type: archive
+        url: https://github.com/libass/libass/releases/download/0.17.3/libass-0.17.3.tar.gz
+        sha256: da7c348deb6fa6c24507afab2dee7545ba5dd5bbf90a137bfe9e738f7df68537
+  # Dependency for libplacebo. Generated with `flatpak-pip-generator --runtime=org.freedesktop.Sdk//24.08 --yaml jinja2`
+  - name: python3-jinja2
+    buildsystem: simple
+    build-commands:
+      - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
+        --prefix=${FLATPAK_DEST} "jinja2" --no-build-isolation
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/b2/97/5d42485e71dfc078108a86d6de8fa46db44a1a9295e89c5d6d4a06e23a62/markupsafe-3.0.2.tar.gz
+        sha256: ee55d3edf80167e48ea11a923c7386f4669df67d7994554387f84e7d8b0a2bf0
+      - type: file
+        url: https://files.pythonhosted.org/packages/62/a1/3d680cbfd5f4b8f15abc1d571870c5fc3e594bb582bc3b64ea099db13e56/jinja2-3.1.6-py3-none-any.whl
+        sha256: 85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67
+  - name: libplacebo
+    cleanup:
+      - '/include'
+      - '/lib/pkgconfig'
+    buildsystem: meson
+    config-opts:
+      - -Dvulkan=disabled
+      - -Dshaderc=disabled
+      - -Dvulkan=disabled
+      - -Dvk-proc-addr=disabled
+      - -Dvulkan-registry=disabled
+      - -Dopengl=disabled
+      - -Dgl-proc-addr=disabled
+      - -Dd3d11=disabled
+      - -Dglslang=disabled
+      - -Dshaderc=disabled
+      - -Dlcms=disabled
+      - -Ddovi=disabled
+      - -Dlibdovi=disabled
+      - -Dunwind=disabled
+      - -Dxxhash=disabled
+      - -Ddemos=false
+    sources:
+      - type: archive
+        url: https://github.com/haasn/libplacebo/archive/refs/tags/v7.349.0.tar.gz
+        sha256: 627e32439a0b3d2b90368ead7e919f470ee7446c87cc0f7841bbe319b23aa8b1
+  - name: libmpv
+    cleanup:
+      - '/include'
+      - '/lib/pkgconfig'
+      - 'lib/*.a'
+    buildsystem: meson
+    config-opts:
+      - -Dbuild-date=false
+      - -Dlibmpv=true
+      - -Dcplayer=false
+    sources:
+      - type: archive
+        url: https://github.com/mpv-player/mpv/archive/refs/tags/v0.40.0.tar.gz
+        sha256: 10a0f4654f62140a6dd4d380dcf0bbdbdcf6e697556863dc499c296182f081a3
+
+  - name: Anzan
+    buildsystem: simple
+    only-arches:
+      - x86_64
+    build-commands:
+      - cp anzan /app/
+      - cp -a lib /app/
+      - cp -a data /app/
+      - mkdir -p /app/bin
+      - ln -s /app/anzan /app/bin/anzan
+      - mkdir -p /app/share/{metainfo,applications,icons/hicolor/256x256/apps}
+      - cp org.sorobanexam.anzan.png /app/share/icons/hicolor/256x256/apps
+      - cp org.sorobanexam.anzan.desktop /app/share/applications/
+      - cp org.sorobanexam.anzan.metainfo.xml /app/share/metainfo/
+    sources:
+      - type: dir
+        path: anzan
+      - type: file
+        path: org.sorobanexam.anzan.png
+      - type: file
+        path: org.sorobanexam.anzan.metainfo.xml
+      - type: file
+        path: org.sorobanexam.anzan.desktop
+    cleanup:
+      - '/lib/*.a'
+      - '/lib/debug'
+      - '/lib/python*'
+      - '/lib/pkgconfig'
+
+# vim: set et ts=2 sw=2:

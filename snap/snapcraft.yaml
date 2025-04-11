@@ -1,0 +1,54 @@
+name: anzan
+base: core24
+version: '0.6.1'
+icon: snap/anzan.png
+summary: Exercise yout mental calculation skills (by visualising a soroban or not)
+description: |
+  An app to help you excercise your mental calculation skill by flashing numbers
+  on screen that you have to sum, or subtract (or more ...)
+
+contact: solstice.dhiver@sorobanexam.org
+issues: https://github.com/solsticedhiver/anzan/issues
+source-code: https://github.com/solsticedhiver/anzan
+license: GPL-3.0-or-later
+grade: devel
+confinement: strict
+platforms:
+  amd64:
+    build-on: [amd64]
+    build-for: [amd64]
+
+parts:
+  anzan:
+    source: .
+    plugin: flutter
+    flutter-target: lib/main.dart
+    flutter-channel: stable
+    build-packages: [pkg-config, ninja-build, cmake, libgtk-3-dev, clang, libstdc++-12-dev]
+    stage-packages: [libmpv2, libblas3, liblapack3]
+  cleanup:
+    after:
+      - anzan
+    plugin: nil
+    override-prime: |
+      find $SNAPCRAFT_PRIME/usr/lib -type f,l -name 'libLLVM*.so*' -delete
+      rm -rf "$SNAPCRAFT_PRIME/usr/share/man"
+      rm -rf "$SNAPCRAFT_PRIME/usr/share/doc"
+      rm -rf "$SNAPCRAFT_PRIME/usr/include"
+      rm -rf "$SNAPCRAFT_PRIME/usr/share/perl*"
+apps:
+  anzan:
+    command: anzan
+    extensions: [gnome]
+    plugs:
+      - network
+      - desktop
+      - wayland
+      - x11
+      - home
+      - audio-playback
+      - opengl
+    environment:
+      LD_LIBRARY_PATH: "$LD_LIBRARY_PATH:$SNAP/usr/lib/x86_64-linux-gnu/blas:$SNAP/usr/lib/x86_64-linux-gnu/lapack"
+
+# vim: set et ts=2 sw=2:
