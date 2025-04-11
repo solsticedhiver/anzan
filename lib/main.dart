@@ -80,44 +80,42 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Future.microtask(() async {
-        try {
-          final req = await http.get(Uri.parse('${AppConfig.host}/tools/tts?lang_list=1'),
-              headers: {'User-Agent': AppConfig.userAgent}).timeout(const Duration(seconds: 10));
-          if (req.statusCode == 200) {
-            for (var l in json.decode(req.body)) {
-              AppConfig.languages.add(l);
-            }
-            //debugPrint(AppConfig.languages.toString());
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      try {
+        final req = await http.get(Uri.parse('${AppConfig.host}/tools/tts?lang_list=1'),
+            headers: {'User-Agent': AppConfig.userAgent}).timeout(const Duration(seconds: 10));
+        if (req.statusCode == 200) {
+          for (var l in json.decode(req.body)) {
+            AppConfig.languages.add(l);
           }
-        } catch (e) {
-          debugPrint(e.toString());
+          //debugPrint(AppConfig.languages.toString());
         }
-        if (!_hasTTSWarningBeenShown && AppConfig.languages.isEmpty) {
-          _hasTTSWarningBeenShown = true;
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: const Text('Error fetching the TTS languages list'),
-                  content: const Text(
-                    'There was a network error retrieving the language TTS list. TTS is disabled.\n'
-                    'Relaunch/reload the app to retry.',
+      } catch (e) {
+        debugPrint(e.toString());
+      }
+      if (!_hasTTSWarningBeenShown && AppConfig.languages.isEmpty) {
+        _hasTTSWarningBeenShown = true;
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text('Error fetching the TTS languages list'),
+                content: const Text(
+                  'There was a network error retrieving the language TTS list. TTS is disabled.\n'
+                  'Relaunch/reload the app to retry.',
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    style: TextButton.styleFrom(textStyle: Theme.of(context).textTheme.labelLarge),
+                    child: const Text('OK'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
                   ),
-                  actions: <Widget>[
-                    TextButton(
-                      style: TextButton.styleFrom(textStyle: Theme.of(context).textTheme.labelLarge),
-                      child: const Text('OK'),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ],
-                );
-              });
-        }
-      });
+                ],
+              );
+            });
+      }
     });
   }
 
