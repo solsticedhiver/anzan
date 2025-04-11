@@ -48,7 +48,6 @@ class _SettingsRouteState extends State<SettingsRoute> {
                     SizedBox(
                         width: 200,
                         child: SpinBox(
-                          readOnly: true,
                           min: 1,
                           max: 13,
                           value: AppConfig.numDigit.toDouble(),
@@ -97,7 +96,6 @@ class _SettingsRouteState extends State<SettingsRoute> {
                     SizedBox(
                         width: 200,
                         child: SpinBox(
-                          readOnly: true,
                           min: 1,
                           max: 10,
                           value: AppConfig.numRowInt.toDouble(),
@@ -141,7 +139,6 @@ class _SettingsRouteState extends State<SettingsRoute> {
                     SizedBox(
                         width: 200,
                         child: SpinBox(
-                          readOnly: true,
                           min: 50,
                           max: 1000,
                           step: 50,
@@ -185,7 +182,6 @@ class _SettingsRouteState extends State<SettingsRoute> {
                     SizedBox(
                         width: 200,
                         child: SpinBox(
-                          readOnly: true,
                           min: 100,
                           max: 5000,
                           step: 50,

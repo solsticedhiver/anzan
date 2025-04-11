@@ -100,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
               context: context,
               builder: (context) {
                 return AlertDialog(
-                  title: const Text('TTS languages list not fetched'),
+                  title: const Text('Error fetching the TTS languages list'),
                   content: const Text(
                     'There was a network error retrieving the language TTS list. TTS is disabled.\n'
                     'Relaunch/reload the app to retry.',
