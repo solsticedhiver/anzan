@@ -1,11 +1,9 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 
 import 'config.dart';
+import 'locale_web.dart' if (dart.library.io) 'locale_platform.dart';
 
 class SettingsRoute extends StatefulWidget {
   const SettingsRoute({super.key});
@@ -271,7 +269,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
                 AppConfig.ttsLocale = _ttsLocale;
                 AppConfig.locale = AppConfig.ttsLocale;
                 if (AppConfig.locale == 'No sound') {
-                  AppConfig.locale = Intl.canonicalizedLocale(Platform.localeName);
+                  AppConfig.locale = detectedSystemLocale;
                 }
               });
             },
