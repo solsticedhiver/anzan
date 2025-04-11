@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:anzan/display.dart';
@@ -80,20 +79,21 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() async {
-      try {
-        final req = await http.get(Uri.parse('${AppConfig.host}/tools/tts?lang_list=1'));
-        if (req.statusCode == 200) {
-          for (var l in json.decode(req.body)) {
-            AppConfig.languages.add(l);
-          }
-          //debugPrint(AppConfig.languages.toString());
-        }
-      } catch (e) {
-        debugPrint(e.toString());
-      }
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.microtask(() async {
+        try {
+          final req = await http.get(Uri.parse('${AppConfig.host}/tools/tts?lang_list=1'),
+              headers: {'User-Agent': AppConfig.userAgent}).timeout(const Duration(seconds: 10));
+          if (req.statusCode == 200) {
+            for (var l in json.decode(req.body)) {
+              AppConfig.languages.add(l);
+            }
+            //debugPrint(AppConfig.languages.toString());
+          }
+        } catch (e) {
+          debugPrint(e.toString());
+        }
         if (!_hasTTSWarningBeenShown && AppConfig.languages.isEmpty) {
           _hasTTSWarningBeenShown = true;
           showDialog(
@@ -235,7 +235,8 @@ class _MyHomePageState extends State<MyHomePage> {
     for (var i = 0; i < numbers.length; i++) {
       final n = numbers[i];
       final uri = '${AppConfig.host}/tools/tts?lang=${AppConfig.ttsLocale}&number=$n';
-      req = await http.get(Uri.parse(uri));
+      req = await http
+          .get(Uri.parse(uri), headers: {'User-Agent': AppConfig.userAgent}).timeout(const Duration(seconds: 10));
       if (req.statusCode == 200) {
         sounds.add(req.bodyBytes);
       }

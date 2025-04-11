@@ -14,6 +14,7 @@ class AppConfig {
   static String locale = 'en_US';
   static List<String> languages = [];
   static String host = 'https://www.sorobanexam.org';
+  static String userAgent = 'Mentalcalculation/$AppVersion (platform)';
 }
 
 const green = Color(0xFF168362);
