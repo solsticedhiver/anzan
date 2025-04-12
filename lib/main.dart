@@ -75,10 +75,13 @@ class _MyHomePageState extends State<MyHomePage> {
   late MyDisplay myDisplay;
   final player = Player();
   TextEditingController textEditingController = TextEditingController();
+  late FocusNode myFocusNode;
 
   @override
   void initState() {
     super.initState();
+
+    myFocusNode = FocusNode();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       try {
@@ -122,6 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void dispose() {
     textEditingController.dispose();
+    myFocusNode.dispose();
     super.dispose();
   }
 
@@ -176,15 +180,14 @@ class _MyHomePageState extends State<MyHomePage> {
     //debugPrint(_indx.toString());
     if (_indx >= numbers.length) {
       player.stop();
-      textEditingController.clear();
       setState(() {
         isPlaying = false;
       });
       Future.delayed(Duration(milliseconds: AppConfig.timeout), () {
-        setState(() {
-          numberModel.setNumber('?');
-          numberModel.setVisible(true);
-        });
+        numberModel.setNumber('?');
+        numberModel.setVisible(true);
+        textEditingController.clear();
+        myFocusNode.requestFocus();
       });
       isReplayable = true;
       AppConfig.history.add(numbers);
@@ -449,6 +452,7 @@ class _MyHomePageState extends State<MyHomePage> {
             SizedBox(
                 width: 200,
                 child: TextField(
+                  focusNode: myFocusNode,
                   cursorColor: Colors.black,
                   keyboardType: TextInputType.number,
                   maxLines: 1,
