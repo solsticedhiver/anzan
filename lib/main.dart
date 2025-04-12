@@ -19,11 +19,17 @@ import 'config.dart';
 import 'settings.dart';
 import 'locale_web.dart' if (dart.library.io) 'locale_platform.dart';
 
-bool _hasTTSWarningBeenShown = false;
+bool _hasWarningBeenShown = false;
+bool _hasMediaKitBeenInitialized = false;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  MediaKit.ensureInitialized();
+  try {
+    MediaKit.ensureInitialized();
+    _hasMediaKitBeenInitialized = true;
+  } catch (e) {
+    debugPrint(e.toString());
+  }
 
   if (kReleaseMode) {
     debugPrint = (String? message, {int? wrapWidth}) {};
@@ -73,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Uint8List> sounds = [];
   late TextStyle style;
   late MyDisplay myDisplay;
-  final player = Player();
+  late Player? player;
   TextEditingController textEditingController = TextEditingController();
   late FocusNode myFocusNode;
 
@@ -82,31 +88,45 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
 
     myFocusNode = FocusNode();
+    if (_hasMediaKitBeenInitialized) {
+      player = Player();
+    } else {
+      player = null;
+    }
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      try {
-        final req = await http.get(Uri.parse('${AppConfig.host}/tools/tts?lang_list=1'),
-            headers: {'User-Agent': AppConfig.userAgent}).timeout(const Duration(seconds: 10));
-        if (req.statusCode == 200) {
-          for (var l in json.decode(req.body)) {
-            AppConfig.languages.add(l);
+      if (_hasMediaKitBeenInitialized) {
+        try {
+          final req = await http.get(Uri.parse('${AppConfig.host}/tools/tts?lang_list=1'),
+              headers: {'User-Agent': AppConfig.userAgent}).timeout(const Duration(seconds: 10));
+          if (req.statusCode == 200) {
+            for (var l in json.decode(req.body)) {
+              AppConfig.languages.add(l);
+            }
+            //debugPrint(AppConfig.languages.toString());
           }
-          //debugPrint(AppConfig.languages.toString());
+        } catch (e) {
+          debugPrint(e.toString());
         }
-      } catch (e) {
-        debugPrint(e.toString());
       }
-      if (!_hasTTSWarningBeenShown && AppConfig.languages.isEmpty) {
-        _hasTTSWarningBeenShown = true;
+      if (!_hasWarningBeenShown && (AppConfig.languages.isEmpty || !_hasMediaKitBeenInitialized)) {
+        _hasWarningBeenShown = true;
+        String title, content;
+        if (!_hasMediaKitBeenInitialized) {
+          title = 'Error initliazing MediaKit library';
+          content = 'This usually means the libmpv library has not been found. Check your installation of libmpv.\n'
+              'TTS will be disabled';
+        } else {
+          title = 'Error fetching the TTS languages list';
+          content = 'There was a network error retrieving the language TTS list. TTS will be disabled.\n'
+              'Relaunch/reload the app to retry with an internet connexion.';
+        }
         showDialog(
             context: context,
             builder: (context) {
               return AlertDialog(
-                title: const Text('Error fetching the TTS languages list'),
-                content: const Text(
-                  'There was a network error retrieving the language TTS list. TTS is disabled.\n'
-                  'Relaunch/reload the app to retry.',
-                ),
+                title: Text(title),
+                content: Text(content, style: Theme.of(context).textTheme.bodyMedium),
                 actions: <Widget>[
                   TextButton(
                     style: TextButton.styleFrom(textStyle: Theme.of(context).textTheme.labelLarge),
@@ -126,6 +146,9 @@ class _MyHomePageState extends State<MyHomePage> {
   void dispose() {
     textEditingController.dispose();
     myFocusNode.dispose();
+    if (player != null) {
+      player!.dispose();
+    }
     super.dispose();
   }
 
@@ -179,7 +202,9 @@ class _MyHomePageState extends State<MyHomePage> {
     final numberModel = Provider.of<NumberModel>(context, listen: false);
     //debugPrint(_indx.toString());
     if (_indx >= numbers.length) {
-      player.stop();
+      if (player != null) {
+        player!.stop();
+      }
       setState(() {
         isPlaying = false;
       });
@@ -202,8 +227,10 @@ class _MyHomePageState extends State<MyHomePage> {
     numberModel.setVisible(true);
     if (sounds.isNotEmpty) {
       final media = await Media.memory(sounds[_indx], type: 'audio/mpeg');
-      await player.seek(const Duration(minutes: 0, seconds: 0, milliseconds: 0));
-      await player.open(media);
+      if (player != null) {
+        await player!.seek(const Duration(minutes: 0, seconds: 0, milliseconds: 0));
+        await player!.open(media);
+      }
       await Future.delayed(Duration(milliseconds: AppConfig.timeFlash), () async {
         numberModel.setVisible(false);
         _indx++;
@@ -232,7 +259,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _getSounds() async {
     http.Response req;
-    sounds.clear();
     for (var i = 0; i < numbers.length; i++) {
       final n = numbers[i];
       final uri = '${AppConfig.host}/tools/tts?lang=${AppConfig.ttsLocale}&number=$n';
@@ -248,10 +274,11 @@ class _MyHomePageState extends State<MyHomePage> {
     _indx = 0;
     textEditingController.clear();
     _generateNumbers(AppConfig.numRowInt, AppConfig.numDigit, AppConfig.useNegNumber);
-    if (AppConfig.languages.contains(AppConfig.ttsLocale)) {
+    sounds.clear();
+    if (_hasMediaKitBeenInitialized &&
+        AppConfig.languages.isNotEmpty &&
+        AppConfig.languages.contains(AppConfig.ttsLocale)) {
       await _getSounds();
-    } else {
-      sounds.clear();
     }
     if (context.mounted) {
       Provider.of<NumberModel>(context, listen: false).setNumber('');
@@ -514,7 +541,9 @@ class _MyHomePageState extends State<MyHomePage> {
           if (!isPlaying) {
             isVisible = false;
             isReplayable = true;
-            player.stop();
+            if (player != null) {
+              player!.stop();
+            }
           } else {
             Provider.of<NumberModel>(context, listen: false).setVisible(false);
             _startPlay();
