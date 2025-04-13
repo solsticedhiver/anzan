@@ -286,14 +286,14 @@ class _MyHomePageState extends State<MyHomePage> {
     await _nextRandomNumber();
   }
 
-  TextStyle _optimizeFontSize() {
-    double fontSize = MediaQuery.of(context).size.height / 2;
+  TextStyle _optimizeFontSize(BuildContext context) {
+    double fontSize = Theme.of(context).textTheme.displayLarge!.fontSize!;
     final testString = '9' * (AppConfig.numDigit + 2);
     TextSpan text = TextSpan(text: testString, style: TextStyle(fontSize: fontSize));
     TextPainter tp = TextPainter(text: text, textDirection: ui.TextDirection.ltr);
     tp.layout();
-    while (tp.width + 20 > MediaQuery.of(context).size.width) {
-      fontSize -= 10;
+    while (tp.width + 20 < MediaQuery.sizeOf(context).width && tp.height < MediaQuery.sizeOf(context).height / 2) {
+      fontSize += 2;
       text = TextSpan(text: testString, style: TextStyle(fontSize: fontSize));
       tp = TextPainter(text: text, textDirection: ui.TextDirection.ltr);
       tp.layout();
@@ -304,7 +304,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    style = _optimizeFontSize();
+    style = _optimizeFontSize(context);
     myDisplay = MyDisplay(style: style);
 
     final ThemeData theme = Theme.of(context);
@@ -369,7 +369,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 builder: (context) => const SettingsRoute(),
               ));
               setState(() {
-                style = _optimizeFontSize();
+                style = _optimizeFontSize(context);
               });
             },
             icon: const Icon(Icons.settings))
@@ -435,7 +435,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     );
                     setState(() {
-                      style = _optimizeFontSize();
+                      style = _optimizeFontSize(context);
                     });
                   },
                 ),
