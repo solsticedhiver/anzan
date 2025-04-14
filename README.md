@@ -11,3 +11,5 @@ You can configure the number of the digits of the numbers you have to add.
 
 You can use a TTS (aka. Text-To-Speach) feature to get the numbers pronounced in a selection of languages.
 
+<img width="640" src="./flatpak/2025-04-11T23-21.png" />
+
