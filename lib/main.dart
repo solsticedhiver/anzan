@@ -201,12 +201,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final numberModel = Provider.of<NumberModel>(context, listen: false);
     //debugPrint(_indx.toString());
-    if (_indx >= numbers.length) {
+    if (_indx == numbers.length) {
       if (player != null) {
         player!.stop();
       }
       setState(() {
         isPlaying = false;
+        isReplayable = true;
       });
       Future.delayed(Duration(milliseconds: AppConfig.timeout), () {
         numberModel.setNumber('?');
@@ -280,6 +281,10 @@ class _MyHomePageState extends State<MyHomePage> {
         AppConfig.languages.contains(AppConfig.ttsLocale)) {
       await _getSounds();
     }
+    setState(() {
+      isReplayable = false;
+      isPlaying = true;
+    });
     if (context.mounted) {
       Provider.of<NumberModel>(context, listen: false).setNumber('');
     }
@@ -499,35 +504,38 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.input, color: isReplayable ? Colors.white : Colors.black),
               style: IconButton.styleFrom(
                   backgroundColor: green, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0))),
-              onPressed: () {
-                if (isPlaying) return;
-                var sum = numbers.fold<int>(0, (p, c) => p + c);
-                String msg;
-                Icon icon = const Icon(null);
-                try {
-                  final sol = int.parse(textEditingController.text);
-                  if (sol == sum) {
-                    msg = 'The answer is correct';
-                    icon = const Icon(Icons.check_box_rounded, color: Colors.green);
-                    AppConfig.success[AppConfig.history.length - 1] = true;
-                  } else {
-                    msg = 'The answer is incorrect';
-                    icon = const Icon(Icons.close, color: Colors.red);
-                    AppConfig.success[AppConfig.history.length - 1] = false;
-                  }
-                } catch (e) {
-                  msg = 'The answer is not a number';
-                  icon = const Icon(Icons.error, color: Colors.red);
-                }
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Center(
-                        child: Row(
-                            mainAxisSize: MainAxisSize.min, children: [Text(msg), const SizedBox(width: 15), icon])),
-                    showCloseIcon: true,
-                  ),
-                );
-              },
+              onPressed: (isPlaying || _indx != AppConfig.numRowInt)
+                  ? () {}
+                  : () {
+                      if (isPlaying) return;
+                      var sum = numbers.fold<int>(0, (p, c) => p + c);
+                      String msg;
+                      Icon icon = const Icon(null);
+                      try {
+                        final sol = int.parse(textEditingController.text);
+                        if (sol == sum) {
+                          msg = 'The answer is correct';
+                          icon = const Icon(Icons.check_box_rounded, color: Colors.green);
+                          AppConfig.success[AppConfig.history.length - 1] = true;
+                        } else {
+                          msg = 'The answer is incorrect';
+                          icon = const Icon(Icons.close, color: Colors.red);
+                          AppConfig.success[AppConfig.history.length - 1] = false;
+                        }
+                      } catch (e) {
+                        msg = 'The answer is not a number';
+                        icon = const Icon(Icons.error, color: Colors.red);
+                      }
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Center(
+                              child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [Text(msg), const SizedBox(width: 15), icon])),
+                          showCloseIcon: true,
+                        ),
+                      );
+                    },
             ),
           ])),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -540,7 +548,6 @@ class _MyHomePageState extends State<MyHomePage> {
           });
           if (!isPlaying) {
             isVisible = false;
-            isReplayable = true;
             if (player != null) {
               player!.stop();
             }
