@@ -21,7 +21,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
     return Scaffold(
       appBar: AppBar(backgroundColor: lightBrown, title: const Text('Settings')),
       body: Center(
-          child: SettingsList(contentPadding: const EdgeInsets.only(left: 100, right: 100), sections: [
+          child: SettingsList(sections: [
         SettingsSection(title: const Text('Numbers', style: TextStyle(color: green)), tiles: [
           CustomSettingsTile(
               child: Container(
@@ -44,7 +44,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
                             ])),
                     const Expanded(child: SizedBox.shrink()),
                     SizedBox(
-                        width: 200,
+                        width: 150,
                         child: SpinBox(
                           min: 1,
                           max: 13,
@@ -92,7 +92,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
                             ])),
                     const Expanded(child: SizedBox.shrink()),
                     SizedBox(
-                        width: 200,
+                        width: 150,
                         child: SpinBox(
                           min: 1,
                           max: 10,
@@ -135,7 +135,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
                     ]),
                     const Expanded(child: SizedBox.shrink()),
                     SizedBox(
-                        width: 200,
+                        width: 150,
                         child: SpinBox(
                           min: 50,
                           max: 1000,
@@ -178,7 +178,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
                     ]),
                     const Expanded(child: SizedBox.shrink()),
                     SizedBox(
-                        width: 200,
+                        width: 150,
                         child: SpinBox(
                           min: 100,
                           max: 5000,
