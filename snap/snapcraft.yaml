@@ -1,6 +1,6 @@
 name: anzan
 base: core24
-version: '0.6.1'
+version: '0.6.0'
 icon: snap/anzan.png
 summary: Exercise yout mental calculation skills (by visualising a soroban or not)
 description: |
