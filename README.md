@@ -1,16 +1,13 @@
-# anzan
+# Flash anzan
 
-A new Flutter project.
+This is a rewrite in *flutter* of our previous work (called *mentalcalcultion* in **python/pyQt**).
 
-## Getting Started
+It is cross-platform and is able to be run on Linux, Windows, web, Android.
+IOs and macOs are not available because I don't own the required hardware (nothing is possible with emulators in that case).
 
-This project is a starting point for a Flutter application.
+You can pratice your anzan skills (or mental calculation if you don't wish to visualize a soroban).
 
-A few resources to get you started if this is your first Flutter project:
+You can configure the number of the digits of the numbers you have to add.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+You can use a TTS (aka. Text-To-Speach) feature to get the numbers pronounced in a selection of languages.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
