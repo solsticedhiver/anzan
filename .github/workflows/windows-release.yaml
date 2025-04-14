@@ -12,28 +12,19 @@ jobs:
     - uses: actions/checkout@v4
     - name: Create version
       id: version
-      #run: |
-      #  'Select-String -Path .\pubspec.yaml -Pattern "^version: (\d+.\d+.\d+)\+\d+"|%{"version=$($_.matches.groups[1].value)"}' >> $env:GITHUB_OUTPUT
-      run: echo "version=$(grep ^version pubspec.yaml |cut -f 2 -d ' '|cut -f 1 -d '+')" >> $GITHUB_OUTPUT
-      shell: bash
-    - name: Get HEAD short sha
-      id: short_sha
-      run: echo "short_sha=$(echo ${{ github.sha }}|head -c 7)" >> $GITHUB_OUTPUT
-      shell: bash
+      run: |
+        Select-String -Path .\pubspec.yaml -Pattern "^version: (\d+.\d+.\d+)\+\d+"|%{"version=$($_.matches.groups[1].value)"} | Out-File -FilePath $env:GITHUB_OUTPUT -Append
     - name: set HEAD git short sha in config.dart
-      run: sed -i "/commit/s/HEAD/${{ steps.short_sha.outputs.short_sha }}/" lib/config.dart
-      shell: bash
+      run: (Get-content -Raw .\lib\config.dart) -replace 'HEAD', $(${env:GITHUB_SHA}.Substring(0,7)) | Set-Content -NoNewLine -Encoding UTF8 .\lib\config.dart
     - uses: subosito/flutter-action@v2
       with:
-        channel : 'stable'
+        channel : stable
         cache: true
     - run: flutter pub get
-    #- run: flutter test
     - run: flutter config --enable-windows-desktop
     - run: flutter build windows --release
     - name: Rename main folder
-      run: mv build/windows/x64/runner/Release build/windows/x64/runner/anzan-${{ steps.version.outputs.version }}
-      shell: bash
+      run: Rename-Item build\windows\x64\runner\Release anzan-${{ steps.version.outputs.version }}
     - name: Archive Release
       uses: thedoctor0/zip-release@0.7.5
       with:
