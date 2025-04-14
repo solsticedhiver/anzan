@@ -37,7 +37,7 @@ jobs:
         channel : 'stable'
         cache: true
     - name: Trust flutter git repo
-      run: git config --global --add safe.directory /opt/hostedtoolcache/flutter/stable-*
+      run: git config --global --add safe.directory /__t/flutter/stable-*
     - if: ${{ env.ACT }}
       run: flutter clean
     - run: flutter config --enable-linux-desktop
