@@ -1,0 +1,66 @@
+name: App Android Release
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  android:
+    name: Build and create android release
+    runs-on: ubuntu-latest
+    outputs:
+      output1: ${{ steps.version.outputs.version }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: Create version
+      id: version
+      run: echo "version=$(grep ^version pubspec.yaml |cut -f 2 -d ' '|cut -f 1 -d '+')" >> $GITHUB_OUTPUT
+    - name: Get HEAD short sha
+      id: short_sha
+      run: echo "short_sha=$(echo ${{ github.sha }}|head -c 7)" >> $GITHUB_OUTPUT
+      shell: bash
+    - name: set HEAD git short sha in config.dart
+      run: sed -i "/commit/s/HEAD/${{ steps.short_sha.outputs.short_sha }}/" lib/config.dart
+      shell: bash
+    - name: use our own cache server [act]
+      if: ${{ env.ACT }}
+      run: sudo echo 'Acquire::http::Proxy "http://192.168.44.106:3142";' > /etc/apt/apt.conf.d/00aptproxy
+    - name: install dependencies for flutter
+      run: |
+        sudo apt-get update -y
+        sudo apt-get install -y ninja-build libgtk-3-dev libmpv-dev mpv
+    - name: install missing tools [act]
+      if: ${{ env.ACT }}
+      run: |
+        sudo apt install -y cmake clang android-sdk openjdk-17-jdk
+        sudo wget https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip
+        sudo unzip commandlinetools-linux-13114758_latest.zip -d /usr/lib/android-sdk
+        sudo mkdir -p /usr/lib/android-sdk/cmdline-tools/latest
+        sudo mv /usr/lib/android-sdk/cmdline-tools/* /usr/lib/android-sdk/cmdline-tools/latest || true
+        sudo /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "build-tools;35.0.1"
+        sudo /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "platforms;android-35"
+        yes | sudo /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses &>/dev/null
+    - uses: subosito/flutter-action@v2
+      with:
+        channel : 'stable'
+        cache: true
+    - name: fix git repo in flutter install and paths [act]
+      if: ${{ env.ACT }}
+      run: |
+        git config --global --add safe.directory /opt/hostedtoolcache/flutter/stable-*
+        flutter config --jdk-dir=/usr/lib/jvm/java-17-openjdk-amd64
+        flutter config --android-sdk=/usr/lib/android-sdk
+        yes | flutter doctor --android-licenses &>/dev/null
+    - run: flutter pub get
+    - run: flutter config --enable-android
+    - run: flutter build apk --release
+    - run: mv build/app/outputs/apk/release/app-release.apk build/app/outputs/apk/release/anzan-${{ steps.version.outputs.version }}.apk
+    - name: Create a release in GitHub
+      if: ${{ !env.ACT }}
+      uses: ncipollo/release-action@v1
+      with:
+        allowUpdates: true
+        artifacts: 'build/app/outputs/apk/release/anzan-${{ steps.version.outputs.version }}.apk'
+        token: "${{ secrets.GH_TOKEN }}"
+        tag: "v${{ steps.version.outputs.version }}"
+        commit: "${{ github.sha }}"
