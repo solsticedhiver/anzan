@@ -1,5 +1,8 @@
 import 'dart:ui';
 
+// a custom type for a record to hold an operation and the correctness of the answer
+typedef Run = ({List<int> op, bool? success});
+
 class AppConfig {
   static int numRowInt = 5;
   static int numDigit = 1;
@@ -8,8 +11,7 @@ class AppConfig {
   static bool useNegNumber = false;
   static bool useContinuousMode = false;
   static int maxHistoryLength = 20;
-  static List<List<int>> history = [];
-  static List<bool?> success = [];
+  static List<Run> history = [];
   static String ttsLocale = 'No sound';
   static String locale = 'en_US';
   static List<String> languages = [];

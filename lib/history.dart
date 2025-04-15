@@ -26,8 +26,8 @@ class _HistoryRouteState extends State<HistoryRoute> {
                     itemBuilder: ((context, index) {
                       List<TextSpan> textSpans = [];
                       int n;
-                      for (var i = 1; i < AppConfig.history[index].length; i++) {
-                        n = AppConfig.history[index][i];
+                      for (var i = 1; i < AppConfig.history[index].op.length; i++) {
+                        n = AppConfig.history[index].op[i];
                         textSpans.add(TextSpan(
                             text: n > 0 ? ' + ' : ' - ',
                             style: textStyle.copyWith(
@@ -36,8 +36,8 @@ class _HistoryRouteState extends State<HistoryRoute> {
                             text: NumberFormat.decimalPattern(AppConfig.locale).format(n.abs()), style: textStyle));
                       }
                       Icon icon = const Icon(null);
-                      if (AppConfig.success[index] != null) {
-                        if (AppConfig.success[index]!) {
+                      if (AppConfig.history[index].success != null) {
+                        if (AppConfig.history[index].success!) {
                           icon = const Icon(Icons.check, color: Colors.green);
                         } else {
                           icon = const Icon(Icons.close, color: Colors.red);
@@ -45,7 +45,7 @@ class _HistoryRouteState extends State<HistoryRoute> {
                       }
                       return ListTile(
                         title: SelectableText.rich(TextSpan(
-                          text: NumberFormat.decimalPattern(AppConfig.locale).format(AppConfig.history[index][0]),
+                          text: NumberFormat.decimalPattern(AppConfig.locale).format(AppConfig.history[index].op[0]),
                           style: textStyle,
                           children: textSpans,
                         )),

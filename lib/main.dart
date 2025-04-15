@@ -216,11 +216,9 @@ class _MyHomePageState extends State<MyHomePage> {
         myFocusNode.requestFocus();
       });
       isReplayable = true;
-      AppConfig.history.add(numbers);
-      AppConfig.success.add(null);
+      AppConfig.history.add((op: numbers, success: null));
       if (AppConfig.history.length > AppConfig.maxHistoryLength) {
         AppConfig.history.removeRange(0, AppConfig.history.length - AppConfig.maxHistoryLength);
-        AppConfig.success.removeRange(0, AppConfig.history.length - AppConfig.maxHistoryLength);
       }
       return;
     }
@@ -516,11 +514,13 @@ class _MyHomePageState extends State<MyHomePage> {
                         if (sol == sum) {
                           msg = 'The answer is correct';
                           icon = const Icon(Icons.check_box_rounded, color: Colors.green);
-                          AppConfig.success[AppConfig.history.length - 1] = true;
+                          AppConfig.history[AppConfig.history.length - 1] =
+                              (op: AppConfig.history[AppConfig.history.length - 1].op, success: true);
                         } else {
                           msg = 'The answer is incorrect';
                           icon = const Icon(Icons.close, color: Colors.red);
-                          AppConfig.success[AppConfig.history.length - 1] = false;
+                          AppConfig.history[AppConfig.history.length - 1] =
+                              (op: AppConfig.history[AppConfig.history.length - 1].op, success: false);
                         }
                       } catch (e) {
                         msg = 'The answer is not a number';
