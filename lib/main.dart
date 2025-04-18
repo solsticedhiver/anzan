@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+import 'dart:ui' as ui;
 
 import 'package:anzan/display.dart';
 import 'package:anzan/history.dart';
@@ -13,7 +14,6 @@ import 'package:media_kit/media_kit.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import 'dart:ui' as ui;
 
 import 'config.dart';
 import 'settings.dart';
@@ -95,6 +95,8 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await getSettings();
+
       if (_hasMediaKitBeenInitialized) {
         try {
           final req = await http.get(Uri.parse('${AppConfig.host}/tools/tts?lang_list=1'),
@@ -367,13 +369,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   },
             icon: const Icon(Icons.history)),
         IconButton(
-            onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
+            onPressed: () async {
+              await Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => const SettingsRoute(),
               ));
               setState(() {
                 style = _optimizeFontSize(context);
               });
+              saveSettings();
             },
             icon: const Icon(Icons.settings))
       ]),
