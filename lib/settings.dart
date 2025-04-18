@@ -319,6 +319,10 @@ Future<void> getSettings() async {
   if (ttsLocale != null) {
     AppConfig.ttsLocale = ttsLocale;
   }
+  String? distinctId = await prefs.getString('distinctId');
+  if (distinctId != null) {
+    AppConfig.distinctId = distinctId;
+  }
   /*
   keep that or not ?
   List<Run> history = [];
@@ -336,4 +340,5 @@ Future<void> saveSettings() async {
   await prefs.setBool('useNegNumber', AppConfig.useNegNumber);
   await prefs.setBool('useContinuousMode', AppConfig.useContinuousMode);
   await prefs.setString('ttsLocale', AppConfig.ttsLocale);
+  await prefs.setString('distinctId', AppConfig.distinctId);
 }

@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:media_kit/media_kit.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -20,6 +21,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'config.dart';
 import 'settings.dart';
 import 'locale_web.dart' if (dart.library.io) 'locale_platform.dart';
+import 'posthog.dart';
 
 bool _hasWarningBeenShown = false;
 bool _hasMediaKitBeenInitialized = false;
@@ -98,6 +100,30 @@ class _MyHomePageState extends State<MyHomePage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await getSettings();
+
+      String source = 'unknown';
+      if (kIsWeb) {
+        source = 'web';
+      } else if (Platform.isAndroid) {
+        source = 'android';
+      } else if (Platform.isLinux) {
+        source = 'linux';
+      } else if (Platform.isMacOS) {
+        source = 'macOS';
+      } else if (Platform.isIOS) {
+        source = 'IOS';
+      }
+      // check pref first
+      if (AppConfig.distinctId.isEmpty) {
+        AppConfig.distinctId = getDistinctId();
+        await SharedPreferencesAsync().setString('distinctId', AppConfig.distinctId);
+      }
+      if (kReleaseMode) {
+        posthog(AppConfig.distinctId, '\$pageView', {'\$current_url': '/anzan.app/', 'source': source});
+      } else {
+        debugPrint(
+            "posthog('${AppConfig.distinctId}', '\$pageView', {'\$current_url': '/anzan.app/', 'source': $source});");
+      }
 
       if (_hasMediaKitBeenInitialized) {
         try {

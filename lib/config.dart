@@ -18,12 +18,15 @@ class AppConfig {
   static String host = 'https://www.sorobanexam.org';
   static String userAgent = 'Mentalcalculation/$AppVersion (platform)';
   static String commit = 'HEAD';
+  static String distinctId = '';
 }
 
 const green = Color(0xFF168362);
 const lightBrown = Color(0xFFB39E8F);
 
 const AppVersion = '0.6.0';
+
+const String POSTHOG_API_KEY = 'phc_ckgtNDKD1zmDpeRvbmDNjIVfgIF1pyhDg2ATUVEsSaT';
 
 const String GPL3 = '''
 GNU GENERAL PUBLIC LICENSE

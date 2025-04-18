@@ -1,5 +1,8 @@
 import 'dart:js_interop';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
+import 'dart:convert';
+import 'config.dart' show POSTHOG_API_KEY;
 
 @JS('navigator')
 extension type NavigatorJS._(JSObject _) implements JSObject {
@@ -8,4 +11,22 @@ extension type NavigatorJS._(JSObject _) implements JSObject {
   external static String languages;
 }
 
+@JS('localStorage')
+extension type LocalStorageJS._(JSObject _) implements JSObject {
+  external LocalStorageJS();
+  external static String? getItem(String keyName);
+}
+
 String detectedSystemLocale = Intl.canonicalizedLocale(NavigatorJS.language);
+
+String getDistinctId() {
+  final String? posthog = LocalStorageJS.getItem('ph_${POSTHOG_API_KEY}_posthog');
+  String distinctId;
+  if (posthog != null) {
+    distinctId = jsonDecode(posthog)['distinct_id'];
+  } else {
+    const uuid = Uuid();
+    distinctId = uuid.v4();
+  }
+  return distinctId;
+}
