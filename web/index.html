@@ -31,8 +31,27 @@
 
   <title>Anzan (i.e mentalcalculation)</title>
   <link rel="manifest" href="manifest.json">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+    .container{
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex: auto;
+      flex-direction: column;
+    }
+  </style>
 </head>
 <body>
+  <div id="loading_indicator" class="container">
+    <img class="indicator" src="./assets/soroban-rounded-512x512.png"/>
+  </div>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

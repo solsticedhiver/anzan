@@ -412,7 +412,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: [
                   Row(children: [
                     Image.asset(
-                      'assets/soroban_logo_rounded.png',
+                      'assets/soroban-rounded-256x256.png',
                       height: 64,
                       width: 64,
                     ),
@@ -471,7 +471,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 AboutListTile(
                   icon: const Icon(Icons.info),
                   applicationIcon: Image.asset(
-                    'assets/soroban_logo_rounded.png',
+                    'assets/soroban-rounded-256x256.png',
                     height: 64,
                     width: 64,
                   ),
