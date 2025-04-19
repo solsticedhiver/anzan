@@ -6,6 +6,7 @@ import 'dart:ui' as ui;
 
 import 'package:anzan/display.dart';
 import 'package:anzan/history.dart';
+import 'package:anzan/misc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -119,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
         AppConfig.distinctId = getDistinctId();
         await prefs.setString('distinctId', AppConfig.distinctId);
       }
-      if (kReleaseMode) {
+      if (kReleaseMode && AppConfig.isTelemetryAllowed) {
         posthog(AppConfig.distinctId, '\$pageView', {'\$current_url': '/anzan.app/', 'source': source});
       } else {
         debugPrint(
@@ -150,7 +151,7 @@ class _MyHomePageState extends State<MyHomePage> {
         } else {
           title = 'Error fetching the TTS languages list';
           content = 'There was a network error retrieving the language TTS list. TTS will be disabled.\n'
-              'Relaunch/reload the app to retry with an internet connexion.';
+              'Relaunch/reload the app to retry with an internet connection up and running.';
         }
         showDialog(
             context: context,
@@ -169,6 +170,21 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               );
             });
+      }
+
+      if (!kIsWeb && AppConfig.isFirstRun) {
+        AppConfig.isFirstRun = false;
+        await prefs.setBool('isFirstRun', AppConfig.isFirstRun);
+
+        // show dialog to choose about data collection
+        final isTelemetryAllowed = await showDialog<bool>(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) {
+              return const UsageDataDialog();
+            });
+        AppConfig.isTelemetryAllowed = isTelemetryAllowed!;
+        await prefs.setBool('isTelemetryAllowed', AppConfig.isTelemetryAllowed);
       }
     });
   }

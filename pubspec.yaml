@@ -46,6 +46,7 @@ dependencies:
   shared_preferences: ^2.5.3
   flutter_cache_manager: ^3.4.1
   uuid: ^4.5.1
+  flutter_html: ^3.0.0
 
 dev_dependencies:
   flutter_test:

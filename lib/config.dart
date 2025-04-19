@@ -20,6 +20,8 @@ class AppConfig {
   static String userAgent = 'Mentalcalculation/$AppVersion (platform)';
   static String commit = 'HEAD';
   static String distinctId = '';
+  static bool isFirstRun = true;
+  static bool isTelemetryAllowed = false;
 }
 
 Future<void> getSettings(SharedPreferencesAsync prefs) async {

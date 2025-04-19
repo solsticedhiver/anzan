@@ -280,7 +280,19 @@ class _SettingsRouteState extends State<SettingsRoute> {
               leading: const Icon(Icons.language),
               description: const Text('used when displaying numbers'),
               title: const Text('App locale'),
-              value: Text(AppConfig.locale))
+              value: Text(AppConfig.locale)),
+          SettingsTile.switchTile(
+            initialValue: AppConfig.isTelemetryAllowed,
+            activeSwitchColor: green,
+            leading: const Icon(Icons.data_exploration),
+            title: const Text('Telemetry'),
+            description: const Text('Usage data collection'),
+            onToggle: (value) {
+              setState(() {
+                AppConfig.isTelemetryAllowed = value;
+              });
+            },
+          ),
         ])
       ])),
     );
