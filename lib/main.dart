@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 import 'dart:ui' as ui;
 
@@ -14,6 +15,7 @@ import 'package:media_kit/media_kit.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 import 'config.dart';
 import 'settings.dart';
@@ -259,15 +261,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _getSounds() async {
-    http.Response req;
+    File sound;
     for (var i = 0; i < numbers.length; i++) {
       final n = numbers[i];
       final uri = '${AppConfig.host}/tools/tts?lang=${AppConfig.ttsLocale}&number=$n';
-      req = await http
-          .get(Uri.parse(uri), headers: {'User-Agent': AppConfig.userAgent}).timeout(const Duration(seconds: 10));
-      if (req.statusCode == 200) {
-        sounds.add(req.bodyBytes);
-      }
+      sound = await DefaultCacheManager()
+          .getSingleFile(uri, headers: {'User-Agent': AppConfig.userAgent}).timeout(const Duration(seconds: 10));
+      sounds.add(sound.readAsBytesSync());
     }
   }
 
