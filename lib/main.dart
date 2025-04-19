@@ -260,18 +260,38 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Future<void> _getSounds() async {
+  Future<void> _getSounds(BuildContext context) async {
     File sound;
+    int errors = 0;
     for (var i = 0; i < numbers.length; i++) {
       final n = numbers[i];
       final uri = '${AppConfig.host}/tools/tts?lang=${AppConfig.ttsLocale}&number=$n';
-      sound = await DefaultCacheManager()
-          .getSingleFile(uri, headers: {'User-Agent': AppConfig.userAgent}).timeout(const Duration(seconds: 10));
-      sounds.add(sound.readAsBytesSync());
+      try {
+        sound = await DefaultCacheManager()
+            .getSingleFile(uri, headers: {'User-Agent': AppConfig.userAgent}).timeout(const Duration(seconds: 10));
+        sounds.add(sound.readAsBytesSync());
+      } catch (e) {
+        debugPrint(e.toString());
+        errors += 1;
+      }
+    }
+    if (errors > 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: Duration(milliseconds: numbers.length * (AppConfig.timeFlash + AppConfig.timeout)),
+          content: Center(
+              child: Row(mainAxisSize: MainAxisSize.min, children: [
+            Text('Error fetching $errors sound(s)'),
+            const SizedBox(width: 15),
+            const Icon(Icons.error, color: Colors.red)
+          ])),
+          showCloseIcon: true,
+        ),
+      );
     }
   }
 
-  void _startPlay() async {
+  void _startPlay(BuildContext context) async {
     _indx = 0;
     textEditingController.clear();
     _generateNumbers(AppConfig.numRowInt, AppConfig.numDigit, AppConfig.useNegNumber);
@@ -279,7 +299,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (_hasMediaKitBeenInitialized &&
         AppConfig.languages.isNotEmpty &&
         AppConfig.languages.contains(AppConfig.ttsLocale)) {
-      await _getSounds();
+      await _getSounds(context);
     }
     setState(() {
       isReplayable = false;
@@ -556,7 +576,7 @@ class _MyHomePageState extends State<MyHomePage> {
             }
           } else {
             Provider.of<NumberModel>(context, listen: false).setVisible(false);
-            _startPlay();
+            _startPlay(context);
           }
         },
         child: Icon(isPlaying ? Icons.stop : Icons.play_arrow),
