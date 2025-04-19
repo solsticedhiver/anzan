@@ -417,9 +417,12 @@ class _MyHomePageState extends State<MyHomePage> {
                       width: 64,
                     ),
                     const SizedBox(width: 15),
-                    Text('Flash Anzan',
-                        style: TextStyle(
-                            color: Colors.black, fontSize: Theme.of(context).textTheme.headlineMedium!.fontSize)),
+                    Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text('Flash Anzan',
+                          style: TextStyle(
+                              color: Colors.black, fontSize: Theme.of(context).textTheme.headlineMedium!.fontSize)),
+                      Text(AppVersion, style: TextStyle(fontSize: Theme.of(context).textTheme.labelLarge!.fontSize))
+                    ]),
                   ]),
                   const SizedBox(
                     height: 15,
@@ -473,7 +476,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     width: 64,
                   ),
                   applicationName: 'Flash Anzan',
-                  applicationVersion: AppVersion,
+                  applicationVersion: '$AppVersion (${AppConfig.commit})',
                   applicationLegalese:
                       "Copyright © 2025\nsolsTiCe d'Hiver <solstice.dhiver@sorobanexam.org>\nGPL-3.0-or-later",
                   aboutBoxChildren: aboutBoxChildren,
