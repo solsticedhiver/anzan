@@ -287,29 +287,28 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _getSounds(BuildContext context) async {
-    File sound;
-    int errors = 0;
+    var futures = <Future<File>>[];
     for (var i = 0; i < numbers.length; i++) {
       final n = numbers[i];
       final uri = '${AppConfig.host}/tools/tts?lang=${AppConfig.ttsLocale}&number=$n';
-      try {
-        sound = await DefaultCacheManager()
-            .getSingleFile(uri, headers: {'User-Agent': AppConfig.userAgent}).timeout(const Duration(seconds: 10));
-        sounds.add(sound.readAsBytesSync());
-      } catch (e) {
-        debugPrint(e.toString());
-        errors += 1;
-      }
+      futures.add(DefaultCacheManager()
+          .getSingleFile(uri, headers: {'User-Agent': AppConfig.userAgent}).timeout(const Duration(seconds: 10)));
     }
-    if (errors > 0) {
+    try {
+      var results = await Future.wait(futures, eagerError: true);
+      for (var r in results) {
+        sounds.add(r.readAsBytesSync());
+      }
+    } catch (e) {
+      debugPrint(e.toString());
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           duration: Duration(milliseconds: numbers.length * (AppConfig.timeFlash + AppConfig.timeout)),
-          content: Center(
+          content: const Center(
               child: Row(mainAxisSize: MainAxisSize.min, children: [
-            Text('Error fetching $errors sound(s)'),
-            const SizedBox(width: 15),
-            const Icon(Icons.error, color: Colors.red)
+            Text('Error fetching some sound(s)'),
+            SizedBox(width: 15),
+            Icon(Icons.error, color: Colors.red)
           ])),
           showCloseIcon: true,
         ),
