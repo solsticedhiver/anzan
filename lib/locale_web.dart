@@ -2,7 +2,7 @@ import 'dart:js_interop';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:convert';
-import 'config.dart' show POSTHOG_API_KEY;
+import 'posthog.dart' show POSTHOG_API_KEY;
 
 @JS('navigator')
 extension type NavigatorJS._(JSObject _) implements JSObject {

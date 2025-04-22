@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'config.dart' show POSTHOG_API_KEY;
+
+const String POSTHOG_API_KEY = 'phc_ckgtNDKD1zmDpeRvbmDNjIVfgIF1pyhDg2ATUVEsSaT';
 
 const String POSTHOG_API = 'https://eu.i.posthog.com/i/v0/e/';
+
 const Map<String, String>? POSTHOG_HEADERS = {'Content-Type': 'application/json'};
 
 Future<void> posthog(String distinctId, String event, Map<String, String> properties) async {

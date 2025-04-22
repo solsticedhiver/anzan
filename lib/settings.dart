@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_ui/flutter_settings_ui.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'config.dart';
 import 'locale_web.dart' if (dart.library.io) 'locale_platform.dart';
@@ -286,59 +285,4 @@ class _SettingsRouteState extends State<SettingsRoute> {
       ])),
     );
   }
-}
-
-Future<void> getSettings() async {
-  final prefs = SharedPreferencesAsync();
-
-  int? numRowInt = await prefs.getInt('numRowInt');
-  if (numRowInt != null) {
-    AppConfig.numRowInt = numRowInt;
-  }
-  int? numDigit = await prefs.getInt('numDigit');
-  if (numDigit != null) {
-    AppConfig.numDigit = numDigit;
-  }
-  int? timeFlash = await prefs.getInt('timeFlash');
-  if (timeFlash != null) {
-    AppConfig.timeFlash = timeFlash;
-  }
-  int? timeout = await prefs.getInt('timeout');
-  if (timeout != null) {
-    AppConfig.timeout = timeout;
-  }
-  bool? useNegNumber = await prefs.getBool('useNegNumber');
-  if (useNegNumber != null) {
-    AppConfig.useNegNumber = useNegNumber;
-  }
-  bool? useContinuousMode = await prefs.getBool('useContinuousMode');
-  if (useContinuousMode != null) {
-    AppConfig.useContinuousMode = useContinuousMode;
-  }
-  String? ttsLocale = await prefs.getString('ttsLocale');
-  if (ttsLocale != null) {
-    AppConfig.ttsLocale = ttsLocale;
-  }
-  String? distinctId = await prefs.getString('distinctId');
-  if (distinctId != null) {
-    AppConfig.distinctId = distinctId;
-  }
-  /*
-  keep that or not ?
-  List<Run> history = [];
-  List<String> languages = [];
-  */
-}
-
-Future<void> saveSettings() async {
-  final prefs = SharedPreferencesAsync();
-
-  await prefs.setInt('numRowInt', AppConfig.numRowInt);
-  await prefs.setInt('numDigit', AppConfig.numDigit);
-  await prefs.setInt('timeFlash', AppConfig.timeFlash);
-  await prefs.setInt('timeout', AppConfig.timeout);
-  await prefs.setBool('useNegNumber', AppConfig.useNegNumber);
-  await prefs.setBool('useContinuousMode', AppConfig.useContinuousMode);
-  await prefs.setString('ttsLocale', AppConfig.ttsLocale);
-  await prefs.setString('distinctId', AppConfig.distinctId);
 }
