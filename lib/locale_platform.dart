@@ -6,5 +6,5 @@ String detectedSystemLocale = Intl.canonicalizedLocale(Platform.localeName);
 
 String getDistinctId() {
   const uuid = Uuid();
-  return uuid.v6();
+  return uuid.v7();
 }

@@ -26,7 +26,7 @@ String getDistinctId() {
     distinctId = jsonDecode(posthog)['distinct_id'];
   } else {
     const uuid = Uuid();
-    distinctId = uuid.v4();
+    distinctId = uuid.v7();
   }
   return distinctId;
 }
