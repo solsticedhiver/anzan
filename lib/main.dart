@@ -19,9 +19,9 @@ import 'package:intl/intl.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 import 'config.dart';
-import 'settings.dart';
 import 'locale_web.dart' if (dart.library.io) 'locale_platform.dart';
 import 'posthog.dart';
+import 'settings.dart';
 
 bool _hasWarningBeenShown = false;
 bool _hasMediaKitBeenInitialized = false;

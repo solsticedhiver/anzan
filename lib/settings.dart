@@ -289,7 +289,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
 }
 
 Future<void> getSettings() async {
-  final SharedPreferencesAsync prefs = SharedPreferencesAsync();
+  final prefs = SharedPreferencesAsync();
 
   int? numRowInt = await prefs.getInt('numRowInt');
   if (numRowInt != null) {
@@ -331,7 +331,7 @@ Future<void> getSettings() async {
 }
 
 Future<void> saveSettings() async {
-  final SharedPreferencesAsync prefs = SharedPreferencesAsync();
+  final prefs = SharedPreferencesAsync();
 
   await prefs.setInt('numRowInt', AppConfig.numRowInt);
   await prefs.setInt('numDigit', AppConfig.numDigit);
