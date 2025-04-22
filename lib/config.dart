@@ -22,9 +22,7 @@ class AppConfig {
   static String distinctId = '';
 }
 
-Future<void> getSettings() async {
-  final prefs = SharedPreferencesAsync();
-
+Future<void> getSettings(SharedPreferencesAsync prefs) async {
   int? numRowInt = await prefs.getInt('numRowInt');
   if (numRowInt != null) {
     AppConfig.numRowInt = numRowInt;
@@ -59,9 +57,7 @@ Future<void> getSettings() async {
   }
 }
 
-Future<void> saveSettings() async {
-  final prefs = SharedPreferencesAsync();
-
+Future<void> saveSettings(SharedPreferencesAsync prefs) async {
   await prefs.setInt('numRowInt', AppConfig.numRowInt);
   await prefs.setInt('numDigit', AppConfig.numDigit);
   await prefs.setInt('timeFlash', AppConfig.timeFlash);

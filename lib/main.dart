@@ -86,6 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
   late Player? player;
   TextEditingController textEditingController = TextEditingController();
   late FocusNode myFocusNode;
+  final prefs = SharedPreferencesAsync();
 
   @override
   void initState() {
@@ -99,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await getSettings();
+      await getSettings(prefs);
 
       String source = 'unknown';
       if (kIsWeb) {
@@ -116,7 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // check pref first
       if (AppConfig.distinctId.isEmpty) {
         AppConfig.distinctId = getDistinctId();
-        await SharedPreferencesAsync().setString('distinctId', AppConfig.distinctId);
+        await prefs.setString('distinctId', AppConfig.distinctId);
       }
       if (kReleaseMode) {
         posthog(AppConfig.distinctId, '\$pageView', {'\$current_url': '/anzan.app/', 'source': source});
@@ -421,7 +422,7 @@ class _MyHomePageState extends State<MyHomePage> {
               setState(() {
                 style = _optimizeFontSize(context);
               });
-              saveSettings();
+              await saveSettings(prefs);
             },
             icon: const Icon(Icons.settings))
       ]),
