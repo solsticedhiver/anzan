@@ -49,6 +49,14 @@ Future<void> getSettings(SharedPreferencesAsync prefs) async {
   if (useContinuousMode != null) {
     AppConfig.useContinuousMode = useContinuousMode;
   }
+  bool? isFirstRun = await prefs.getBool('isFirstRun');
+  if (isFirstRun != null) {
+    AppConfig.isFirstRun = isFirstRun;
+  }
+  bool? isTelemetryAllowed = await prefs.getBool('isTelemetryAllowed');
+  if (isTelemetryAllowed != null) {
+    AppConfig.isTelemetryAllowed = isTelemetryAllowed;
+  }
   String? ttsLocale = await prefs.getString('ttsLocale');
   if (ttsLocale != null) {
     AppConfig.ttsLocale = ttsLocale;

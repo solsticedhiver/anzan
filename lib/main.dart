@@ -121,6 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
         await prefs.setString('distinctId', AppConfig.distinctId);
       }
       if (kReleaseMode && AppConfig.isTelemetryAllowed) {
+        // Do we still need this if we use X-Distinct-ID???
         posthog(AppConfig.distinctId, '\$pageView', {'\$current_url': '/anzan.app/', 'source': source});
       } else {
         debugPrint(
