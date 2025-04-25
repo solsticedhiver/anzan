@@ -129,8 +129,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
       if (_hasMediaKitBeenInitialized) {
         try {
-          final req = await http.get(Uri.parse('${AppConfig.host}/tools/tts?lang_list=1'),
-              headers: {'User-Agent': AppConfig.userAgent}).timeout(const Duration(seconds: 10));
+          final req = await http.get(Uri.parse('${AppConfig.host}/tools/tts?lang_list=1'), headers: {
+            'User-Agent': AppConfig.userAgent,
+            'X-Distinct-ID': AppConfig.distinctId
+          }).timeout(const Duration(seconds: 10));
           if (req.statusCode == 200) {
             for (var l in json.decode(req.body)) {
               AppConfig.languages.add(l);
@@ -308,8 +310,10 @@ class _MyHomePageState extends State<MyHomePage> {
     for (var i = 0; i < numbers.length; i++) {
       final n = numbers[i];
       final uri = '${AppConfig.host}/tools/tts?lang=${AppConfig.ttsLocale}&number=$n';
-      futures.add(DefaultCacheManager()
-          .getSingleFile(uri, headers: {'User-Agent': AppConfig.userAgent}).timeout(const Duration(seconds: 10)));
+      futures.add(DefaultCacheManager().getSingleFile(uri, headers: {
+        'User-Agent': AppConfig.userAgent,
+        'X-Distinct-ID': AppConfig.distinctId
+      }).timeout(const Duration(seconds: 10)));
     }
     try {
       var results = await Future.wait(futures, eagerError: true);
