@@ -17,7 +17,7 @@ Future<void> posthog(String distinctId, String event, Map<String, String> proper
   };
   final req = await http
       .post(Uri.parse(POSTHOG_API), headers: POSTHOG_HEADERS, body: jsonEncode(payload))
-      .timeout(const Duration(seconds: 10));
+      .timeout(const Duration(seconds: 5));
   if (req.statusCode != 200) {
     debugPrint('Error posting to PostHog: ${req.body}');
   }

@@ -120,6 +120,23 @@ class _MyHomePageState extends State<MyHomePage> {
         AppConfig.distinctId = getDistinctId();
         await prefs.setString('distinctId', AppConfig.distinctId);
       }
+
+      AppConfig.isFirstRun = true;
+      if (!kIsWeb && AppConfig.isFirstRun) {
+        AppConfig.isFirstRun = false;
+        await prefs.setBool('isFirstRun', AppConfig.isFirstRun);
+
+        // show dialog to choose about data collection
+        final isTelemetryAllowed = await showDialog<bool>(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) {
+              return const UsageDataDialog();
+            });
+        AppConfig.isTelemetryAllowed = isTelemetryAllowed!;
+        await prefs.setBool('isTelemetryAllowed', AppConfig.isTelemetryAllowed);
+      }
+
       if (kReleaseMode && AppConfig.isTelemetryAllowed) {
         // Do we still need this if we use X-Distinct-ID???
         posthog(AppConfig.distinctId, '\$pageView', {'\$current_url': '/anzan.app/', 'source': source});
@@ -133,7 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
           final req = await http.get(Uri.parse('${AppConfig.host}/tools/tts?lang_list=1'), headers: {
             'User-Agent': AppConfig.userAgent,
             'X-Distinct-ID': AppConfig.distinctId
-          }).timeout(const Duration(seconds: 10));
+          }).timeout(const Duration(seconds: 5));
           if (req.statusCode == 200) {
             for (var l in json.decode(req.body)) {
               AppConfig.languages.add(l);
@@ -173,21 +190,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               );
             });
-      }
-
-      if (!kIsWeb && AppConfig.isFirstRun) {
-        AppConfig.isFirstRun = false;
-        await prefs.setBool('isFirstRun', AppConfig.isFirstRun);
-
-        // show dialog to choose about data collection
-        final isTelemetryAllowed = await showDialog<bool>(
-            context: context,
-            barrierDismissible: false,
-            builder: (context) {
-              return const UsageDataDialog();
-            });
-        AppConfig.isTelemetryAllowed = isTelemetryAllowed!;
-        await prefs.setBool('isTelemetryAllowed', AppConfig.isTelemetryAllowed);
       }
     });
   }
@@ -318,7 +320,7 @@ class _MyHomePageState extends State<MyHomePage> {
       futures.add(DefaultCacheManager().getSingleFile(uri, headers: {
         'User-Agent': AppConfig.userAgent,
         'X-Distinct-ID': AppConfig.distinctId
-      }).timeout(const Duration(seconds: 10)));
+      }).timeout(const Duration(seconds: 5)));
     }
     try {
       var results = await Future.wait(futures, eagerError: true);
