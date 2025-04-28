@@ -203,41 +203,53 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // dart Random.nextInt() can't handle int bigger than 2^32
-  String _generateRandomInteger(int minLength, int maxLength) {
+  int _generateRandomBigInteger(int startInt, int maxInt) {
+    final minLength = startInt.toString().length;
+    final maxLength = maxInt.toString().length;
+    final random = Random();
+
     if (minLength < 1 || maxLength < minLength) {
-      throw ArgumentError('Invalid length parameters');
+      throw ArgumentError('Invalid length parameters ($minLength, $maxLength)');
     }
 
-    final randomLength = Random().nextInt(maxLength - minLength + 1) + minLength;
+    final randomLength = random.nextInt(maxLength - minLength + 1) + minLength;
 
-    StringBuffer randomNumber = StringBuffer();
-    randomNumber.write(Random().nextInt(9) + 1);
-    for (int i = 1; i < randomLength; i++) {
-      randomNumber.write(Random().nextInt(10));
+    StringBuffer randomNumber;
+    int rn;
+    do {
+      randomNumber = StringBuffer();
+      randomNumber.write(random.nextInt(9) + 1);
+      for (int i = 1; i < randomLength; i++) {
+        randomNumber.write(random.nextInt(10));
+      }
+      rn = int.parse(randomNumber.toString());
+    } while (rn < startInt || rn > maxInt);
+    return rn;
+  }
+
+  int _generateRandomInteger(int startInt, int maxInt) {
+    final minLength = startInt.toString().length;
+    // if more than 9 digits or > 2^32, don't use dart Random()
+    if (minLength > 9) {
+      return _generateRandomBigInteger(startInt, maxInt);
+    } else {
+      return Random().nextInt(maxInt - startInt + 1) + startInt;
     }
-
-    return randomNumber.toString();
   }
 
   void _generateNumbers(int length, int digits, bool allowNegative) {
     final random = Random();
-    bool isSizeTooBig = digits > 9; // or 2^32
     int startInt = pow(10, digits - 1).toInt();
-    int maxInt = pow(10, digits).toInt() - startInt;
-    int range = maxInt - startInt + 1;
+    int maxInt = pow(10, digits).toInt() - 1;
     //debugPrint('startInt=$startInt, maxInt=$maxInt');
     numbers = [];
     int sum = 0, nextNum;
     for (int i = 0; i < length; i++) {
-      if (isSizeTooBig) {
-        nextNum = int.parse(_generateRandomInteger(startInt.toString().length, maxInt.toString().length));
-      } else {
-        nextNum = random.nextInt(range) + startInt;
-      }
-      if (allowNegative && sum > 0) {
+      nextNum = _generateRandomInteger(startInt, maxInt);
+      if (allowNegative && sum > startInt) {
         bool isNegative = random.nextInt(2).toInt() == 1 ? true : false;
         if (isNegative) {
-          nextNum = -1 * (random.nextInt(min(sum - startInt, range)).toInt() + startInt);
+          nextNum = -1 * _generateRandomInteger(min(sum, startInt), maxInt);
         }
       }
       sum += nextNum;
@@ -345,7 +357,8 @@ class _MyHomePageState extends State<MyHomePage> {
     sounds.clear();
     if (_hasMediaKitBeenInitialized &&
         AppConfig.languages.isNotEmpty &&
-        AppConfig.languages.contains(AppConfig.ttsLocale)) {
+        AppConfig.languages.contains(AppConfig.ttsLocale) &&
+        AppConfig.ttsLocale != 'No sound') {
       await _getSounds(context);
     }
     setState(() {
