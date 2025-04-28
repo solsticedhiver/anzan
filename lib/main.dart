@@ -79,7 +79,6 @@ class _MyHomePageState extends State<MyHomePage> {
   int _indx = 0;
   bool isReplayable = false;
   bool isPlaying = false;
-  bool isVisible = false;
   List<int> numbers = [];
   List<Uint8List> sounds = [];
   late TextStyle style;
@@ -88,6 +87,8 @@ class _MyHomePageState extends State<MyHomePage> {
   TextEditingController textEditingController = TextEditingController();
   late FocusNode myFocusNode;
   final prefs = SharedPreferencesAsync();
+  Timer? t1, t2;
+  bool isPlayButtonDisabled = false;
 
   @override
   void initState() {
@@ -249,7 +250,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (allowNegative && sum > startInt) {
         bool isNegative = random.nextInt(2).toInt() == 1 ? true : false;
         if (isNegative) {
-          nextNum = -1 * _generateRandomInteger(min(sum, startInt), maxInt);
+          nextNum = -1 * _generateRandomInteger(startInt, min(sum, maxInt));
         }
       }
       sum += nextNum;
@@ -286,29 +287,21 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     numberModel.setNumber(NumberFormat.decimalPattern(AppConfig.locale).format(numbers[_indx]));
     numberModel.setVisible(true);
-    if (sounds.isNotEmpty) {
+    if (_hasMediaKitBeenInitialized && sounds.isNotEmpty) {
       final media = await Media.memory(sounds[_indx], type: 'audio/mpeg');
       if (player != null) {
         await player!.seek(const Duration(minutes: 0, seconds: 0, milliseconds: 0));
         await player!.open(media);
       }
-      await Future.delayed(Duration(milliseconds: AppConfig.timeFlash), () async {
-        numberModel.setVisible(false);
-        _indx++;
-        await Future.delayed(Duration(milliseconds: AppConfig.timeout), () async {
-          await _nextRandomNumber();
-        });
-      });
-    } else {
-      //debugPrint('no sound');
-      Future.delayed(Duration(milliseconds: AppConfig.timeFlash), () async {
-        numberModel.setVisible(false);
-        _indx++;
-        Future.delayed(Duration(milliseconds: AppConfig.timeout), () async {
-          await _nextRandomNumber();
-        });
-      });
     }
+    //debugPrint('no sound');
+    t1 = Timer(Duration(milliseconds: AppConfig.timeFlash), () async {
+      numberModel.setVisible(false);
+      _indx++;
+      t2 = Timer(Duration(milliseconds: AppConfig.timeout), () async {
+        await _nextRandomNumber();
+      });
+    });
   }
 
   void _replay() {
@@ -363,7 +356,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     setState(() {
       isReplayable = false;
-      isPlaying = true;
     });
     if (context.mounted) {
       Provider.of<NumberModel>(context, listen: false).setNumber('');
@@ -628,20 +620,28 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         //backgroundColor: green,
         //foregroundColor: Colors.white,
-        onPressed: () {
-          setState(() {
-            isPlaying = !isPlaying;
-          });
-          if (!isPlaying) {
-            isVisible = false;
-            if (player != null) {
-              player!.stop();
-            }
-          } else {
-            Provider.of<NumberModel>(context, listen: false).setVisible(false);
-            _startPlay(context);
-          }
-        },
+        onPressed: isPlayButtonDisabled
+            ? () {}
+            : () {
+                setState(() {
+                  isPlaying = !isPlaying;
+                });
+                if (!isPlaying) {
+                  isPlayButtonDisabled = true;
+                  Future.delayed(const Duration(seconds: 1), () {
+                    setState(() {
+                      isPlayButtonDisabled = false;
+                    });
+                  });
+                  Provider.of<NumberModel>(context, listen: false).setVisible(false);
+                  player?.stop();
+                  t1?.cancel();
+                  t2?.cancel();
+                } else {
+                  Provider.of<NumberModel>(context, listen: false).setVisible(false);
+                  _startPlay(context);
+                }
+              },
         child: Icon(isPlaying ? Icons.stop : Icons.play_arrow),
       ),
     );
