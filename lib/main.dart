@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-import 'dart:ui' as ui;
 
 import 'package:anzan/display.dart';
 import 'package:anzan/history.dart';
@@ -363,26 +362,9 @@ class _MyHomePageState extends State<MyHomePage> {
     await _nextRandomNumber();
   }
 
-  TextStyle _optimizeFontSize(BuildContext context) {
-    double fontSize = Theme.of(context).textTheme.displayLarge!.fontSize!;
-    final testString = '9' * (AppConfig.numDigit + 2);
-    TextSpan text = TextSpan(text: testString, style: TextStyle(fontSize: fontSize));
-    TextPainter tp = TextPainter(text: text, textDirection: ui.TextDirection.ltr);
-    tp.layout();
-    while (tp.width + 20 < MediaQuery.sizeOf(context).width && tp.height < MediaQuery.sizeOf(context).height / 2) {
-      fontSize += 2;
-      text = TextSpan(text: testString, style: TextStyle(fontSize: fontSize));
-      tp = TextPainter(text: text, textDirection: ui.TextDirection.ltr);
-      tp.layout();
-    }
-    //debugPrint(fontSize.toString());
-    return TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold);
-  }
-
   @override
   Widget build(BuildContext context) {
-    style = _optimizeFontSize(context);
-    myDisplay = MyDisplay(style: style);
+    myDisplay = MyDisplay();
 
     final ThemeData theme = Theme.of(context);
     final TextStyle textStyle = theme.textTheme.bodyLarge!;
@@ -445,9 +427,6 @@ class _MyHomePageState extends State<MyHomePage> {
               await Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => const SettingsRoute(),
               ));
-              setState(() {
-                style = _optimizeFontSize(context);
-              });
               await saveSettings(prefs);
             },
             icon: const Icon(Icons.settings))
@@ -515,9 +494,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         builder: (context) => const SettingsRoute(),
                       ),
                     );
-                    setState(() {
-                      style = _optimizeFontSize(context);
-                    });
                   },
                 ),
                 AboutListTile(
@@ -536,9 +512,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ])),
         ],
       )),
-      body: Center(
-        child: myDisplay,
-      ),
+      body: Center(child: myDisplay),
       bottomNavigationBar: BottomAppBar(
           color: lightBrown,
           child: Row(spacing: 10.0, mainAxisAlignment: MainAxisAlignment.center, children: [

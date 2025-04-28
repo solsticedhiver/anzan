@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'dart:ui' as ui;
+
+import 'config.dart';
 
 class NumberModel extends ChangeNotifier {
   String number = '';
@@ -17,12 +20,26 @@ class NumberModel extends ChangeNotifier {
 }
 
 class MyDisplay extends StatefulWidget {
-  const MyDisplay({super.key, required this.style});
-
-  final TextStyle style;
+  const MyDisplay({super.key});
 
   @override
   State<MyDisplay> createState() => _MyDisplayState();
+}
+
+TextStyle _optimizeFontSize(BuildContext context, BoxConstraints constraints) {
+  double fontSize = Theme.of(context).textTheme.displayLarge!.fontSize!;
+  final testString = '9' * (AppConfig.numDigit + (AppConfig.numDigit / 3).round());
+  TextSpan text = TextSpan(text: testString, style: TextStyle(fontSize: fontSize));
+  TextPainter tp = TextPainter(text: text, textDirection: ui.TextDirection.ltr);
+  tp.layout();
+  while (tp.width + 20 < constraints.maxWidth && tp.height < constraints.maxHeight) {
+    fontSize += 2;
+    text = TextSpan(text: testString, style: TextStyle(fontSize: fontSize));
+    tp = TextPainter(text: text, textDirection: ui.TextDirection.ltr);
+    tp.layout();
+  }
+  //debugPrint(fontSize.toString());
+  return TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold);
 }
 
 class _MyDisplayState extends State<MyDisplay> {
@@ -32,10 +49,21 @@ class _MyDisplayState extends State<MyDisplay> {
       return Visibility(
           replacement: const SizedBox(height: 300),
           visible: numberModel.isVisible,
-          child: Text(
-            numberModel.number,
-            style: widget.style,
-          ));
+          child: LayoutBuilder(builder: (context, constraints) {
+            final style = _optimizeFontSize(context, constraints);
+            return Column(children: [
+              SizedBox(
+                  height: constraints.maxHeight - 64,
+                  child: Text(
+                    textHeightBehavior:
+                        const TextHeightBehavior(applyHeightToFirstAscent: false, applyHeightToLastDescent: false),
+                    textAlign: TextAlign.center,
+                    numberModel.number,
+                    style: style,
+                  )),
+              const SizedBox(height: 64)
+            ]);
+          }));
     });
   }
 }
