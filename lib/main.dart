@@ -5,7 +5,6 @@ import 'dart:math';
 
 import 'package:anzan/display.dart';
 import 'package:anzan/history.dart';
-import 'package:anzan/misc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -121,28 +120,11 @@ class _MyHomePageState extends State<MyHomePage> {
         await prefs.setString('distinctId', AppConfig.distinctId);
       }
 
-      AppConfig.isFirstRun = true;
-      if (!kIsWeb && AppConfig.isFirstRun) {
-        AppConfig.isFirstRun = false;
-        await prefs.setBool('isFirstRun', AppConfig.isFirstRun);
-
-        // show dialog to choose about data collection
-        final isTelemetryAllowed = await showDialog<bool>(
-            context: context,
-            barrierDismissible: false,
-            builder: (context) {
-              return const UsageDataDialog();
-            });
-        AppConfig.isTelemetryAllowed = isTelemetryAllowed!;
-        await prefs.setBool('isTelemetryAllowed', AppConfig.isTelemetryAllowed);
-      }
-
       if (kReleaseMode && AppConfig.isTelemetryAllowed) {
         // Do we still need this if we use X-Distinct-ID???
-        posthog(AppConfig.distinctId, '\$pageView', {'\$current_url': '/anzan.app/', 'source': source});
+        posthog(AppConfig.distinctId, 'app_started', {'source': source});
       } else {
-        debugPrint(
-            "posthog('${AppConfig.distinctId}', '\$pageView', {'\$current_url': '/anzan.app/', 'source': $source});");
+        debugPrint("posthog('${AppConfig.distinctId}', 'app_started', {'source': $source});");
       }
 
       if (_hasMediaKitBeenInitialized) {

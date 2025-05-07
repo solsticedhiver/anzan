@@ -20,7 +20,6 @@ class AppConfig {
   static String userAgent = 'Mentalcalculation/$AppVersion (platform)';
   static String commit = 'HEAD';
   static String distinctId = '';
-  static bool isFirstRun = true;
   static bool isTelemetryAllowed = false;
 }
 
@@ -49,10 +48,6 @@ Future<void> getSettings(SharedPreferencesAsync prefs) async {
   if (useContinuousMode != null) {
     AppConfig.useContinuousMode = useContinuousMode;
   }
-  bool? isFirstRun = await prefs.getBool('isFirstRun');
-  if (isFirstRun != null) {
-    AppConfig.isFirstRun = isFirstRun;
-  }
   bool? isTelemetryAllowed = await prefs.getBool('isTelemetryAllowed');
   if (isTelemetryAllowed != null) {
     AppConfig.isTelemetryAllowed = isTelemetryAllowed;
@@ -76,6 +71,7 @@ Future<void> saveSettings(SharedPreferencesAsync prefs) async {
   await prefs.setBool('useContinuousMode', AppConfig.useContinuousMode);
   await prefs.setString('ttsLocale', AppConfig.ttsLocale);
   await prefs.setString('distinctId', AppConfig.distinctId);
+  await prefs.setBool('isTelemetryAllowed', AppConfig.isTelemetryAllowed);
 }
 
 const green = Color(0xFF168362);
