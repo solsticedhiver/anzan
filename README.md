@@ -20,7 +20,7 @@ You can configure various settings:
 
 You can also use a TTS (aka. Text-To-Speach) feature to get the numbers pronounced in a selection of languages.
 
-This is a tool you can use to practice on a real soroban, if you don't like the soroban exam pdf or htmls.
+This is a also tool you can use to practice on a real soroban, instead of anzan.
 
 TODO: we need to add multiplication and division for that purpose.
 
