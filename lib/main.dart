@@ -80,13 +80,14 @@ class _MyHomePageState extends State<MyHomePage> {
   List<int> numbers = [];
   List<Uint8List> sounds = [];
   late TextStyle style;
-  late MyDisplay myDisplay;
   late Player? player;
   TextEditingController textEditingController = TextEditingController();
   late FocusNode myFocusNode;
   final prefs = SharedPreferencesAsync();
   Timer? t1, t2;
   bool isPlayButtonDisabled = false;
+  bool isAnswerShown = false;
+  RichText answerText = RichText(text: const TextSpan(text: ''));
 
   @override
   void initState() {
@@ -242,6 +243,35 @@ class _MyHomePageState extends State<MyHomePage> {
     debugPrint(numbers.toString());
   }
 
+  RichText currentOperation(List<int> op, bool showSum) {
+    final ThemeData theme = Theme.of(context);
+    final TextStyle textStyle = theme.textTheme.bodyLarge!;
+
+    List<TextSpan> textSpans = [];
+    int n;
+    for (var i = 1; i < op.length; i++) {
+      n = op[i];
+      textSpans.add(TextSpan(
+          text: n > 0 ? ' + ' : ' - ',
+          style: textStyle.copyWith(fontWeight: FontWeight.bold, color: n > 0 ? Colors.grey[500] : Colors.grey[700])));
+      textSpans.add(TextSpan(text: NumberFormat.decimalPattern(AppConfig.locale).format(n.abs()), style: textStyle));
+    }
+    if (showSum) {
+      textSpans.add(TextSpan(text: ' = ', style: textStyle));
+      final sum = op.fold<int>(0, (p, c) => p + c);
+      textSpans.add(TextSpan(
+          text: NumberFormat.decimalPattern(AppConfig.locale).format(sum),
+          style: textStyle.copyWith(fontWeight: FontWeight.bold)));
+    }
+    final answerText = RichText(
+        text: TextSpan(
+      text: NumberFormat.decimalPattern(AppConfig.locale).format(op[0]),
+      style: textStyle,
+      children: textSpans,
+    ));
+    return answerText;
+  }
+
   Future<void> _nextRandomNumber() async {
     if (!isPlaying) return;
 
@@ -254,6 +284,7 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         isPlaying = false;
         isReplayable = true;
+        answerText = currentOperation(numbers.sublist(0, _indx), false);
       });
       Future.delayed(Duration(milliseconds: AppConfig.timeout), () {
         numberModel.setNumber('?');
@@ -266,6 +297,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (AppConfig.history.length > AppConfig.maxHistoryLength) {
         AppConfig.history.removeRange(0, AppConfig.history.length - AppConfig.maxHistoryLength);
       }
+
       return;
     }
     numberModel.setNumber(NumberFormat.decimalPattern(AppConfig.locale).format(numbers[_indx]));
@@ -280,6 +312,9 @@ class _MyHomePageState extends State<MyHomePage> {
     //debugPrint('no sound');
     t1 = Timer(Duration(milliseconds: AppConfig.timeFlash), () async {
       numberModel.setVisible(false);
+      setState(() {
+        answerText = currentOperation(numbers.sublist(0, _indx + 1), false);
+      });
       _indx++;
       t2 = Timer(Duration(milliseconds: AppConfig.timeout), () async {
         await _nextRandomNumber();
@@ -343,13 +378,13 @@ class _MyHomePageState extends State<MyHomePage> {
     if (context.mounted) {
       Provider.of<NumberModel>(context, listen: false).setNumber('');
     }
-    await _nextRandomNumber();
+    Future.delayed(Duration(milliseconds: AppConfig.timeout), () async {
+      await _nextRandomNumber();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    myDisplay = MyDisplay();
-
     final ThemeData theme = Theme.of(context);
     final TextStyle textStyle = theme.textTheme.bodyLarge!;
     final List<Widget> aboutBoxChildren = <Widget>[
@@ -496,10 +531,32 @@ class _MyHomePageState extends State<MyHomePage> {
               ])),
         ],
       )),
-      body: Center(child: myDisplay),
+      body: Stack(
+        alignment: AlignmentDirectional.center,
+        children: [
+          Positioned(
+              top: 0.0,
+              bottom: 32.0,
+              left: 0.0,
+              child: Visibility(
+                  visible: isAnswerShown, child: Container(margin: const EdgeInsets.all(16.0), child: answerText))),
+          const Positioned.fill(child: MyDisplay()),
+        ],
+      ),
       bottomNavigationBar: BottomAppBar(
           color: lightBrown,
           child: Row(spacing: 10.0, mainAxisAlignment: MainAxisAlignment.center, children: [
+            IconButton(
+              iconSize: 32.0,
+              icon: Icon(isAnswerShown ? Icons.visibility : Icons.visibility_off, color: Colors.white),
+              style: IconButton.styleFrom(
+                  backgroundColor: green, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0))),
+              onPressed: () {
+                setState(() {
+                  isAnswerShown = !isAnswerShown;
+                });
+              },
+            ),
             IconButton(
               iconSize: 32.0,
               icon: Icon(Icons.replay, color: isReplayable ? Colors.white : Colors.black),
@@ -542,14 +599,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   ? () {}
                   : () {
                       if (isPlaying) return;
-                      var sum = numbers.fold<int>(0, (p, c) => p + c);
+                      final sum = numbers.fold<int>(0, (p, c) => p + c);
                       String msg;
                       Icon icon = const Icon(null);
                       try {
                         final sol = int.parse(textEditingController.text);
                         if (sol == sum) {
                           msg = 'The answer is correct';
-                          icon = const Icon(Icons.check_box_rounded, color: Colors.green);
+                          icon = const Icon(Icons.check_box, color: Colors.green);
                           AppConfig.history[AppConfig.history.length - 1] =
                               (op: AppConfig.history[AppConfig.history.length - 1].op, success: true);
                         } else {
@@ -558,6 +615,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           AppConfig.history[AppConfig.history.length - 1] =
                               (op: AppConfig.history[AppConfig.history.length - 1].op, success: false);
                         }
+                        setState(() {
+                          answerText = currentOperation(numbers.sublist(0, _indx), true);
+                        });
                       } catch (e) {
                         msg = 'The answer is not a number';
                         icon = const Icon(Icons.error, color: Colors.red);
@@ -597,6 +657,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   t2?.cancel();
                 } else {
                   Provider.of<NumberModel>(context, listen: false).setVisible(false);
+                  answerText = RichText(text: const TextSpan(text: ''));
                   _startPlay(context);
                 }
               },
