@@ -28,7 +28,7 @@ class MyDisplay extends StatefulWidget {
 
 TextStyle _optimizeFontSize(BuildContext context, BoxConstraints constraints) {
   double fontSize = Theme.of(context).textTheme.displayLarge!.fontSize!;
-  final testString = '9' * (AppConfig.numDigit + (AppConfig.numDigit / 3).round());
+  final testString = '9' * (AppConfig.numDigit + 1 + (AppConfig.numDigit / 3).round());
   TextSpan text = TextSpan(text: testString, style: TextStyle(fontSize: fontSize));
   TextPainter tp = TextPainter(text: text, textDirection: ui.TextDirection.ltr);
   tp.layout();
