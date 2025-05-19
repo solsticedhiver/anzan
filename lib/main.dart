@@ -153,7 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
               'TTS will be disabled';
         } else {
           title = 'Error fetching the TTS languages list';
-          content = 'There was a network error retrieving the language TTS list. TTS will be disabled.\n'
+          content = 'There was a network error while retrieving the language TTS list. TTS will be disabled.\n'
               'Relaunch/reload the app to retry with an internet connection up and running.';
         }
         showDialog(
