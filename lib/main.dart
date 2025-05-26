@@ -86,7 +86,6 @@ class _MyHomePageState extends State<MyHomePage> {
   final prefs = SharedPreferencesAsync();
   Timer? t1, t2;
   bool isPlayButtonDisabled = false;
-  bool isAnswerShown = false;
   RichText answerText = RichText(text: const TextSpan(text: ''));
 
   @override
@@ -284,7 +283,6 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         isPlaying = false;
         isReplayable = true;
-        answerText = currentOperation(numbers.sublist(0, _indx), false);
       });
       Future.delayed(Duration(milliseconds: AppConfig.timeout), () {
         numberModel.setNumber('?');
@@ -312,9 +310,6 @@ class _MyHomePageState extends State<MyHomePage> {
     //debugPrint('no sound');
     t1 = Timer(Duration(milliseconds: AppConfig.timeFlash), () async {
       numberModel.setVisible(false);
-      setState(() {
-        answerText = currentOperation(numbers.sublist(0, _indx + 1), false);
-      });
       _indx++;
       t2 = Timer(Duration(milliseconds: AppConfig.timeout), () async {
         await _nextRandomNumber();
@@ -538,25 +533,13 @@ class _MyHomePageState extends State<MyHomePage> {
               top: 0.0,
               bottom: 32.0,
               left: 0.0,
-              child: Visibility(
-                  visible: isAnswerShown, child: Container(margin: const EdgeInsets.all(16.0), child: answerText))),
+              child: Container(margin: const EdgeInsets.all(16.0), child: answerText)),
           const Positioned.fill(child: MyDisplay()),
         ],
       ),
       bottomNavigationBar: BottomAppBar(
           color: lightBrown,
           child: Row(spacing: 10.0, mainAxisAlignment: MainAxisAlignment.center, children: [
-            IconButton(
-              iconSize: 32.0,
-              icon: Icon(isAnswerShown ? Icons.visibility : Icons.visibility_off, color: Colors.white),
-              style: IconButton.styleFrom(
-                  backgroundColor: green, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0))),
-              onPressed: () {
-                setState(() {
-                  isAnswerShown = !isAnswerShown;
-                });
-              },
-            ),
             IconButton(
               iconSize: 32.0,
               icon: Icon(Icons.replay, color: isReplayable ? Colors.white : Colors.black),
