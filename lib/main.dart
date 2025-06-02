@@ -38,6 +38,11 @@ void main() {
     debugPrint = (String? message, {int? wrapWidth}) {};
   } else {
     AppConfig.host = 'http://127.0.0.1:5000';
+    if (kIsWeb) {
+      AppConfig.host = "http://localhost:5000";
+    } else if (Platform.isAndroid) {
+      AppConfig.host = "http://10.0.2.2:5000";
+    }
   }
 
   AppConfig.locale = detectedSystemLocale;
