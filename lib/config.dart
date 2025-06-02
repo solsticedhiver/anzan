@@ -5,6 +5,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 typedef Run = ({List<int> op, bool? success});
 
 class AppConfig {
+  static const String appVersion = '0.6.0';
+  static String host = 'https://www.sorobanexam.org';
+  static String userAgent = 'Mentalcalculation/$appVersion (platform)';
+  static String commit = 'HEAD';
+  static String distinctId = '';
+
   static int numRowInt = 5;
   static int numDigit = 1;
   static int timeFlash = 500;
@@ -16,10 +22,6 @@ class AppConfig {
   static String ttsLocale = 'No sound';
   static String locale = 'en_US';
   static List<String> languages = [];
-  static String host = 'https://www.sorobanexam.org';
-  static String userAgent = 'Mentalcalculation/$AppVersion (platform)';
-  static String commit = 'HEAD';
-  static String distinctId = '';
   static bool isTelemetryAllowed = false;
 }
 
@@ -77,8 +79,8 @@ Future<void> saveSettings(SharedPreferencesAsync prefs) async {
 const green = Color(0xFF168362);
 const lightBrown = Color(0xFFB39E8F);
 
-const AppVersion = '0.6.0';
-
+// because loading from an asset file is somewhat broken in initState()
+// ignore: constant_identifier_names
 const String GPL3 = '''
 GNU GENERAL PUBLIC LICENSE
 Version 3, 29 June 2007
