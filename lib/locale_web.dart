@@ -2,7 +2,7 @@ import 'dart:js_interop';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:convert';
-import 'posthog.dart' show POSTHOG_API_KEY;
+import 'posthog.dart' show posthogApiKey;
 
 @JS('navigator')
 extension type NavigatorJS._(JSObject _) implements JSObject {
@@ -20,7 +20,7 @@ extension type LocalStorageJS._(JSObject _) implements JSObject {
 String detectedSystemLocale = Intl.canonicalizedLocale(NavigatorJS.language);
 
 String getDistinctId() {
-  final String? posthog = LocalStorageJS.getItem('ph_${POSTHOG_API_KEY}_posthog');
+  final String? posthog = LocalStorageJS.getItem('ph_${posthogApiKey}_posthog');
   String distinctId;
   if (posthog != null) {
     distinctId = jsonDecode(posthog)['distinct_id'];
