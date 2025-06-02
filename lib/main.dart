@@ -289,17 +289,30 @@ class _MyHomePageState extends State<MyHomePage> {
         isPlaying = false;
         isReplayable = true;
       });
+
+      AppConfig.history.add((op: numbers, success: null));
+      if (AppConfig.history.length > AppConfig.maxHistoryLength) {
+        AppConfig.history.removeRange(0, AppConfig.history.length - AppConfig.maxHistoryLength);
+      }
+
       Future.delayed(Duration(milliseconds: AppConfig.timeout), () {
         numberModel.setNumber('?');
         numberModel.setVisible(true);
         textEditingController.clear();
         myFocusNode.requestFocus();
+
+        Future.delayed(Duration(milliseconds: 2 * AppConfig.timeout), () {
+          if (AppConfig.useContinuousMode) {
+            if (context.mounted) {
+              setState(() {
+                isPlaying = true;
+              });
+              // ignore: use_build_context_synchronously
+              _startPlay(context);
+            }
+          }
+        });
       });
-      isReplayable = true;
-      AppConfig.history.add((op: numbers, success: null));
-      if (AppConfig.history.length > AppConfig.maxHistoryLength) {
-        AppConfig.history.removeRange(0, AppConfig.history.length - AppConfig.maxHistoryLength);
-      }
 
       return;
     }
