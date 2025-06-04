@@ -286,7 +286,9 @@ class _MyHomePageState extends State<MyHomePage> {
         player!.stop();
       }
       setState(() {
-        isPlaying = false;
+        if (!AppConfig.useContinuousMode) {
+          isPlaying = false;
+        }
         isReplayable = true;
       });
 
@@ -298,18 +300,23 @@ class _MyHomePageState extends State<MyHomePage> {
       Future.delayed(Duration(milliseconds: AppConfig.timeout), () {
         numberModel.setNumber('?');
         numberModel.setVisible(true);
-        textEditingController.clear();
-        myFocusNode.requestFocus();
+        if (!AppConfig.useContinuousMode) {
+          textEditingController.clear();
+          myFocusNode.requestFocus();
+        }
 
         Future.delayed(Duration(milliseconds: 2 * AppConfig.timeout), () {
           if (AppConfig.useContinuousMode) {
-            if (context.mounted) {
-              setState(() {
-                isPlaying = true;
-              });
+            setState(() {
+              answerText = currentOperation(numbers.sublist(0, _indx), true);
+              isPlaying = true;
+            });
+            Future.delayed(Duration(milliseconds: AppConfig.timeout), () {
               // ignore: use_build_context_synchronously
-              _startPlay(context);
-            }
+              if (context.mounted) {
+                _startPlay(context);
+              }
+            });
           }
         });
       });
@@ -645,6 +652,7 @@ class _MyHomePageState extends State<MyHomePage> {
             : () {
                 setState(() {
                   isPlaying = !isPlaying;
+                  answerText = RichText(text: const TextSpan());
                 });
                 if (!isPlaying) {
                   isPlayButtonDisabled = true;
