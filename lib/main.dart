@@ -352,7 +352,17 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _getSounds(BuildContext context) async {
     var futures = <Future<File>>[];
     for (var i = 0; i < numbers.length; i++) {
-      final n = numbers[i];
+      String n = numbers[i].abs().toString();
+      if (AppConfig.useNegNumber) {
+        if (i > 0) {
+          if (numbers[i] > 0) {
+            n = '\u002b $n';
+          } else {
+            n = '\u2212 $n';
+          }
+        }
+      }
+      n = Uri.encodeQueryComponent(n);
       final uri = '${AppConfig.host}/tools/tts?lang=${AppConfig.ttsLocale}&number=$n';
       futures.add(DefaultCacheManager().getSingleFile(uri, headers: {
         'User-Agent': AppConfig.userAgent,
