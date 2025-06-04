@@ -5,11 +5,14 @@ This is a rewrite in **flutter** of our previous work (called *mentalcalcultion*
 It is cross-platform and is able to be run on Linux, Windows, web, Android.
 IOS and macOS are not available because I don't own the required hardware (nothing is possible with emulators in that case).
 
-You can practice your anzan skills (or mental calculation if you don't wish to visualize a soroban).
+You can practice your anzan skills i.e. mental abacus (or mental calculation if you don't wish to visualize a soroban).
 
 <img width="640" src="./flatpak/2025-04-11T23-21.png" />
 
-[https://en.wikipedia.org/wiki/Soroban](https://en.wikipedia.org/wiki/Soroban)
+## Wikipedia links
+  - [Soroban](https://en.wikipedia.org/wiki/Soroban)
+  - [Mental abacus](https://en.wikipedia.org/wiki/Mental_abacus)
+  - [Mental calculation](https://en.wikipedia.org/wiki/Mental_calculation)
 
 ##  Description
 The app flashes number and you have to provide the result of the operation (addition and/or subtraction). You are free to use or not anzan for doing the calculation of course, because this is your mental processing the operation.
@@ -20,12 +23,13 @@ You can configure various settings:
 
 You can also use a TTS (aka. Text-To-Speach) feature to get the numbers pronounced in a selection of languages.
 
-This is a also tool you can use to practice on a real soroban, instead of anzan.
+This is also a tool you can use to practice on a real soroban, instead of doing anzan.
 
 TODO: we need to add multiplication and division for that purpose.
 
 ## Releases
 
+Different prebuild binaries are available in [Releases](https://github.com/solsticedhiver/anzan/releases)
 ### Linux
 For linux, you can use:
   - the tarbal *anzan-linux_x64.tar.gz*, that contains a binary build of the software.
