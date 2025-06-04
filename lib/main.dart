@@ -365,6 +365,7 @@ class _MyHomePageState extends State<MyHomePage> {
         sounds.add(r.readAsBytesSync());
       }
     } catch (e) {
+      sounds.clear();
       debugPrint(e.toString());
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
