@@ -252,7 +252,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
           ),
           SettingsTile.navigation(
             enabled: AppConfig.useTTS,
-            leading: const Icon(Icons.flag),
+            leading: const Icon(Icons.language),
             title: const Text('Language Voice'),
             value: Text(AppConfig.ttsLocale),
             onPressed: (context) async {
@@ -290,7 +290,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
         ]),
         SettingsSection(title: const Text('Misc.', style: TextStyle(color: green)), tiles: [
           SettingsTile(
-              leading: const Icon(Icons.language),
+              leading: const Icon(Icons.translate),
               description: const Text('used when displaying numbers'),
               title: const Text('App locale'),
               value: Text(AppConfig.locale)),
