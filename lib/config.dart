@@ -19,7 +19,8 @@ class AppConfig {
   static bool useContinuousMode = false;
   static int maxHistoryLength = 20;
   static List<Run> history = [];
-  static String ttsLocale = 'No sound';
+  static String ttsLocale = 'en-US';
+  static bool useTTS = false;
   static String locale = 'en_US';
   static List<String> languages = [];
   static bool isTelemetryAllowed = false;
@@ -46,6 +47,10 @@ Future<void> getSettings(SharedPreferencesAsync prefs) async {
   if (useNegNumber != null) {
     AppConfig.useNegNumber = useNegNumber;
   }
+  bool? useTTS = await prefs.getBool('useTTS');
+  if (useTTS != null) {
+    AppConfig.useTTS = useTTS;
+  }
   bool? useContinuousMode = await prefs.getBool('useContinuousMode');
   if (useContinuousMode != null) {
     AppConfig.useContinuousMode = useContinuousMode;
@@ -70,6 +75,7 @@ Future<void> saveSettings(SharedPreferencesAsync prefs) async {
   await prefs.setInt('timeFlash', AppConfig.timeFlash);
   await prefs.setInt('timeout', AppConfig.timeout);
   await prefs.setBool('useNegNumber', AppConfig.useNegNumber);
+  await prefs.setBool('useTTS', AppConfig.useTTS);
   await prefs.setBool('useContinuousMode', AppConfig.useContinuousMode);
   await prefs.setString('ttsLocale', AppConfig.ttsLocale);
   await prefs.setString('distinctId', AppConfig.distinctId);

@@ -235,12 +235,28 @@ class _SettingsRouteState extends State<SettingsRoute> {
           ),
         ]),
         SettingsSection(title: const Text('Text To Speech', style: TextStyle(color: green)), tiles: [
+          SettingsTile.switchTile(
+            enabled: AppConfig.languages.isNotEmpty,
+            initialValue: AppConfig.useTTS,
+            activeSwitchColor: green,
+            leading: const Icon(Icons.transcribe),
+            title: const Text('TTS feature'),
+            description: const Text('Get numbers voiced over'),
+            onToggle: AppConfig.languages.isNotEmpty
+                ? (value) {
+                    setState(() {
+                      AppConfig.useTTS = value;
+                    });
+                  }
+                : null,
+          ),
           SettingsTile.navigation(
-            leading: const Icon(Icons.voice_chat),
+            enabled: AppConfig.useTTS,
+            leading: const Icon(Icons.flag),
             title: const Text('Language Voice'),
             value: Text(AppConfig.ttsLocale),
             onPressed: (context) async {
-              final languages = ['No sound'] + AppConfig.languages;
+              final languages = AppConfig.languages;
               await showDialog<String>(
                   context: context,
                   builder: (context) {
@@ -268,9 +284,6 @@ class _SettingsRouteState extends State<SettingsRoute> {
               setState(() {
                 AppConfig.ttsLocale = _ttsLocale;
                 AppConfig.locale = AppConfig.ttsLocale;
-                if (AppConfig.locale == 'No sound') {
-                  AppConfig.locale = detectedSystemLocale;
-                }
               });
             },
           ),

@@ -146,6 +146,7 @@ class _MyHomePageState extends State<MyHomePage> {
             //debugPrint(AppConfig.languages.toString());
           }
         } catch (e) {
+          AppConfig.useTTS = false;
           debugPrint(e.toString());
         }
       }
@@ -336,17 +337,17 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     numberModel.setNumber(nm);
     numberModel.setVisible(true);
-    if (_hasMediaKitBeenInitialized && sounds.isNotEmpty) {
+    int timeFlash = AppConfig.timeFlash;
+    if (AppConfig.useTTS && _hasMediaKitBeenInitialized && sounds.isNotEmpty) {
       final media = await Media.memory(sounds[_indx], type: 'audio/mpeg');
       if (player != null) {
         await player!.seek(const Duration(minutes: 0, seconds: 0, milliseconds: 0));
         await player!.open(media);
+        final duration = MP3Processor.fromBytes(sounds[_indx]).duration.inMilliseconds;
+        if (duration > timeFlash) {
+          timeFlash = duration;
+        }
       }
-    }
-    final duration = MP3Processor.fromBytes(sounds[_indx]).duration.inMilliseconds;
-    int timeFlash = AppConfig.timeFlash;
-    if (duration > timeFlash) {
-      timeFlash = duration;
     }
     t1 = Timer(Duration(milliseconds: timeFlash), () async {
       numberModel.setVisible(false);
@@ -415,7 +416,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (_hasMediaKitBeenInitialized &&
         AppConfig.languages.isNotEmpty &&
         AppConfig.languages.contains(AppConfig.ttsLocale) &&
-        AppConfig.ttsLocale != 'No sound') {
+        AppConfig.useTTS) {
       await _getSounds(context);
     }
     setState(() {
