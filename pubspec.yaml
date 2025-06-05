@@ -47,6 +47,7 @@ dependencies:
   flutter_cache_manager: ^3.4.1
   uuid: ^4.5.1
   flutter_html: ^3.0.0
+  mp3_info: ^0.2.1
 
 dev_dependencies:
   flutter_test:

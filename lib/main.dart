@@ -16,6 +16,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:mp3_info/mp3_info.dart';
 
 import 'config.dart';
 import 'locale_web.dart' if (dart.library.io) 'locale_platform.dart';
@@ -337,8 +338,12 @@ class _MyHomePageState extends State<MyHomePage> {
         await player!.open(media);
       }
     }
-    //debugPrint('no sound');
-    t1 = Timer(Duration(milliseconds: AppConfig.timeFlash), () async {
+    final duration = MP3Processor.fromBytes(sounds[_indx]).duration.inMilliseconds;
+    int timeFlash = AppConfig.timeFlash;
+    if (duration > timeFlash) {
+      timeFlash = duration;
+    }
+    t1 = Timer(Duration(milliseconds: timeFlash), () async {
       numberModel.setVisible(false);
       _indx++;
       t2 = Timer(Duration(milliseconds: AppConfig.timeout), () async {
