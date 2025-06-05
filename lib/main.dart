@@ -621,6 +621,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: TextField(
                   focusNode: myFocusNode,
                   cursorColor: Colors.black,
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.black),
                   keyboardType: TextInputType.number,
                   maxLines: 1,
                   controller: textEditingController,
