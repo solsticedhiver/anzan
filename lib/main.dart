@@ -48,8 +48,11 @@ void main() {
 
   AppConfig.locale = detectedSystemLocale;
 
-  runApp(ChangeNotifierProvider(
-    create: (context) => NumberModel(),
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (context) => NumberModel()),
+      ChangeNotifierProvider(create: (context) => ThemeModeModel()),
+    ],
     child: const MyApp(),
   ));
 }
@@ -59,13 +62,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Mental Calculation',
-      theme: ThemeData(colorScheme: const ColorScheme.light(primary: green, secondary: lightBrown)),
-      darkTheme: ThemeData(colorScheme: const ColorScheme.dark(primary: lightGreen, secondary: lightBrown)),
-      themeMode: AppConfig.themeMode,
-      home: const MyHomePage(title: 'Anzan'),
-    );
+    return Consumer<ThemeModeModel>(builder: (context, tMM, child) {
+      return MaterialApp(
+        title: 'Mental Calculation',
+        theme: ThemeData(colorScheme: const ColorScheme.light(primary: green, secondary: lightBrown)),
+        darkTheme: ThemeData(colorScheme: const ColorScheme.dark(primary: lightGreen, secondary: lightBrown)),
+        themeMode: tMM.themeMode,
+        home: const MyHomePage(title: 'Anzan'),
+      );
+    });
   }
 }
 
@@ -106,6 +111,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await getSettings(prefs);
+
+      Provider.of<ThemeModeModel>(context, listen: false).setThemeMode(AppConfig.themeMode);
 
       String source = 'unknown';
       if (kIsWeb) {

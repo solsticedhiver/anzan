@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_ui/flutter_settings_ui.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
+import 'package:provider/provider.dart';
 
 import 'config.dart';
 import 'locale_web.dart' if (dart.library.io) 'locale_platform.dart';
@@ -290,20 +291,23 @@ class _SettingsRouteState extends State<SettingsRoute> {
             },
           ),
         ]),
-        SettingsSection(title: Text('Colors', style: TextStyle(color: localGreen)), tiles: [
+        SettingsSection(title: Text('Theme', style: TextStyle(color: localGreen)), tiles: [
           SettingsTile.switchTile(
             initialValue: _useSystemTheme,
             activeSwitchColor: localGreen,
             leading: const Icon(Icons.palette),
-            title: const Text('Theme'),
-            description: const Text('Use system theme'),
+            title: const Text('System Theme'),
+            description: const Text('Follow the theme used by the system'),
             onToggle: (value) {
+              ThemeMode tm = ThemeMode.system;
+              if (!value) {
+                tm = ThemeMode.light;
+              }
               setState(() {
                 _useSystemTheme = value;
-                if (_useSystemTheme) {
-                  AppConfig.themeMode = ThemeMode.system;
-                }
+                AppConfig.themeMode = tm;
               });
+              Provider.of<ThemeModeModel>(context, listen: false).setThemeMode(tm);
             },
           ),
           SettingsTile.switchTile(
@@ -313,15 +317,18 @@ class _SettingsRouteState extends State<SettingsRoute> {
             leading: const Icon(Icons.dark_mode),
             title: const Text('Dark Theme'),
             description: const Text('Use the dark theme'),
-            onToggle: (value) {
-              setState(() {
-                if (value) {
-                  AppConfig.themeMode = ThemeMode.dark;
-                } else {
-                  AppConfig.themeMode = ThemeMode.light;
-                }
-              });
-            },
+            onToggle: !_useSystemTheme
+                ? (value) {
+                    ThemeMode tm = ThemeMode.dark;
+                    if (!value) {
+                      tm = ThemeMode.light;
+                    }
+                    Provider.of<ThemeModeModel>(context, listen: false).setThemeMode(tm);
+                    setState(() {
+                      AppConfig.themeMode = tm;
+                    });
+                  }
+                : null,
           ),
         ]),
         SettingsSection(title: Text('Misc.', style: TextStyle(color: localGreen)), tiles: [

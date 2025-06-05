@@ -109,6 +109,15 @@ const lightGreen = Color(0xFF1DAB80);
 const darkGreen = Color(0xFF184101);
 const lightBrown = Color(0xFFB39E8F);
 
+class ThemeModeModel extends ChangeNotifier {
+  ThemeMode themeMode = AppConfig.themeMode;
+
+  void setThemeMode(ThemeMode tm) {
+    themeMode = tm;
+    notifyListeners();
+  }
+}
+
 // because loading from an asset file is somewhat broken in initState()
 // ignore: constant_identifier_names
 const String GPL3 = '''
