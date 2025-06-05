@@ -323,7 +323,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
       return;
     }
-    numberModel.setNumber(NumberFormat.decimalPattern(AppConfig.locale).format(numbers[_indx]));
+    final n = NumberFormat.decimalPattern(AppConfig.locale).format(numbers[_indx]);
+    String nm = n;
+    if (AppConfig.useNegNumber && _indx > 0 && numbers[_indx] > 0) {
+      nm = '+$n';
+    }
+    numberModel.setNumber(nm);
     numberModel.setVisible(true);
     if (_hasMediaKitBeenInitialized && sounds.isNotEmpty) {
       final media = await Media.memory(sounds[_indx], type: 'audio/mpeg');
