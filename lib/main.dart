@@ -301,6 +301,11 @@ class _MyHomePageState extends State<MyHomePage> {
       Future.delayed(Duration(milliseconds: AppConfig.timeout), () {
         numberModel.setNumber('?');
         numberModel.setVisible(true);
+        if (AppConfig.useContinuousMode) {
+          setState(() {
+            answerText = RichText(text: const TextSpan());
+          });
+        }
         if (!AppConfig.useContinuousMode) {
           textEditingController.clear();
           myFocusNode.requestFocus();
