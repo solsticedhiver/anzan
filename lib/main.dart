@@ -598,7 +598,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   : () {},
             ),
             SizedBox(
-                width: 200,
+                width: 150,
                 child: TextField(
                   focusNode: myFocusNode,
                   cursorColor: Colors.black,

@@ -51,9 +51,10 @@ class _MyDisplayState extends State<MyDisplay> {
           visible: numberModel.isVisible,
           child: LayoutBuilder(builder: (context, constraints) {
             final style = _optimizeFontSize(context, constraints);
-            return Column(children: [
-              SizedBox(
-                  height: constraints.maxHeight - 64,
+            return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Container(
+                  height: constraints.maxHeight,
+                  alignment: Alignment.center,
                   child: Text(
                     textHeightBehavior:
                         const TextHeightBehavior(applyHeightToFirstAscent: false, applyHeightToLastDescent: false),
@@ -61,7 +62,6 @@ class _MyDisplayState extends State<MyDisplay> {
                     numberModel.number,
                     style: style,
                   )),
-              const SizedBox(height: 64)
             ]);
           }));
     });
