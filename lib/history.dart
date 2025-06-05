@@ -17,7 +17,7 @@ class _HistoryRouteState extends State<HistoryRoute> {
     final TextStyle textStyle = theme.textTheme.bodyLarge!;
 
     return Scaffold(
-        appBar: AppBar(backgroundColor: lightBrown, title: const Text('History')),
+        appBar: AppBar(foregroundColor: Colors.black, backgroundColor: lightBrown, title: const Text('History')),
         body: Center(
             child: SizedBox(
                 width: 500,

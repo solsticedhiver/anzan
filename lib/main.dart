@@ -61,10 +61,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Mental Calculation',
-      theme: ThemeData(
-        colorScheme: const ColorScheme.light(primary: green, secondary: lightBrown),
-        //colorScheme: ColorScheme.fromSeed(seedColor: green),
-      ),
+      theme: ThemeData(colorScheme: const ColorScheme.light(primary: green, secondary: lightBrown)),
+      darkTheme: ThemeData(colorScheme: const ColorScheme.dark(primary: lightGreen, secondary: lightBrown)),
+      themeMode: AppConfig.themeMode,
       home: const MyHomePage(title: 'Anzan'),
     );
   }
@@ -481,7 +480,7 @@ class _MyHomePageState extends State<MyHomePage> {
     ];
 
     return Scaffold(
-      appBar: AppBar(backgroundColor: lightBrown, title: Text(widget.title), actions: [
+      appBar: AppBar(backgroundColor: lightBrown, foregroundColor: Colors.black, title: Text(widget.title), actions: [
         IconButton(
             onPressed: AppConfig.history.isEmpty
                 ? null
@@ -520,7 +519,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           style: TextStyle(
                               color: Colors.black, fontSize: Theme.of(context).textTheme.headlineMedium!.fontSize)),
                       Text(AppConfig.appVersion,
-                          style: TextStyle(fontSize: Theme.of(context).textTheme.labelLarge!.fontSize))
+                          style: TextStyle(
+                              color: Colors.black, fontSize: Theme.of(context).textTheme.labelLarge!.fontSize))
                     ]),
                   ]),
                   const SizedBox(
@@ -673,8 +673,8 @@ class _MyHomePageState extends State<MyHomePage> {
           ])),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
-        //backgroundColor: green,
-        //foregroundColor: Colors.white,
+        backgroundColor: green,
+        foregroundColor: Colors.white,
         onPressed: isPlayButtonDisabled
             ? () {}
             : () {

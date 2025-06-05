@@ -1,4 +1,4 @@
-import 'dart:ui';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // a custom type for a record to hold an operation and the correctness of the answer
@@ -24,6 +24,7 @@ class AppConfig {
   static String locale = 'en_US';
   static List<String> languages = [];
   static bool isTelemetryAllowed = false;
+  static ThemeMode themeMode = ThemeMode.system;
 }
 
 Future<void> getSettings(SharedPreferencesAsync prefs) async {
@@ -67,6 +68,17 @@ Future<void> getSettings(SharedPreferencesAsync prefs) async {
   if (distinctId != null) {
     AppConfig.distinctId = distinctId;
   }
+  String? themeMode = await prefs.getString('themeMode');
+  if (themeMode != null) {
+    switch (themeMode) {
+      case 'light':
+        AppConfig.themeMode = ThemeMode.light;
+      case 'dark':
+        AppConfig.themeMode = ThemeMode.dark;
+      case 'system':
+        AppConfig.themeMode = ThemeMode.system;
+    }
+  }
 }
 
 Future<void> saveSettings(SharedPreferencesAsync prefs) async {
@@ -80,9 +92,21 @@ Future<void> saveSettings(SharedPreferencesAsync prefs) async {
   await prefs.setString('ttsLocale', AppConfig.ttsLocale);
   await prefs.setString('distinctId', AppConfig.distinctId);
   await prefs.setBool('isTelemetryAllowed', AppConfig.isTelemetryAllowed);
+  String themeMode;
+  switch (AppConfig.themeMode) {
+    case ThemeMode.light:
+      themeMode = 'light';
+    case ThemeMode.dark:
+      themeMode = 'dark';
+    case ThemeMode.system:
+      themeMode = 'system';
+  }
+  await prefs.setString('themeMode', themeMode);
 }
 
 const green = Color(0xFF168362);
+const lightGreen = Color(0xFF1DAB80);
+const darkGreen = Color(0xFF184101);
 const lightBrown = Color(0xFFB39E8F);
 
 // because loading from an asset file is somewhat broken in initState()

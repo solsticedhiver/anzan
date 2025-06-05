@@ -14,14 +14,16 @@ class SettingsRoute extends StatefulWidget {
 
 class _SettingsRouteState extends State<SettingsRoute> {
   String _ttsLocale = AppConfig.ttsLocale;
+  bool _useSystemTheme = AppConfig.themeMode == ThemeMode.system;
 
   @override
   Widget build(BuildContext context) {
+    final localGreen = Theme.of(context).colorScheme.primary;
     return Scaffold(
-      appBar: AppBar(backgroundColor: lightBrown, title: const Text('Settings')),
+      appBar: AppBar(foregroundColor: Colors.black, backgroundColor: lightBrown, title: const Text('Settings')),
       body: Center(
           child: SettingsList(sections: [
-        SettingsSection(title: const Text('Numbers', style: TextStyle(color: green)), tiles: [
+        SettingsSection(title: Text('Numbers', style: TextStyle(color: localGreen)), tiles: [
           CustomSettingsTile(
               child: Container(
                   padding: const EdgeInsets.only(top: 10, bottom: 10),
@@ -58,7 +60,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
                             if (states.contains(WidgetState.focused)) {
                               return Colors.blue;
                             }
-                            return Colors.black;
+                            return Theme.of(context).colorScheme.onSurface;
                           }),
                           decoration: const InputDecoration(
                             border: InputBorder.none,
@@ -106,7 +108,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
                             if (states.contains(WidgetState.focused)) {
                               return Colors.blue;
                             }
-                            return Colors.black;
+                            return Theme.of(context).colorScheme.onSurface;
                           }),
                           decoration: const InputDecoration(
                             border: InputBorder.none,
@@ -119,7 +121,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
                         ))
                   ]))),
         ]),
-        SettingsSection(title: const Text('Timings', style: TextStyle(color: green)), tiles: [
+        SettingsSection(title: Text('Timings', style: TextStyle(color: localGreen)), tiles: [
           CustomSettingsTile(
               child: Container(
                   padding: const EdgeInsets.only(top: 10, bottom: 10),
@@ -151,7 +153,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
                             if (states.contains(WidgetState.focused)) {
                               return Colors.blue;
                             }
-                            return Colors.black;
+                            return Theme.of(context).colorScheme.onSurface;
                           }),
                           decoration: const InputDecoration(
                             border: InputBorder.none,
@@ -194,7 +196,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
                             if (states.contains(WidgetState.focused)) {
                               return Colors.blue;
                             }
-                            return Colors.black;
+                            return Theme.of(context).colorScheme.onSurface;
                           }),
                           decoration: const InputDecoration(
                             border: InputBorder.none,
@@ -207,10 +209,10 @@ class _SettingsRouteState extends State<SettingsRoute> {
                         ))
                   ]))),
         ]),
-        SettingsSection(title: const Text('Mode of operation', style: TextStyle(color: green)), tiles: [
+        SettingsSection(title: Text('Mode of operation', style: TextStyle(color: localGreen)), tiles: [
           SettingsTile.switchTile(
             initialValue: AppConfig.useNegNumber,
-            activeSwitchColor: green,
+            activeSwitchColor: localGreen,
             leading: const Icon(Icons.exposure_minus_1),
             title: const Text('Subtraction'),
             description: const Text('Allow negative numbers'),
@@ -223,7 +225,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
           ),
           SettingsTile.switchTile(
             initialValue: AppConfig.useContinuousMode,
-            activeSwitchColor: green,
+            activeSwitchColor: localGreen,
             leading: const Icon(Icons.waving_hand),
             title: const Text('Continuous mode'),
             description: const Text('Continue without pause to enter answer'),
@@ -234,11 +236,11 @@ class _SettingsRouteState extends State<SettingsRoute> {
             },
           ),
         ]),
-        SettingsSection(title: const Text('Text To Speech', style: TextStyle(color: green)), tiles: [
+        SettingsSection(title: Text('Text To Speech', style: TextStyle(color: localGreen)), tiles: [
           SettingsTile.switchTile(
             enabled: AppConfig.languages.isNotEmpty,
             initialValue: AppConfig.useTTS,
-            activeSwitchColor: green,
+            activeSwitchColor: localGreen,
             leading: const Icon(Icons.transcribe),
             title: const Text('TTS feature'),
             description: const Text('Get numbers voiced over'),
@@ -266,8 +268,8 @@ class _SettingsRouteState extends State<SettingsRoute> {
                               mainAxisSize: MainAxisSize.min,
                               children: languages.map((l) {
                                 return RadioListTile<String>(
-                                  activeColor: green,
-                                  selectedTileColor: green.withAlpha(31),
+                                  activeColor: localGreen,
+                                  selectedTileColor: localGreen.withAlpha(31),
                                   selected: _ttsLocale == l,
                                   title: Text(l),
                                   value: l,
@@ -288,7 +290,41 @@ class _SettingsRouteState extends State<SettingsRoute> {
             },
           ),
         ]),
-        SettingsSection(title: const Text('Misc.', style: TextStyle(color: green)), tiles: [
+        SettingsSection(title: Text('Colors', style: TextStyle(color: localGreen)), tiles: [
+          SettingsTile.switchTile(
+            initialValue: _useSystemTheme,
+            activeSwitchColor: localGreen,
+            leading: const Icon(Icons.palette),
+            title: const Text('Theme'),
+            description: const Text('Use system theme'),
+            onToggle: (value) {
+              setState(() {
+                _useSystemTheme = value;
+                if (_useSystemTheme) {
+                  AppConfig.themeMode = ThemeMode.system;
+                }
+              });
+            },
+          ),
+          SettingsTile.switchTile(
+            enabled: !_useSystemTheme,
+            initialValue: AppConfig.themeMode == ThemeMode.dark,
+            activeSwitchColor: localGreen,
+            leading: const Icon(Icons.dark_mode),
+            title: const Text('Dark Theme'),
+            description: const Text('Use the dark theme'),
+            onToggle: (value) {
+              setState(() {
+                if (value) {
+                  AppConfig.themeMode = ThemeMode.dark;
+                } else {
+                  AppConfig.themeMode = ThemeMode.light;
+                }
+              });
+            },
+          ),
+        ]),
+        SettingsSection(title: Text('Misc.', style: TextStyle(color: localGreen)), tiles: [
           SettingsTile(
               leading: const Icon(Icons.translate),
               description: const Text('used when displaying numbers'),
@@ -296,7 +332,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
               value: Text(AppConfig.locale)),
           SettingsTile.switchTile(
             initialValue: AppConfig.isTelemetryAllowed,
-            activeSwitchColor: green,
+            activeSwitchColor: localGreen,
             leading: const Icon(Icons.data_exploration),
             title: const Text('Telemetry'),
             description: const Text('Usage data collection'),
