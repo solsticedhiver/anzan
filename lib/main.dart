@@ -25,8 +25,9 @@ import 'settings.dart';
 
 bool _hasWarningBeenShown = false;
 bool _hasMediaKitBeenInitialized = false;
+final prefs = SharedPreferencesAsync();
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
     MediaKit.ensureInitialized();
@@ -47,18 +48,19 @@ void main() {
   }
 
   AppConfig.locale = detectedSystemLocale;
+  await getSettings(prefs);
 
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (context) => NumberModel()),
       ChangeNotifierProvider(create: (context) => ThemeModeModel()),
     ],
-    child: const MyApp(),
+    child: MyApp(prefs),
   ));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp(SharedPreferencesAsync prefs, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +95,6 @@ class _MyHomePageState extends State<MyHomePage> {
   late Player? player;
   TextEditingController textEditingController = TextEditingController();
   late FocusNode myFocusNode;
-  final prefs = SharedPreferencesAsync();
   Timer? t1, t2;
   bool isPlayButtonDisabled = false;
   RichText answerText = RichText(text: const TextSpan(text: ''));
@@ -110,8 +111,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await getSettings(prefs);
-
       Provider.of<ThemeModeModel>(context, listen: false).setThemeMode(AppConfig.themeMode);
 
       String source = 'unknown';
