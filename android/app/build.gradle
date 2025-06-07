@@ -24,7 +24,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace "org.sorobanexam.anzan"
-    compileSdk flutter.compileSdkVersion
+    compileSdkVersion flutter.compileSdkVersion
     ndkVersion = "27.2.12479018"
 
     compileOptions {
