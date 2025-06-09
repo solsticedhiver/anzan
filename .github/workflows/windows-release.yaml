@@ -17,6 +17,7 @@ jobs:
     - name: set HEAD git short sha in config.dart
       run: (Get-content -Raw .\lib\config.dart) -replace 'HEAD', $(${env:GITHUB_SHA}.Substring(0,7)) | Set-Content -NoNewLine -Encoding UTF8 .\lib\config.dart
     - uses: subosito/flutter-action@v2
+      if: ${{ !env.ACT }}
       with:
         channel : stable
         cache: true
@@ -25,10 +26,11 @@ jobs:
     - run: flutter build windows --release
 
     - name: Create setup.exe with Inno
-      run: C:\Program Files (x86)\Inno Setup 6\ISCC.exe anzan.iss
+      run: iex "& '${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe' .\anzan.iss"
     - name: Rename setup.exe
-      run: Rename-Item Output/setup.exe anzan-setup.exe
+      run: Rename-Item Output\mysetup.exe anzan-setup.exe
     - name: Create a release on GitHub
+      if: ${{ !env.ACT }}
       uses: ncipollo/release-action@v1
       with:
         allowUpdates: true
@@ -47,6 +49,7 @@ jobs:
         path: 'anzan-${{ steps.version.outputs.version }}'
         filename: 'anzan-windows_x64.zip'
     - name: Create a release on GitHub
+      if: ${{ !env.ACT }}
       uses: ncipollo/release-action@v1
       with:
         allowUpdates: true
