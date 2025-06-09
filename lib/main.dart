@@ -132,10 +132,10 @@ class _MyHomePageState extends State<MyHomePage> {
       }
 
       if (kReleaseMode && AppConfig.isTelemetryAllowed) {
-        // Do we still need this if we use X-Distinct-ID???
-        posthog(AppConfig.distinctId, 'app_started', {'source': source});
+        posthog(AppConfig.distinctId, 'app_started', {'source': source, 'version': AppConfig.appVersion});
       } else {
-        debugPrint("posthog('${AppConfig.distinctId}', 'app_started', {'source': $source});");
+        debugPrint(
+            "posthog('${AppConfig.distinctId}', 'app_started', {'source': $source, 'version': ${AppConfig.appVersion}});");
       }
 
       if (_hasMediaKitBeenInitialized) {
