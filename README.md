@@ -32,16 +32,20 @@ TODO: we need to add multiplication and division for that purpose.
 Different prebuild binaries are available in [Releases](https://github.com/solsticedhiver/anzan/releases)
 ### Linux
 For linux, you can use:
-  - the tarbal *anzan-linux_x64.tar.gz*, that contains a binary build of the software.
-  - the *snap* package *anzan_x.y.z_amd64.snap*. You install it with `snap install anzan_x.y.z_amd64.snap --dangerous`. This will bypass certificate check. Look at the snap documentation for the reason of option name (i.e. dangerous)
-  - the *flatpak* *anzan-vx.y.z-x86_64.flatpak*. You can install it with `flatpak install --user anzan-vx.y.z-x86_64.flatpak`
+  - the **tarbal** *anzan-linux_x64.tar.gz*, that contains a binary build of the software.
+  - the **snap** package *anzan_x.y.z_amd64.snap*. You can install it with `snap install anzan_x.y.z_amd64.snap --dangerous`. This will bypass certificate check. Look at the snap documentation for the reason of the option name (i.e. dangerous)
+  - the **flatpak** *anzan-x86_64.flatpak*. You can install it with `flatpak install --user anzan-x86_64.flatpak`
 
 ### Windows
-For windows, you have only, for now, a zip archive *anzan-windows_x64.zip*, that contains a binary built. You can launch it with `anzan.exe`.
-An installer is to be expected, in the future.
+For windows, you have:
+  - a zip archive *anzan-windows_x64.zip*, that contains a binary built. You can launch it by running `anzan.exe` inside the *anzan-x.y.z* directory.
+  - a setup.exe *anzan-setup.exe* to install the software.
 
 ### Android
-On android, you have to download and install the package `anzan-x.y.z.apk` on your device.
+On android, you have to download and install the **apk** package for your device:
+  - *anzan-armeabi-v7a.apk* for arm 32-bit machine
+  - *anzan-arm64-v8a.apk* for arm 64-bit machine
+  - *anzan-x86_64.apk* for x86_64 machine
 
 ### Source
 You can built it yourself from source. You have to have a working *flutter* installation. You run it with `flutter run`.
