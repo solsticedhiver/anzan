@@ -47,7 +47,7 @@ jobs:
     - run: mv build/linux/x64/release/bundle/ flatpak/anzan
     - uses: flatpak/flatpak-github-actions/flatpak-builder@v6.4
       with:
-        bundle: anzan-${{ steps.version.outputs.version }}-x86_64.flatpak
+        bundle: anzan-x86_64.flatpak
         manifest-path: flatpak/org.sorobanexam.anzan.yml
         cache-key: flatpak-builder-${{ github.sha }}
     - name: Create a release in GitHub
@@ -55,7 +55,7 @@ jobs:
       uses: ncipollo/release-action@v1
       with:
         allowUpdates: true
-        artifacts: "anzan-${{ steps.version.outputs.version }}-x86_64.flatpak"
+        artifacts: "anzan-x86_64.flatpak"
         token: "${{ secrets.GH_TOKEN }}"
         tag: "${{ steps.version.outputs.version }}"
         commit: "${{ github.sha }}"
