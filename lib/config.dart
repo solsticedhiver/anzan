@@ -23,7 +23,7 @@ class AppConfig {
   static bool useTTS = false;
   static String locale = 'en_US';
   static List<String> languages = [];
-  static bool isTelemetryAllowed = false;
+  static bool isTelemetryAllowed = true;
   static ThemeMode themeMode = ThemeMode.system;
 }
 
