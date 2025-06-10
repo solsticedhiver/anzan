@@ -27,6 +27,33 @@ bool _hasWarningBeenShown = false;
 bool _hasMediaKitBeenInitialized = false;
 final prefs = SharedPreferencesAsync();
 
+int compareVersion(String v1, String v2) {
+  var v1s = v1.split('.');
+  var v2s = v2.split('.');
+  int sign = 1;
+  if (v2s.length > v1s.length) {
+    List<String> tmp = v2s.toList();
+    v2s = v1s.toList();
+    v1s = tmp;
+    sign = -1;
+  }
+  int n, m;
+  for (var i = 0; i < v1s.length; i++) {
+    n = int.parse(v1s[i]);
+    if (i > v2s.length - 1) {
+      m = 0;
+    } else {
+      m = int.parse(v2s[i]);
+    }
+    if (n > m) {
+      return -1 * sign;
+    } else if (n < m) {
+      return sign;
+    }
+  }
+  return 0;
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
@@ -108,6 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
       player = Player();
     } else {
       player = null;
+      AppConfig.useTTS = false;
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -138,23 +166,54 @@ class _MyHomePageState extends State<MyHomePage> {
             "posthog('${AppConfig.distinctId}', 'app_started', {'source': $source, 'version': ${AppConfig.appVersion}});");
       }
 
-      if (_hasMediaKitBeenInitialized) {
-        try {
-          final req = await http.get(Uri.parse('${AppConfig.host}/tools/tts?lang_list=1'), headers: {
-            'User-Agent': AppConfig.userAgent,
-            'X-Distinct-ID': AppConfig.distinctId
-          }).timeout(const Duration(seconds: 5));
-          if (req.statusCode == 200) {
-            for (var l in json.decode(req.body)) {
-              AppConfig.languages.add(l);
-            }
-            //debugPrint(AppConfig.languages.toString());
+      try {
+        final req = await http.get(Uri.parse('${AppConfig.host}/tools/tts?lang_list=1&version=1'), headers: {
+          'User-Agent': AppConfig.userAgent,
+          'X-Distinct-ID': AppConfig.distinctId
+        }).timeout(const Duration(seconds: 5));
+        if (req.statusCode == 200) {
+          final resp = json.decode(req.body);
+          for (var l in resp['languages']) {
+            AppConfig.languages.add(l);
           }
-        } catch (e) {
-          AppConfig.useTTS = false;
-          debugPrint(e.toString());
+          //debugPrint(AppConfig.languages.toString());
+          final version = resp['version'];
+          if (compareVersion(AppConfig.appVersion, version) == 1) {
+            // show a dialog about the new version
+            if (context.mounted) {
+              const redOnDark = Color.fromARGB(255, 0xF3, 0x74, 0x74);
+              const redOnLight = Color.fromARGB(255, 0xBD, 0x37, 0x37);
+              Color red = redOnDark;
+              if (Theme.of(context).scaffoldBackgroundColor.computeLuminance() < 0.179) {
+                red = redOnLight;
+              }
+              if (!kIsWeb) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      duration: const Duration(seconds: 30),
+                      content: Center(
+                          child: Row(mainAxisSize: MainAxisSize.min, children: [
+                        const Text('A new release is available'),
+                        const SizedBox(width: 15),
+                        Icon(Icons.new_releases, color: red)
+                      ])),
+                      showCloseIcon: true,
+                      action: SnackBarAction(
+                          label: 'Go to website',
+                          textColor: red,
+                          onPressed: () {
+                            launchUrl(Uri.parse('https://www.sorobanexam.org/anzan.html'));
+                          })),
+                );
+              }
+            }
+          }
         }
+      } catch (e) {
+        AppConfig.useTTS = false;
+        debugPrint(e.toString());
       }
+
       if (!_hasWarningBeenShown && (AppConfig.languages.isEmpty || !_hasMediaKitBeenInitialized)) {
         _hasWarningBeenShown = true;
         String title, content;
