@@ -77,6 +77,36 @@ void main() async {
   AppConfig.locale = detectedSystemLocale;
   await getSettings(prefs);
 
+  String source = 'unknown';
+  if (kIsWeb) {
+    source = 'web';
+  } else if (Platform.isWindows) {
+    source = 'windows';
+  } else if (Platform.isAndroid) {
+    source = 'android';
+  } else if (Platform.isLinux) {
+    source = 'linux';
+  } else if (Platform.isMacOS) {
+    source = 'macOS';
+  } else if (Platform.isIOS) {
+    source = 'IOS';
+  }
+  AppConfig.platform = '${source.substring(0, 1).toUpperCase()}${source.substring(1)}';
+  AppConfig.userAgent = AppConfig.userAgent.replaceAll('platform', AppConfig.platform);
+
+  // check pref first
+  if (AppConfig.distinctId.isEmpty) {
+    AppConfig.distinctId = getDistinctId();
+    await prefs.setString('distinctId', AppConfig.distinctId);
+  }
+
+  if (kReleaseMode && AppConfig.isTelemetryAllowed) {
+    posthog(AppConfig.distinctId, 'app_started', {'source': source, 'version': AppConfig.appVersion});
+  } else {
+    debugPrint(
+        "posthog('${AppConfig.distinctId}', 'app_started', {'source': $source, 'version': ${AppConfig.appVersion}});");
+  }
+
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (context) => NumberModel()),
@@ -140,34 +170,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       Provider.of<ThemeModeModel>(context, listen: false).setThemeMode(AppConfig.themeMode);
-
-      String source = 'unknown';
-      if (kIsWeb) {
-        source = 'web';
-      } else if (Platform.isAndroid) {
-        source = 'android';
-      } else if (Platform.isLinux) {
-        source = 'linux';
-      } else if (Platform.isMacOS) {
-        source = 'macOS';
-      } else if (Platform.isIOS) {
-        source = 'IOS';
-      }
-      AppConfig.platform = '${source.substring(0, 1).toUpperCase()}${source.substring(1)}';
-      AppConfig.userAgent = AppConfig.userAgent.replaceAll('platform', AppConfig.platform);
-
-      // check pref first
-      if (AppConfig.distinctId.isEmpty) {
-        AppConfig.distinctId = getDistinctId();
-        await prefs.setString('distinctId', AppConfig.distinctId);
-      }
-
-      if (kReleaseMode && AppConfig.isTelemetryAllowed) {
-        posthog(AppConfig.distinctId, 'app_started', {'source': source, 'version': AppConfig.appVersion});
-      } else {
-        debugPrint(
-            "posthog('${AppConfig.distinctId}', 'app_started', {'source': $source, 'version': ${AppConfig.appVersion}});");
-      }
 
       try {
         final req = await http.get(Uri.parse('${AppConfig.host}/tools/tts?lang_list=1&version=1'), headers: {
@@ -642,7 +644,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     width: 64,
                   ),
                   applicationName: 'Flash Anzan',
-                  applicationVersion: '${AppConfig.appVersion} (${AppConfig.commit})',
+                  applicationVersion: '${AppConfig.appVersion} (${AppConfig.commit}) [${AppConfig.platform}]',
                   applicationLegalese:
                       "Copyright © 2025\nsolsTiCe d'Hiver <solstice.dhiver@sorobanexam.org>\nGPL-3.0-or-later",
                   aboutBoxChildren: aboutBoxChildren,
