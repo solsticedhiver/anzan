@@ -153,6 +153,9 @@ class _MyHomePageState extends State<MyHomePage> {
       } else if (Platform.isIOS) {
         source = 'IOS';
       }
+      AppConfig.platform = '${source.substring(0, 1).toUpperCase()}${source.substring(1)}';
+      AppConfig.userAgent = AppConfig.userAgent.replaceAll('platform', AppConfig.platform);
+
       // check pref first
       if (AppConfig.distinctId.isEmpty) {
         AppConfig.distinctId = getDistinctId();
