@@ -551,229 +551,245 @@ class _MyHomePageState extends State<MyHomePage> {
                   style: textStyle.copyWith(fontFamily: 'NerdFont', fontSize: 12, fontWeight: FontWeight.w600)))),
     ];
 
-    return Scaffold(
-      appBar: AppBar(backgroundColor: lightBrown, foregroundColor: Colors.black, title: Text(widget.title), actions: [
-        IconButton(
-            onPressed: AppConfig.history.isEmpty
-                ? null
-                : () {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => const HistoryRoute()));
-                  },
-            icon: const Icon(Icons.history)),
-        IconButton(
-            onPressed: () async {
-              await Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => const SettingsRoute(),
-              ));
-              await saveSettings(prefs);
-            },
-            icon: const Icon(Icons.settings))
-      ]),
-      drawer: Drawer(
-          child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          DrawerHeader(
-            decoration: const BoxDecoration(color: lightBrown),
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(children: [
-                    Image.asset(
-                      'assets/soroban-rounded-256x256.webp',
-                      height: 64,
-                      width: 64,
-                    ),
-                    const SizedBox(width: 15),
-                    Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text('Flash Anzan',
-                          style: TextStyle(
-                              color: Colors.black, fontSize: Theme.of(context).textTheme.headlineMedium!.fontSize)),
-                      Text(AppConfig.appVersion,
-                          style: TextStyle(
-                              color: Colors.black, fontSize: Theme.of(context).textTheme.labelLarge!.fontSize))
-                    ]),
-                  ]),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  Expanded(
-                      flex: 1,
-                      child: InkWell(
-                        onTap: () async {
-                          await launchUrl(Uri.parse('https://www.sorobanexam.org'));
-                        },
-                        child: const Text('sorobanexam.org', style: TextStyle(color: Colors.black)),
-                      )),
-                ]),
-          ),
-          Expanded(
-              flex: 1,
-              child: ListView(children: [
-                ListTile(
-                  enabled: AppConfig.history.isNotEmpty,
-                  leading: const Icon(Icons.history),
-                  title: const Text('History'),
-                  onTap: () async {
-                    Navigator.pop(context); // close the drawer, first
-                    await Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const HistoryRoute(),
-                      ),
-                    );
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.settings),
-                  title: const Text('Settings'),
-                  onTap: () async {
-                    Navigator.pop(context); // close the drawer, first
-                    await Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const SettingsRoute(),
-                      ),
-                    );
-                  },
-                ),
-                AboutListTile(
-                  icon: const Icon(Icons.info),
-                  applicationIcon: Image.asset(
-                    'assets/soroban-rounded-256x256.webp',
-                    height: 64,
-                    width: 64,
-                  ),
-                  applicationName: 'Flash Anzan',
-                  applicationVersion: '${AppConfig.appVersion} (${AppConfig.commit}) [${AppConfig.platform}]',
-                  applicationLegalese:
-                      "Copyright © 2025\nsolsTiCe d'Hiver <solstice.dhiver@sorobanexam.org>\nGPL-3.0-or-later",
-                  aboutBoxChildren: aboutBoxChildren,
-                )
-              ])),
-        ],
-      )),
-      body: Stack(
-        alignment: AlignmentDirectional.center,
-        children: [
-          Positioned(
-              top: 0.0,
-              bottom: 32.0,
-              left: 0.0,
-              child: Container(margin: const EdgeInsets.all(16.0), child: answerText)),
-          const Positioned.fill(child: MyDisplay()),
-        ],
-      ),
-      bottomNavigationBar: BottomAppBar(
-          color: lightBrown,
-          child: Row(spacing: 10.0, mainAxisAlignment: MainAxisAlignment.center, children: [
-            IconButton(
-              iconSize: 32.0,
-              icon: Icon(Icons.replay, color: isReplayable ? Colors.white : Colors.black),
-              style: IconButton.styleFrom(
-                  backgroundColor: green, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0))),
-              onPressed: isReplayable
-                  ? () {
-                      setState(() {
-                        isPlaying = true;
-                      });
-                      Provider.of<NumberModel>(context, listen: false).setVisible(false);
-                      _replay();
-                    }
-                  : () {},
-            ),
-            SizedBox(
-                width: 150,
-                child: TextField(
-                  focusNode: myFocusNode,
-                  cursorColor: Colors.black,
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.black),
-                  keyboardType: TextInputType.number,
-                  maxLines: 1,
-                  controller: textEditingController,
-                  decoration: const InputDecoration(
-                    isDense: true,
-                    border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
-                    enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
-                    focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
-                    labelText: 'Your answer',
-                    labelStyle: TextStyle(color: Colors.black),
-                    hintStyle: TextStyle(color: Colors.black),
-                  ),
-                )),
-            IconButton(
-              iconSize: 32.0,
-              icon: Icon(Icons.input, color: isReplayable ? Colors.white : Colors.black),
-              style: IconButton.styleFrom(
-                  backgroundColor: green, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0))),
-              onPressed: (isPlaying || _indx != AppConfig.numRowInt)
-                  ? () {}
+    return LayoutBuilder(builder: (context, constraints) {
+      double aboutImageSize = 128;
+      if (constraints.maxWidth < 300) {
+        aboutImageSize = 0;
+      } else if (constraints.maxWidth < 400) {
+        aboutImageSize = 48;
+      } else if (constraints.maxWidth < 450) {
+        aboutImageSize = 64;
+      } else if (constraints.maxWidth < 500) {
+        aboutImageSize = 96;
+      }
+
+      return Scaffold(
+        appBar: AppBar(backgroundColor: lightBrown, foregroundColor: Colors.black, title: Text(widget.title), actions: [
+          IconButton(
+              onPressed: AppConfig.history.isEmpty
+                  ? null
                   : () {
-                      if (isPlaying) return;
-                      final sum = numbers.fold<int>(0, (p, c) => p + c);
-                      String msg;
-                      Icon icon = const Icon(null);
-                      try {
-                        final sol = int.parse(textEditingController.text);
-                        if (sol == sum) {
-                          msg = 'The answer is correct';
-                          icon = const Icon(Icons.check_box, color: Colors.green);
-                          AppConfig.history[AppConfig.history.length - 1] =
-                              (op: AppConfig.history[AppConfig.history.length - 1].op, success: true);
-                        } else {
-                          msg = 'The answer is incorrect';
-                          icon = const Icon(Icons.close, color: Colors.red);
-                          AppConfig.history[AppConfig.history.length - 1] =
-                              (op: AppConfig.history[AppConfig.history.length - 1].op, success: false);
-                        }
-                        setState(() {
-                          answerText = currentOperation(numbers.sublist(0, _indx), true);
-                        });
-                      } catch (e) {
-                        msg = 'The answer is not a number';
-                        icon = const Icon(Icons.error, color: Colors.red);
-                      }
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Center(
-                              child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [Text(msg), const SizedBox(width: 15), icon])),
-                          showCloseIcon: true,
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => const HistoryRoute()));
+                    },
+              icon: const Icon(Icons.history)),
+          IconButton(
+              onPressed: () async {
+                await Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => const SettingsRoute(),
+                ));
+                await saveSettings(prefs);
+              },
+              icon: const Icon(Icons.settings))
+        ]),
+        drawer: Drawer(
+            child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            DrawerHeader(
+              decoration: const BoxDecoration(color: lightBrown),
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(children: [
+                      Expanded(
+                          child: Image.asset(
+                        'assets/soroban-rounded-256x256.webp',
+                        fit: BoxFit.contain,
+                        height: 96,
+                        width: 96,
+                      )),
+                      const SizedBox(width: 15),
+                      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text('Flash Anzan',
+                            style: TextStyle(
+                                color: Colors.black, fontSize: Theme.of(context).textTheme.headlineMedium!.fontSize)),
+                        Text(AppConfig.appVersion,
+                            style: TextStyle(
+                                color: Colors.black, fontSize: Theme.of(context).textTheme.labelLarge!.fontSize))
+                      ]),
+                    ]),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Expanded(
+                        flex: 1,
+                        child: InkWell(
+                          onTap: () async {
+                            await launchUrl(Uri.parse('https://www.sorobanexam.org'));
+                          },
+                          child: const Text('sorobanexam.org',
+                              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                        )),
+                  ]),
+            ),
+            Expanded(
+                flex: 1,
+                child: ListView(children: [
+                  ListTile(
+                    enabled: AppConfig.history.isNotEmpty,
+                    leading: const Icon(Icons.history),
+                    title: const Text('History'),
+                    onTap: () async {
+                      Navigator.pop(context); // close the drawer, first
+                      await Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const HistoryRoute(),
                         ),
                       );
                     },
-            ),
-          ])),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: green,
-        foregroundColor: Colors.white,
-        onPressed: isPlayButtonDisabled
-            ? () {}
-            : () {
-                setState(() {
-                  isPlaying = !isPlaying;
-                  answerText = RichText(text: const TextSpan());
-                });
-                if (!isPlaying) {
-                  isPlayButtonDisabled = true;
-                  Future.delayed(const Duration(seconds: 1), () {
-                    setState(() {
-                      isPlayButtonDisabled = false;
-                    });
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.settings),
+                    title: const Text('Settings'),
+                    onTap: () async {
+                      Navigator.pop(context); // close the drawer, first
+                      await Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const SettingsRoute(),
+                        ),
+                      );
+                    },
+                  ),
+                  AboutListTile(
+                    icon: const Icon(Icons.info),
+                    applicationIcon: Image.asset(
+                      'assets/soroban-rounded-256x256.webp',
+                      width: aboutImageSize,
+                      height: aboutImageSize,
+                    ),
+                    applicationName: 'Flash Anzan',
+                    applicationVersion: '${AppConfig.appVersion} (${AppConfig.commit}) [${AppConfig.platform}]',
+                    applicationLegalese:
+                        "Copyright © 2025\nsolsTiCe d'Hiver <solstice.dhiver@sorobanexam.org>\nGPL-3.0-or-later",
+                    aboutBoxChildren: aboutBoxChildren,
+                  )
+                ])),
+          ],
+        )),
+        body: Stack(
+          alignment: AlignmentDirectional.center,
+          children: [
+            Positioned(
+                top: 0.0,
+                bottom: 32.0,
+                left: 0.0,
+                child: Container(margin: const EdgeInsets.all(16.0), child: answerText)),
+            const Positioned.fill(child: MyDisplay()),
+          ],
+        ),
+        bottomNavigationBar: BottomAppBar(
+            color: lightBrown,
+            child: Row(spacing: 10.0, mainAxisAlignment: MainAxisAlignment.center, children: [
+              IconButton(
+                iconSize: 32.0,
+                icon: Icon(Icons.replay, color: isReplayable ? Colors.white : Colors.black),
+                style: IconButton.styleFrom(
+                    backgroundColor: green, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0))),
+                onPressed: isReplayable
+                    ? () {
+                        setState(() {
+                          isPlaying = true;
+                        });
+                        Provider.of<NumberModel>(context, listen: false).setVisible(false);
+                        _replay();
+                      }
+                    : () {},
+              ),
+              SizedBox(
+                  width: 150,
+                  child: TextField(
+                    focusNode: myFocusNode,
+                    cursorColor: Colors.black,
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.black),
+                    keyboardType: TextInputType.number,
+                    maxLines: 1,
+                    controller: textEditingController,
+                    decoration: const InputDecoration(
+                      isDense: true,
+                      border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
+                      enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
+                      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
+                      labelText: 'Your answer',
+                      labelStyle: TextStyle(color: Colors.black),
+                      hintStyle: TextStyle(color: Colors.black),
+                    ),
+                  )),
+              IconButton(
+                iconSize: 32.0,
+                icon: Icon(Icons.input, color: isReplayable ? Colors.white : Colors.black),
+                style: IconButton.styleFrom(
+                    backgroundColor: green, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0))),
+                onPressed: (isPlaying || _indx != AppConfig.numRowInt)
+                    ? () {}
+                    : () {
+                        if (isPlaying) return;
+                        final sum = numbers.fold<int>(0, (p, c) => p + c);
+                        String msg;
+                        Icon icon = const Icon(null);
+                        try {
+                          final sol = int.parse(textEditingController.text);
+                          if (sol == sum) {
+                            msg = 'The answer is correct';
+                            icon = const Icon(Icons.check_box, color: Colors.green);
+                            AppConfig.history[AppConfig.history.length - 1] =
+                                (op: AppConfig.history[AppConfig.history.length - 1].op, success: true);
+                          } else {
+                            msg = 'The answer is incorrect';
+                            icon = const Icon(Icons.close, color: Colors.red);
+                            AppConfig.history[AppConfig.history.length - 1] =
+                                (op: AppConfig.history[AppConfig.history.length - 1].op, success: false);
+                          }
+                          setState(() {
+                            answerText = currentOperation(numbers.sublist(0, _indx), true);
+                          });
+                        } catch (e) {
+                          msg = 'The answer is not a number';
+                          icon = const Icon(Icons.error, color: Colors.red);
+                        }
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Center(
+                                child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [Text(msg), const SizedBox(width: 15), icon])),
+                            showCloseIcon: true,
+                          ),
+                        );
+                      },
+              ),
+            ])),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: green,
+          foregroundColor: Colors.white,
+          onPressed: isPlayButtonDisabled
+              ? () {}
+              : () {
+                  setState(() {
+                    isPlaying = !isPlaying;
+                    answerText = RichText(text: const TextSpan());
                   });
-                  Provider.of<NumberModel>(context, listen: false).setVisible(false);
-                  player?.stop();
-                  t1?.cancel();
-                  t2?.cancel();
-                } else {
-                  Provider.of<NumberModel>(context, listen: false).setVisible(false);
-                  answerText = RichText(text: const TextSpan(text: ''));
-                  _startPlay(context);
-                }
-              },
-        child: Icon(isPlaying ? Icons.stop : Icons.play_arrow),
-      ),
-    );
+                  if (!isPlaying) {
+                    isPlayButtonDisabled = true;
+                    Future.delayed(const Duration(seconds: 1), () {
+                      setState(() {
+                        isPlayButtonDisabled = false;
+                      });
+                    });
+                    Provider.of<NumberModel>(context, listen: false).setVisible(false);
+                    player?.stop();
+                    t1?.cancel();
+                    t2?.cancel();
+                  } else {
+                    Provider.of<NumberModel>(context, listen: false).setVisible(false);
+                    answerText = RichText(text: const TextSpan(text: ''));
+                    _startPlay(context);
+                  }
+                },
+          child: Icon(isPlaying ? Icons.stop : Icons.play_arrow),
+        ),
+      );
+    });
   }
 }
