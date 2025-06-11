@@ -65,6 +65,11 @@ void main() async {
 
   if (kReleaseMode) {
     debugPrint = (String? message, {int? wrapWidth}) {};
+    if (kIsWeb) {
+      if (getHostname() == "127.0.0.1") {
+        AppConfig.host = 'http://127.0.0.1:5000';
+      }
+    }
   } else {
     AppConfig.host = 'http://127.0.0.1:5000';
     if (kIsWeb) {
@@ -92,6 +97,9 @@ void main() async {
     source = 'IOS';
   }
   AppConfig.platform = '${source.substring(0, 1).toUpperCase()}${source.substring(1)}';
+  if (const bool.fromEnvironment('dart.tool.dart2wasm')) {
+    AppConfig.platform = '${AppConfig.platform} (wasm)';
+  }
   AppConfig.userAgent = AppConfig.userAgent.replaceAll('platform', AppConfig.platform);
 
   // check pref first

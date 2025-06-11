@@ -17,6 +17,11 @@ extension type LocalStorageJS._(JSObject _) implements JSObject {
   external static String? getItem(String keyName);
 }
 
+@JS('window.location')
+extension type LocationJS(JSObject _) implements JSObject {
+  external static String hostname;
+}
+
 String detectedSystemLocale = Intl.canonicalizedLocale(NavigatorJS.language);
 
 String getDistinctId() {
@@ -29,4 +34,8 @@ String getDistinctId() {
     distinctId = uuid.v7();
   }
   return distinctId;
+}
+
+String getHostname() {
+  return LocationJS.hostname;
 }

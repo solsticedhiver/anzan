@@ -8,3 +8,7 @@ String getDistinctId() {
   const uuid = Uuid();
   return uuid.v7();
 }
+
+String getHostname() {
+  return 'unknown';
+}
