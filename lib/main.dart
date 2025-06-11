@@ -604,7 +604,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         onTap: () async {
                           await launchUrl(Uri.parse('https://www.sorobanexam.org'));
                         },
-                        child: const Text('www.sorobanexam.org', style: TextStyle(color: Colors.black)),
+                        child: const Text('sorobanexam.org', style: TextStyle(color: Colors.black)),
                       )),
                 ]),
           ),
