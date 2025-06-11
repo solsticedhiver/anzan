@@ -178,7 +178,7 @@ class _MyHomePageState extends State<MyHomePage> {
           }
           //debugPrint(AppConfig.languages.toString());
           final version = resp['version'];
-          if (compareVersion(AppConfig.appVersion, version) == 1) {
+          if (AppConfig.updateNotificationCount < 3 && compareVersion(AppConfig.appVersion, version) == 1) {
             // show a dialog about the new version
             if (context.mounted) {
               const redOnDark = Color.fromARGB(255, 0xF3, 0x74, 0x74);
@@ -188,6 +188,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 red = redOnLight;
               }
               if (!kIsWeb) {
+                AppConfig.updateNotificationCount += 1;
+                await prefs.setInt('updateNotificationCount', AppConfig.updateNotificationCount);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                       duration: const Duration(seconds: 30),

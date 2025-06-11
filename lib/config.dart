@@ -25,6 +25,7 @@ class AppConfig {
   static List<String> languages = [];
   static bool isTelemetryAllowed = true;
   static ThemeMode themeMode = ThemeMode.system;
+  static int updateNotificationCount = 0;
 }
 
 Future<void> getSettings(SharedPreferencesAsync prefs) async {
@@ -78,6 +79,10 @@ Future<void> getSettings(SharedPreferencesAsync prefs) async {
       case 'system':
         AppConfig.themeMode = ThemeMode.system;
     }
+  }
+  int? updateNotificationCount = await prefs.getInt('updateNotificationCount');
+  if (updateNotificationCount != null) {
+    AppConfig.updateNotificationCount = updateNotificationCount;
   }
 }
 
