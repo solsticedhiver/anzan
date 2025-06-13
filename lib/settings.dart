@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_ui/flutter_settings_ui.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:provider/provider.dart';
+import 'package:pwa_install/pwa_install.dart';
 
 import 'config.dart';
 import 'locale_web.dart' if (dart.library.io) 'locale_platform.dart';
@@ -332,9 +334,23 @@ class _SettingsRouteState extends State<SettingsRoute> {
           ),
         ]),
         SettingsSection(title: Text('Misc.', style: TextStyle(color: localGreen)), tiles: [
+          if (kIsWeb)
+            SettingsTile(
+              leading: const Icon(Icons.install_mobile),
+              trailing: ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: green),
+                  onPressed: PWAInstall().installPromptEnabled
+                      ? () {
+                          PWAInstall().promptInstall_();
+                        }
+                      : null,
+                  child: const Text('Install', style: TextStyle(color: Colors.white))),
+              description: const Text('Install the current PWA as a system app'),
+              title: const Text('PWA install'),
+            ),
           SettingsTile(
               leading: const Icon(Icons.translate),
-              description: const Text('used when displaying numbers'),
+              description: const Text('Used when displaying numbers'),
               title: const Text('App locale'),
               value: Text(AppConfig.locale)),
           SettingsTile.switchTile(
