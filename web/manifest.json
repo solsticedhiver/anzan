@@ -3,10 +3,10 @@
     "short_name": "Anzan",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "Anzan (i.e. mentalcalculation)",
-    "orientation": "portrait-primary",
+    "background_color": "#ffffff",
+    "theme_color": "#168362",
+    "description": "Practice anzan or mental calculation with flashing number",
+    "orientation": "any",
     "prefer_related_applications": false,
     "icons": [
         {
