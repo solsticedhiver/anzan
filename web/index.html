@@ -19,6 +19,7 @@
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="Anzan (i.e. mentalcalculation)">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
@@ -48,13 +49,22 @@
       font-family: Arial, Helvetica, sans-serif;
       font-weight: bold;
     }
+    .img {
+	    width: 512px;
+    }
+    @media screen and (max-width: 512px) {
+      .img {
+        width: 256px;
+        height: 256px;
+      }
+    }
   </style>
 </head>
 <body>
   <div id="loading_indicator" class="container">
     <!-- the object element tag is to work-around the changing assets dir in debug and release build -->
-    <object data="assets/soroban-rounded-512x512.webp" type="image/webp">
-      <img src="assets/assets/soroban-rounded-512x512.webp" alt="a close-up view of a soroban"/>
+    <object data="assets/soroban-rounded-512x512.webp" type="image/webp" class="img">
+      <img src="assets/assets/soroban-rounded-512x512.webp" alt="a close-up view of a soroban" class="img"/>
     </object>
     <p>Loading...</p>
   </div>
