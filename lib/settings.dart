@@ -99,7 +99,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
                         width: 150,
                         child: SpinBox(
                           min: 1,
-                          max: 10,
+                          max: 15,
                           value: AppConfig.numRowInt.toDouble(),
                           iconColor: WidgetStateProperty.resolveWith((states) {
                             if (states.contains(WidgetState.disabled)) {
