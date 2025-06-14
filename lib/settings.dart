@@ -265,26 +265,41 @@ class _SettingsRouteState extends State<SettingsRoute> {
               await showDialog<String>(
                   context: context,
                   builder: (context) {
-                    return AlertDialog(content: StatefulBuilder(builder: (context, setState) {
-                      return SingleChildScrollView(
-                          child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: languages.map((l) {
-                                return RadioListTile<String>(
-                                  activeColor: localGreen,
-                                  selectedTileColor: localGreen.withAlpha(31),
-                                  selected: _ttsLocale == l,
-                                  title: Text(l),
-                                  value: l,
-                                  groupValue: _ttsLocale,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _ttsLocale = value!;
-                                    });
-                                  },
-                                );
-                              }).toList()));
-                    }));
+                    return AlertDialog(
+                      content: StatefulBuilder(builder: (context, setState) {
+                        return SingleChildScrollView(
+                            child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: languages.map((l) {
+                                  return RadioListTile<String>(
+                                    activeColor: localGreen,
+                                    selectedTileColor: localGreen.withAlpha(31),
+                                    selected: _ttsLocale == l,
+                                    title: Text(l),
+                                    value: l,
+                                    groupValue: _ttsLocale,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _ttsLocale = value!;
+                                      });
+                                    },
+                                  );
+                                }).toList()));
+                      }),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              _ttsLocale = AppConfig.ttsLocale;
+                              Navigator.pop(context);
+                            },
+                            child: const Text('Cancel')),
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text('OK')),
+                      ],
+                    );
                   });
               setState(() {
                 AppConfig.ttsLocale = _ttsLocale;
