@@ -231,7 +231,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
             activeSwitchColor: localGreen,
             leading: const Icon(Icons.waving_hand),
             title: const Text('Continuous mode'),
-            description: const Text('Continue without pause to enter answer'),
+            description: const Text('Continue (with a pause) without checking answer'),
             onToggle: (value) {
               setState(() {
                 AppConfig.useContinuousMode = value;
@@ -255,7 +255,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
                             color:
                                 (AppConfig.useContinuousMode ? Theme.of(context).colorScheme.onSurface : Colors.grey)),
                       ),
-                      Text('in ms',
+                      Text('in ms (between each operation)',
                           style: TextStyle(
                               color: (AppConfig.useContinuousMode
                                   ? Theme.of(context).colorScheme.onSurface
