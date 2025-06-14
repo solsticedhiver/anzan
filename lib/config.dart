@@ -59,6 +59,10 @@ Future<void> getSettings(SharedPreferencesAsync prefs) async {
   if (useContinuousMode != null) {
     AppConfig.useContinuousMode = useContinuousMode;
   }
+  int? pause = await prefs.getInt('pause');
+  if (pause != null) {
+    AppConfig.pause = pause;
+  }
   bool? isTelemetryAllowed = await prefs.getBool('isTelemetryAllowed');
   if (isTelemetryAllowed != null) {
     AppConfig.isTelemetryAllowed = isTelemetryAllowed;
@@ -96,6 +100,7 @@ Future<void> saveSettings(SharedPreferencesAsync prefs) async {
   await prefs.setBool('useNegNumber', AppConfig.useNegNumber);
   await prefs.setBool('useTTS', AppConfig.useTTS);
   await prefs.setBool('useContinuousMode', AppConfig.useContinuousMode);
+  await prefs.setInt('pause', AppConfig.pause);
   await prefs.setString('ttsLocale', AppConfig.ttsLocale);
   await prefs.setString('distinctId', AppConfig.distinctId);
   await prefs.setBool('isTelemetryAllowed', AppConfig.isTelemetryAllowed);
