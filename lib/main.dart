@@ -579,11 +579,9 @@ class _MyHomePageState extends State<MyHomePage> {
       return Scaffold(
         appBar: AppBar(backgroundColor: lightBrown, foregroundColor: Colors.black, title: Text(widget.title), actions: [
           IconButton(
-              onPressed: AppConfig.history.isEmpty
-                  ? null
-                  : () {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => const HistoryRoute()));
-                    },
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => const HistoryRoute()));
+              },
               icon: const Icon(Icons.history)),
           IconButton(
               onPressed: () async {
@@ -640,7 +638,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 flex: 1,
                 child: ListView(children: [
                   ListTile(
-                    enabled: AppConfig.history.isNotEmpty,
                     leading: const Icon(Icons.history),
                     title: const Text('History'),
                     onTap: () async {
