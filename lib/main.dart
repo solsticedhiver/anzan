@@ -684,7 +684,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 top: 0.0,
                 bottom: 32.0,
                 left: 0.0,
-                child: Container(margin: const EdgeInsets.all(16.0), child: answerText)),
+                child: Container(
+                    width: MediaQuery.sizeOf(context).width, margin: const EdgeInsets.all(16.0), child: answerText)),
             const Positioned.fill(child: MyDisplay()),
           ],
         ),
