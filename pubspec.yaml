@@ -48,7 +48,10 @@ dependencies:
   uuid: ^4.5.1
   flutter_html: ^3.0.0
   mp3_info: ^0.2.1
-  pwa_install: ^0.0.6
+  pwa_install:
+    git:
+      url: https://github.com/jtmuller5/pwa_install.git
+      ref: refs/pull/9/head
 
 dev_dependencies:
   flutter_test:
