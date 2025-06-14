@@ -402,7 +402,7 @@ class _MyHomePageState extends State<MyHomePage> {
               answerText = currentOperation(numbers.sublist(0, _indx), true);
               isPlaying = true;
             });
-            Future.delayed(Duration(milliseconds: AppConfig.timeout), () {
+            Future.delayed(Duration(milliseconds: AppConfig.pause), () {
               // ignore: use_build_context_synchronously
               if (context.mounted) {
                 _startPlay(context);

@@ -238,6 +238,61 @@ class _SettingsRouteState extends State<SettingsRoute> {
               });
             },
           ),
+          CustomSettingsTile(
+              child: Container(
+                  padding: const EdgeInsets.only(top: 10, bottom: 10),
+                  child: Row(mainAxisAlignment: MainAxisAlignment.start, mainAxisSize: MainAxisSize.max, children: [
+                    Container(
+                        margin: const EdgeInsets.only(left: 24, right: 24),
+                        child: Icon(Icons.pause,
+                            color:
+                                (AppConfig.useContinuousMode ? Theme.of(context).colorScheme.onSurface : Colors.grey))),
+                    Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text(
+                        'Pause',
+                        style: TextStyle(
+                            fontSize: 20,
+                            color:
+                                (AppConfig.useContinuousMode ? Theme.of(context).colorScheme.onSurface : Colors.grey)),
+                      ),
+                      Text('in ms',
+                          style: TextStyle(
+                              color: (AppConfig.useContinuousMode
+                                  ? Theme.of(context).colorScheme.onSurface
+                                  : Colors.grey)))
+                    ]),
+                    const Expanded(child: SizedBox.shrink()),
+                    SizedBox(
+                        width: 150,
+                        child: SpinBox(
+                          min: 500,
+                          max: 10000,
+                          step: 100,
+                          pageStep: 100,
+                          enabled: AppConfig.useContinuousMode,
+                          value: AppConfig.pause.toDouble(),
+                          iconColor: WidgetStateProperty.resolveWith((states) {
+                            if (states.contains(WidgetState.disabled)) {
+                              return Colors.grey;
+                            }
+                            if (states.contains(WidgetState.error)) {
+                              return Colors.red;
+                            }
+                            if (states.contains(WidgetState.focused)) {
+                              return Colors.blue;
+                            }
+                            return Theme.of(context).colorScheme.onSurface;
+                          }),
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              AppConfig.pause = value.toInt();
+                            });
+                          },
+                        ))
+                  ]))),
         ]),
         SettingsSection(title: Text('Text To Speech', style: TextStyle(color: localGreen)), tiles: [
           SettingsTile.switchTile(
