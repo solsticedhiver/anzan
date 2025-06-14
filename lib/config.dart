@@ -17,7 +17,7 @@ class AppConfig {
   static int timeout = 1000;
   static bool useNegNumber = false;
   static bool useContinuousMode = false;
-  static int maxHistoryLength = 20;
+  static int maxHistoryLength = 25;
   static List<Run> history = [];
   static String ttsLocale = 'en-US';
   static bool useTTS = false;
