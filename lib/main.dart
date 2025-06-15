@@ -239,12 +239,12 @@ class _MyHomePageState extends State<MyHomePage> {
         String title, content;
         if (!_hasMediaKitBeenInitialized) {
           title = 'Error initliazing MediaKit library';
-          content = 'This usually means the libmpv library has not been found. Check your installation of libmpv.\n'
+          content = 'This usually means the libmpv library was not found. Check your installation of libmpv.\n'
               'TTS will be disabled';
         } else {
           title = 'Error fetching the TTS languages list';
-          content = 'There was a network error while retrieving the language TTS list. TTS will be disabled.\n'
-              'Relaunch/reload the app to retry with an internet connection up and running.';
+          content = 'There was a network error while retrieving the TTS language list. TTS will be disabled.\n'
+              'Please relaunch or reload the app to retry once your internet connection is up and running.';
         }
         showDialog(
             context: context,

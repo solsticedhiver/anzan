@@ -416,7 +416,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
                       : null,
                   child: const Text('Install', style: TextStyle(color: Colors.white))),
               description: const Text('Install the current PWA as a system app'),
-              title: const Text('PWA install'),
+              title: const Text('Progressive Web App'),
             ),
           SettingsTile(
               leading: const Icon(Icons.translate),
