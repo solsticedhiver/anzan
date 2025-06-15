@@ -47,5 +47,8 @@ On android, you have to download and install the **apk** package for your device
   - *anzan-arm64-v8a.apk* for arm 64-bit machine
   - *anzan-x86_64.apk* for x86_64 machine
 
+### Web
+This app is also available as an installable PWA (Progressive Web App) on the web at [sorobanexam.org](https://www.sorobanexam.org/anzan.app/)
+
 ### Source
 You can built it yourself from source. You have to have a working *flutter* installation. You run it with `flutter run`.
