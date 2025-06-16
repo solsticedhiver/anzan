@@ -55,14 +55,6 @@ int compareVersion(String v1, String v2) {
 }
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  try {
-    MediaKit.ensureInitialized();
-    _hasMediaKitBeenInitialized = true;
-  } catch (e) {
-    debugPrint(e.toString());
-  }
-
   if (kReleaseMode) {
     debugPrint = (String? message, {int? wrapWidth}) {};
     if (kIsWeb) {
@@ -78,8 +70,17 @@ void main() async {
       AppConfig.host = "http://10.0.2.2:5000";
     }
   }
-
   AppConfig.locale = detectedSystemLocale;
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    MediaKit.ensureInitialized();
+    _hasMediaKitBeenInitialized = true;
+  } catch (e) {
+    debugPrint(e.toString());
+  }
+
   await getSettings(prefs);
 
   String source = 'unknown';
