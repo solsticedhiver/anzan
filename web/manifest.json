@@ -4,7 +4,7 @@
     "start_url": ".",
     "display": "standalone",
     "background_color": "#ffffff",
-    "theme_color": "#168362",
+    "theme_color": "#b39e8f",
     "description": "Practice anzan or mental calculation with flashing number",
     "orientation": "any",
     "prefer_related_applications": false,
