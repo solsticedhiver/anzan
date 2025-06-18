@@ -53,7 +53,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
                           value: AppConfig.numDigit.toDouble(),
                           iconColor: WidgetStateProperty.resolveWith((states) {
                             if (states.contains(WidgetState.disabled)) {
-                              return Colors.grey;
+                              return Theme.of(context).disabledColor;
                             }
                             if (states.contains(WidgetState.error)) {
                               return Colors.red;
@@ -101,7 +101,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
                           value: AppConfig.numRowInt.toDouble(),
                           iconColor: WidgetStateProperty.resolveWith((states) {
                             if (states.contains(WidgetState.disabled)) {
-                              return Colors.grey;
+                              return Theme.of(context).disabledColor;
                             }
                             if (states.contains(WidgetState.error)) {
                               return Colors.red;
@@ -146,7 +146,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
                           value: AppConfig.timeFlash.toDouble(),
                           iconColor: WidgetStateProperty.resolveWith((states) {
                             if (states.contains(WidgetState.disabled)) {
-                              return Colors.grey;
+                              return Theme.of(context).disabledColor;
                             }
                             if (states.contains(WidgetState.error)) {
                               return Colors.red;
@@ -189,7 +189,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
                           value: AppConfig.timeout.toDouble(),
                           iconColor: WidgetStateProperty.resolveWith((states) {
                             if (states.contains(WidgetState.disabled)) {
-                              return Colors.grey;
+                              return Theme.of(context).disabledColor;
                             }
                             if (states.contains(WidgetState.error)) {
                               return Colors.red;
@@ -243,21 +243,23 @@ class _SettingsRouteState extends State<SettingsRoute> {
                     Container(
                         margin: const EdgeInsets.only(left: 24, right: 24),
                         child: Icon(Icons.pause,
-                            color:
-                                (AppConfig.useContinuousMode ? Theme.of(context).colorScheme.onSurface : Colors.grey))),
+                            color: (AppConfig.useContinuousMode
+                                ? Theme.of(context).colorScheme.onSurface
+                                : Theme.of(context).disabledColor))),
                     Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Text(
                         'Pause',
                         style: TextStyle(
                             fontSize: 20,
-                            color:
-                                (AppConfig.useContinuousMode ? Theme.of(context).colorScheme.onSurface : Colors.grey)),
+                            color: (AppConfig.useContinuousMode
+                                ? Theme.of(context).colorScheme.onSurface
+                                : Theme.of(context).disabledColor)),
                       ),
                       Text('in ms (between each operation)',
                           style: TextStyle(
                               color: (AppConfig.useContinuousMode
                                   ? Theme.of(context).colorScheme.onSurface
-                                  : Colors.grey)))
+                                  : Theme.of(context).disabledColor)))
                     ]),
                     const Expanded(child: SizedBox.shrink()),
                     SizedBox(
@@ -271,7 +273,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
                           value: AppConfig.pause.toDouble(),
                           iconColor: WidgetStateProperty.resolveWith((states) {
                             if (states.contains(WidgetState.disabled)) {
-                              return Colors.grey;
+                              return Theme.of(context).disabledColor;
                             }
                             if (states.contains(WidgetState.error)) {
                               return Colors.red;
@@ -310,8 +312,13 @@ class _SettingsRouteState extends State<SettingsRoute> {
           ),
           SettingsTile.navigation(
             enabled: AppConfig.useTTS,
-            leading: const Icon(Icons.language),
-            title: const Text('Language Voice'),
+            leading: Icon(Icons.language,
+                color: AppConfig.useTTS ? Theme.of(context).colorScheme.onSurface : Theme.of(context).disabledColor),
+            title: Text('Language Voice',
+                style: TextStyle(
+                    color: AppConfig.useTTS
+                        ? Theme.of(context).colorScheme.onSurfaceVariant
+                        : Theme.of(context).disabledColor)),
             value: Text(AppConfig.ttsLocale),
             onPressed: (context) async {
               final languages = AppConfig.languages;
@@ -385,7 +392,10 @@ class _SettingsRouteState extends State<SettingsRoute> {
             initialValue: AppConfig.themeMode == ThemeMode.dark,
             activeSwitchColor: localGreen,
             leading: const Icon(Icons.dark_mode),
-            title: const Text('Dark Theme'),
+            title: Text('Dark Theme',
+                style: TextStyle(
+                    color:
+                        _useSystemTheme ? Theme.of(context).disabledColor : Theme.of(context).colorScheme.onSurface)),
             description: const Text('Use the dark theme'),
             onToggle: !_useSystemTheme
                 ? (value) {
