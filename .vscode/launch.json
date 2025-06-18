@@ -7,19 +7,22 @@
         {
             "name": "anzan",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "args": ["--web-experimental-hot-reload"]
         },
         {
             "name": "anzan (profile mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "profile"
+            "flutterMode": "profile",
+            "args": ["--web-experimental-hot-reload"]
         },
         {
             "name": "anzan (release mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "release"
+            "flutterMode": "release",
+            "args": ["--web-experimental-hot-reload"]
         }
     ]
 }
