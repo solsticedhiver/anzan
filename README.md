@@ -25,7 +25,13 @@ You can also use a TTS (aka. Text-To-Speach) feature to get the numbers pronounc
 
 This is also a tool you can use to practice on a real soroban, instead of doing anzan.
 
-TODO: we need to add multiplication and division for that purpose.
+TODO: Add multiplication and division to be complete.
+
+### Web
+This app is available as an installable PWA (Progressive Web App) on the web at [sorobanexam.org](https://www.sorobanexam.org/anzan.app/).
+Meaning, this will look like a native app, once installed.
+
+Otherwise, look at the releases below, to install a real native app.
 
 ## Releases
 
@@ -46,9 +52,6 @@ On android, you have to download and install the **apk** package for your device
   - *anzan-armeabi-v7a.apk* for arm 32-bit machine
   - *anzan-arm64-v8a.apk* for arm 64-bit machine
   - *anzan-x86_64.apk* for x86_64 machine
-
-### Web
-This app is also available as an installable PWA (Progressive Web App) on the web at [sorobanexam.org](https://www.sorobanexam.org/anzan.app/)
 
 ### Source
 You can built it yourself from source. You have to have a working *flutter* installation. You run it with `flutter run`.
