@@ -557,7 +557,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: RichText(
               text: TextSpan(
                   text: GPL3,
-                  style: textStyle.copyWith(fontFamily: 'NerdFont', fontSize: 12, fontWeight: FontWeight.w600)))),
+                  style: textStyle.copyWith(fontFamily: 'mono', fontSize: 12, fontWeight: FontWeight.w600)))),
     ];
 
     return LayoutBuilder(builder: (context, constraints) {
