@@ -555,6 +555,7 @@ class _MyHomePageState extends State<MyHomePage> {
       SizedBox(
           width: 550,
           child: RichText(
+              textAlign: TextAlign.justify,
               text: TextSpan(
                   text: GPL3,
                   style: textStyle.copyWith(fontFamily: 'mono', fontSize: 12, fontWeight: FontWeight.w600)))),
