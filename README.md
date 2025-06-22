@@ -3,7 +3,9 @@
 This is a rewrite in **flutter** of our previous work (called *mentalcalcultion* in *python/pyQt*).
 
 It is cross-platform and is able to be run on Linux, Windows, web, Android.
-IOS and macOS are not available because I don't own the required hardware (nothing is possible with emulators in that case).
+iOS and macOS are not available because I don't own the required hardware (nothing is possible with emulators in that case).
+
+You can submit PR for iOS/macOS support.
 
 You can practice your anzan skills i.e. mental abacus (or mental calculation if you don't wish to visualize a soroban).
 
