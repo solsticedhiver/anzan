@@ -5,8 +5,6 @@ This is a rewrite in **flutter** of our previous work (called *mentalcalcultion*
 It is cross-platform and is able to be run on Linux, Windows, web, Android.
 iOS and macOS are not available because I don't own the required hardware (nothing is possible with emulators in that case).
 
-You can submit PR for iOS/macOS support.
-
 You can practice your anzan skills i.e. mental abacus (or mental calculation if you don't wish to visualize a soroban).
 
 <img width="640" src="./flatpak/2025-04-11T23-21.png" />
@@ -56,6 +54,11 @@ On android, you have to download and install the **apk** package for your device
   - *anzan-x86_64.apk* for x86_64 machine
 
 We are working on submitting the app to the F-Droid repo.
+
+### iOS/macOS
+Like said above, I can't build and test the app because I don't own the required Apple hardware.
+
+You can submit PR to imporove the iOS/macOS support. Please use small commits with a single purpose.
 
 ### Source
 You can built it yourself from source. You have to have a working *flutter* installation. You run it with `flutter run`.
