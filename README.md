@@ -55,5 +55,7 @@ On android, you have to download and install the **apk** package for your device
   - *anzan-arm64-v8a.apk* for arm 64-bit machine
   - *anzan-x86_64.apk* for x86_64 machine
 
+We are working on submitting the app to the F-Droid repo.
+
 ### Source
 You can built it yourself from source. You have to have a working *flutter* installation. You run it with `flutter run`.
