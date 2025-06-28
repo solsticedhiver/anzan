@@ -26,4 +26,5 @@ Source: ".\build\windows\x64\runner\Release\media_kit_libs_windows_audio_plugin.
 Source: ".\build\windows\x64\runner\Release\url_launcher_windows_plugin.dll"; DestDir: "{app}\"; Flags: ignoreversion
 
 [Icons]
+Name: "{group}\Anzan"; Filename: "{app}\anzan.exe"; WorkingDir: "{app}"
 Name: "{group}\Uninstall Anzan"; Filename: "{uninstallexe}"
