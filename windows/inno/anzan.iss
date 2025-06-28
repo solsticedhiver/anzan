@@ -1,6 +1,3 @@
-; https://github.com/DomGries/InnoDependencyInstaller
-#include "CodeDependencies.iss"
-
 [Languages]
 Name: "en"; MessagesFile: "compiler:Default.isl"
 Name: "fr"; MessagesFile: "compiler:Languages\French.isl"
@@ -25,6 +22,9 @@ Name: "{app}\data"
 [Files]
 Source: "..\..\build\windows\x64\runner\Release\data\*"; DestDir: "{app}\data\"; Flags: ignoreversion recursesubdirs
 Source: "..\..\build\windows\x64\runner\Release\anzan.exe"; DestDir: "{app}\"; Flags: ignoreversion
+Source: "..\..\build\windows\x64\runner\Release\msvcp140.dll"; DestDir: "{app}\"; Flags: ignoreversion
+Source: "..\..\build\windows\x64\runner\Release\vcruntime140.dll"; DestDir: "{app}\"; Flags: ignoreversion
+Source: "..\..\build\windows\x64\runner\Release\vcruntime140_1.dll"; DestDir: "{app}\"; Flags: ignoreversion
 Source: "..\..\build\windows\x64\runner\Release\flutter_windows.dll"; DestDir: "{app}\"; Flags: ignoreversion
 Source: "..\..\build\windows\x64\runner\Release\libmpv-2.dll"; DestDir: "{app}\"; Flags: ignoreversion
 Source: "..\..\build\windows\x64\runner\Release\media_kit_libs_windows_audio_plugin.dll"; DestDir: "{app}\"; Flags: ignoreversion
@@ -34,11 +34,3 @@ Source: "..\..\build\windows\x64\runner\Release\url_launcher_windows_plugin.dll"
 Name: "{group}\Run Anzan"; Filename: "{app}\anzan.exe"; WorkingDir: "{app}"
 Name: "{group}\Uninstall Anzan"; Filename: "{uninstallexe}"
 
-[Code]
-function InitializeSetup: Boolean;
-begin
-
-  Dependency_AddVC2015To2022;
-
-  Result := True;
-end;

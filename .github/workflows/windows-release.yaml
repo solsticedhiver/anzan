@@ -25,6 +25,13 @@ jobs:
     - run: flutter config --enable-windows-desktop
     - run: flutter build windows --release
 
+    - name: Add Visual C++ Runtime DLLs
+      run: |
+        Copy-Item "${env:SystemRoot}\System32\msvcp140.dll" -Destination build\windows\x64\runner\Release
+        Copy-Item "${env:SystemRoot}\System32\vcruntime140.dll" -Destination build\windows\x64\runner\Release
+        Copy-Item "${env:SystemRoot}\System32\vcruntime140_1.dll" -Destination build\windows\x64\runner\Release
+      env:
+        VCINSTALLDIR: "${{ steps.vcinstalldir.outputs.vcid }}"
     - name: Create setup.exe with Inno
       run: iex "& '${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe' .\windows\inno\anzan.iss"
     - name: Rename setup.exe
