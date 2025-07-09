@@ -426,6 +426,11 @@ class _SettingsRouteState extends State<SettingsRoute> {
             onToggle: (value) {
               setState(() {
                 AppConfig.isTelemetryAllowed = value;
+                if (value) {
+                  AppConfig.distinctId = getDistinctId();
+                } else {
+                  AppConfig.distinctId = '';
+                }
               });
             },
           ),

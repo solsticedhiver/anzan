@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:convert';
 import 'posthog.dart' show posthogApiKey;
+import 'package:http/browser_client.dart';
+import 'package:http/http.dart' as http show Client;
 
 @JS('navigator')
 extension type NavigatorJS._(JSObject _) implements JSObject {
@@ -39,3 +41,5 @@ String getDistinctId() {
 String getHostname() {
   return LocationJS.hostname;
 }
+
+http.Client httpClient = BrowserClient()..withCredentials = true;

@@ -104,7 +104,7 @@ void main() async {
   AppConfig.userAgent = AppConfig.userAgent.replaceAll('platform', AppConfig.platform);
 
   // check pref first
-  if (AppConfig.distinctId.isEmpty) {
+  if (AppConfig.distinctId.isEmpty && AppConfig.isTelemetryAllowed) {
     AppConfig.distinctId = getDistinctId();
     await prefs.setString('distinctId', AppConfig.distinctId);
   }
@@ -164,6 +164,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Timer? t1, t2;
   bool isPlayButtonDisabled = false;
   RichText answerText = RichText(text: const TextSpan(text: ''));
+  final _headers = {'User-Agent': AppConfig.userAgent, 'X-Distinct-ID': AppConfig.distinctId};
+  String _cookieHeader = '';
 
   @override
   void initState() {
@@ -181,11 +183,13 @@ class _MyHomePageState extends State<MyHomePage> {
       Provider.of<ThemeModeModel>(context, listen: false).setThemeMode(AppConfig.themeMode);
 
       try {
-        final req = await http.get(Uri.parse('${AppConfig.host}/tools/tts?lang_list=1&version=1'), headers: {
-          'User-Agent': AppConfig.userAgent,
-          'X-Distinct-ID': AppConfig.distinctId
-        }).timeout(const Duration(seconds: 5));
+        final req =
+            await httpClient.get(Uri.parse('${AppConfig.host}/tools/tts?lang_list=1&version=1'), headers: _headers);
         if (req.statusCode == 200) {
+          final cookies = [
+            for (var value in req.headersSplitValues['set-cookie'] ?? <String>[]) Cookie.fromSetCookieValue(value)
+          ];
+          _cookieHeader = cookies.map((c) => '${c.name}=${c.value}').join('; ');
           final resp = json.decode(req.body);
           for (var l in resp['languages']) {
             AppConfig.languages.add(l);
@@ -460,10 +464,15 @@ class _MyHomePageState extends State<MyHomePage> {
       }
       n = Uri.encodeQueryComponent(n);
       final uri = '${AppConfig.host}/tools/tts?lang=${AppConfig.ttsLocale}&number=$n';
-      futures.add(DefaultCacheManager().getSingleFile(uri, headers: {
+      final headers = {
         'User-Agent': AppConfig.userAgent,
-        'X-Distinct-ID': AppConfig.distinctId
-      }).timeout(const Duration(seconds: 5)));
+        'X-Distinct-ID': AppConfig.distinctId,
+      };
+      if (_cookieHeader.isNotEmpty) {
+        headers['cookie'] = _cookieHeader;
+      }
+
+      futures.add(DefaultCacheManager().getSingleFile(uri, headers: headers).timeout(const Duration(seconds: 5)));
     }
     try {
       var results = await Future.wait(futures, eagerError: true);
@@ -656,6 +665,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           builder: (context) => const SettingsRoute(),
                         ),
                       );
+                      await saveSettings(prefs);
                     },
                   ),
                   AboutListTile(
