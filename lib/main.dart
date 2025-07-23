@@ -186,9 +186,11 @@ class _MyHomePageState extends State<MyHomePage> {
         final req =
             await httpClient.get(Uri.parse('${AppConfig.host}/tools/tts?lang_list=1&version=1'), headers: _headers);
         if (req.statusCode == 200) {
+          // collect all cookies
           final cookies = [
             for (var value in req.headersSplitValues['set-cookie'] ?? <String>[]) Cookie.fromSetCookieValue(value)
           ];
+          // turn them into a string for later header
           _cookieHeader = cookies.map((c) => '${c.name}=${c.value}').join('; ');
           final resp = json.decode(req.body);
           for (var l in resp['languages']) {
@@ -450,7 +452,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _getSounds(BuildContext context) async {
-    var futures = <Future<File>>[];
+    var futures = <Future>[];
     for (var i = 0; i < numbers.length; i++) {
       String n = numbers[i].abs().toString();
       if (AppConfig.useNegNumber) {
@@ -468,16 +470,31 @@ class _MyHomePageState extends State<MyHomePage> {
         'User-Agent': AppConfig.userAgent,
         'X-Distinct-ID': AppConfig.distinctId,
       };
-      if (_cookieHeader.isNotEmpty) {
+      if (_cookieHeader.isNotEmpty && !kIsWeb) {
         headers['cookie'] = _cookieHeader;
       }
 
-      futures.add(DefaultCacheManager().getSingleFile(uri, headers: headers).timeout(const Duration(seconds: 5)));
+      Future future;
+      if (kIsWeb) {
+        // use the regular http client
+        future = httpClient.get(Uri.parse(uri), headers: headers).timeout(const Duration(seconds: 5));
+      } else {
+        /* DefaultCacheManager() does not work on web:
+          - does not use the browser's cache and does not cache
+          - does not send the headers, hence the correct cookie
+          */
+        future = DefaultCacheManager().getSingleFile(uri, headers: headers).timeout(const Duration(seconds: 5));
+      }
+      futures.add(future);
     }
     try {
       var results = await Future.wait(futures, eagerError: true);
       for (var r in results) {
-        sounds.add(r.readAsBytesSync());
+        if (kIsWeb) {
+          sounds.add(r.bodyBytes);
+        } else {
+          sounds.add(r.readAsBytesSync());
+        }
       }
     } catch (e) {
       sounds.clear();

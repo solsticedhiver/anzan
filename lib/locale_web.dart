@@ -42,4 +42,5 @@ String getHostname() {
   return LocationJS.hostname;
 }
 
+// for the web, we need this quirk to get cookies
 http.Client httpClient = BrowserClient()..withCredentials = true;
