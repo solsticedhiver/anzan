@@ -14,7 +14,7 @@ You can practice your anzan skills i.e. mental abacus (or mental calculation if 
   - [Mental abacus](https://en.wikipedia.org/wiki/Mental_abacus)
   - [Mental calculation](https://en.wikipedia.org/wiki/Mental_calculation)
 
-##  Description
+## Description
 The app flashes number and you have to provide the result of the operation (addition and/or subtraction). You are free to use or not anzan for doing the calculation of course, because this is your mental processing the operation.
 
 You can configure various settings:
@@ -62,3 +62,11 @@ You can submit PR to imporove the iOS/macOS support. Please use small commits wi
 
 ### Source
 You can built it yourself from source. You have to have a working *flutter* installation. You run it with `flutter run`.
+
+## Telemetry
+If telemetry is allowed, a unique random ID is generated, and used along side each TTS request to our server **sorobanexam.org**. It is kept for all next runs of the app.
+This helps us to keep track of the number of users of our app.
+
+So calling it telemetry is a little far-fetched.
+
+If it is disabled, a unique ID is created at each start of the app, instead.

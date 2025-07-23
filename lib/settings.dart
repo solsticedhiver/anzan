@@ -422,7 +422,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
             activeSwitchColor: localGreen,
             leading: const Icon(Icons.data_exploration),
             title: const Text('Telemetry'),
-            description: const Text('Usage data collection'),
+            description: const Text('Use a unique random ID'),
             onToggle: (value) {
               setState(() {
                 AppConfig.isTelemetryAllowed = value;
