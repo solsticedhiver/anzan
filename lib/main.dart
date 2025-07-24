@@ -166,6 +166,7 @@ class _MyHomePageState extends State<MyHomePage> {
   RichText answerText = RichText(text: const TextSpan(text: ''));
   final _headers = {'User-Agent': AppConfig.userAgent, 'X-Distinct-ID': AppConfig.distinctId};
   String _cookieHeader = '';
+  final Map<String, Uint8List> myCache = {};
 
   @override
   void initState() {
@@ -453,6 +454,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _getSounds(BuildContext context) async {
     var futures = <Future>[];
+    var keys = <String>[];
     for (var i = 0; i < numbers.length; i++) {
       String n = numbers[i].abs().toString();
       if (AppConfig.useNegNumber) {
@@ -465,7 +467,9 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       }
       n = Uri.encodeQueryComponent(n);
-      final uri = '${AppConfig.host}/tools/tts?lang=${AppConfig.ttsLocale}&number=$n';
+      final key = 'lang=${AppConfig.ttsLocale}&number=$n';
+      keys.add(key);
+      final uri = '${AppConfig.host}/tools/tts?$key';
       final headers = {
         'User-Agent': AppConfig.userAgent,
         'X-Distinct-ID': AppConfig.distinctId,
@@ -477,7 +481,11 @@ class _MyHomePageState extends State<MyHomePage> {
       Future future;
       if (kIsWeb) {
         // use the regular http client
-        future = httpClient.get(Uri.parse(uri), headers: headers).timeout(const Duration(seconds: 5));
+        if (myCache.containsKey(key)) {
+          future = Future.value(myCache[key]);
+        } else {
+          future = httpClient.get(Uri.parse(uri), headers: headers).timeout(const Duration(seconds: 5));
+        }
       } else {
         /* DefaultCacheManager() does not work on web:
           - does not use the browser's cache and does not cache
@@ -489,12 +497,19 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     try {
       var results = await Future.wait(futures, eagerError: true);
+      int count = 0;
       for (var r in results) {
         if (kIsWeb) {
-          sounds.add(r.bodyBytes);
+          try {
+            sounds.add(r.bodyBytes);
+            myCache[keys[count]] = r.bodyBytes;
+          } on NoSuchMethodError {
+            sounds.add(r);
+          }
         } else {
           sounds.add(r.readAsBytesSync());
         }
+        count++;
       }
     } catch (e) {
       sounds.clear();
