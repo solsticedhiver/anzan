@@ -83,23 +83,23 @@ void main() async {
 
   await getSettings(prefs);
 
-  String source = 'unknown';
+  String source = 'Unknown';
   if (kIsWeb) {
-    source = 'web';
+    source = 'Web';
   } else if (Platform.isWindows) {
-    source = 'windows';
+    source = 'Windows';
   } else if (Platform.isAndroid) {
-    source = 'android';
+    source = 'Android';
   } else if (Platform.isLinux) {
-    source = 'linux';
+    source = 'Linux';
   } else if (Platform.isMacOS) {
     source = 'macOS';
   } else if (Platform.isIOS) {
-    source = 'IOS';
+    source = 'iOS';
   }
-  AppConfig.platform = '${source.substring(0, 1).toUpperCase()}${source.substring(1)}';
+  AppConfig.platform = source;
   if (const bool.fromEnvironment('dart.tool.dart2wasm')) {
-    AppConfig.platform = '${AppConfig.platform} (wasm)';
+    AppConfig.platform = '${AppConfig.platform}/Wasm';
   }
   AppConfig.userAgent = AppConfig.userAgent.replaceAll('platform', AppConfig.platform);
 
@@ -164,7 +164,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Timer? t1, t2;
   bool isPlayButtonDisabled = false;
   RichText answerText = RichText(text: const TextSpan(text: ''));
-  final _headers = {'User-Agent': AppConfig.userAgent, 'X-Distinct-ID': AppConfig.distinctId};
+  final _headers = {'X-Custom-Ua': AppConfig.userAgent, 'X-Distinct-ID': AppConfig.distinctId};
   String _cookieHeader = '';
   final Map<String, Uint8List> myCache = {};
 
@@ -470,10 +470,7 @@ class _MyHomePageState extends State<MyHomePage> {
       final key = 'lang=${AppConfig.ttsLocale}&number=$n';
       keys.add(key);
       final uri = '${AppConfig.host}/tools/tts?$key';
-      final headers = {
-        'User-Agent': AppConfig.userAgent,
-        'X-Distinct-ID': AppConfig.distinctId,
-      };
+      final headers = _headers;
       if (_cookieHeader.isNotEmpty && !kIsWeb) {
         headers['cookie'] = _cookieHeader;
       }

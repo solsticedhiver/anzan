@@ -8,6 +8,7 @@ class AppConfig {
   static const String appVersion = '0.6.0';
   static String host = 'https://www.sorobanexam.org';
   static String userAgent = 'Anzan/$appVersion (platform)';
+  static String platform = '';
   static String commit = 'HEAD';
   static String distinctId = '';
 
@@ -27,7 +28,6 @@ class AppConfig {
   static bool isTelemetryAllowed = true;
   static ThemeMode themeMode = ThemeMode.system;
   static int updateNotificationCount = 0;
-  static String platform = '';
 }
 
 Future<void> getSettings(SharedPreferencesAsync prefs) async {
