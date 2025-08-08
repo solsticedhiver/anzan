@@ -35,13 +35,13 @@ jobs:
     - name: Create setup.exe with Inno
       run: iex "& '${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe' .\windows\inno\anzan.iss"
     - name: Rename setup.exe
-      run: Rename-Item .\windows\inno\Output\mysetup.exe anzan-setup.exe
+      run: Rename-Item .\windows\inno\Output\mysetup.exe anzan-windows-setup.exe
     - name: Create a release on GitHub
       if: ${{ !env.ACT }}
       uses: ncipollo/release-action@v1
       with:
         allowUpdates: true
-        artifacts: "./windows/inno/Output/anzan-setup.exe"
+        artifacts: "./windows/inno/Output/anzan-windows-setup.exe"
         token: "${{ secrets.GH_TOKEN }}"
         tag: "v${{ steps.version.outputs.version }}"
         commit: "${{ github.sha }}"
