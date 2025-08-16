@@ -327,24 +327,25 @@ class _SettingsRouteState extends State<SettingsRoute> {
                   builder: (context) {
                     return AlertDialog(
                       content: StatefulBuilder(builder: (context, setState) {
-                        return SingleChildScrollView(
-                            child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: languages.map((l) {
-                                  return RadioListTile<String>(
-                                    activeColor: localGreen,
-                                    selectedTileColor: localGreen.withAlpha(31),
-                                    selected: _ttsLocale == l,
-                                    title: Text(l),
-                                    value: l,
-                                    groupValue: _ttsLocale,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _ttsLocale = value!;
-                                      });
-                                    },
-                                  );
-                                }).toList()));
+                        return RadioGroup<String>(
+                            groupValue: _ttsLocale,
+                            onChanged: (value) {
+                              setState(() {
+                                _ttsLocale = value!;
+                              });
+                            },
+                            child: SingleChildScrollView(
+                                child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: languages.map((l) {
+                                      return RadioListTile<String>(
+                                        activeColor: localGreen,
+                                        selectedTileColor: localGreen.withAlpha(31),
+                                        selected: _ttsLocale == l,
+                                        title: Text(l),
+                                        value: l,
+                                      );
+                                    }).toList())));
                       }),
                       actions: [
                         TextButton(
