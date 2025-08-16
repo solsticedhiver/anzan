@@ -15,10 +15,14 @@ Future<void> posthog(String distinctId, String event, Map<String, String> proper
     'distinct_id': distinctId,
     'properties': properties,
   };
-  final req = await http
-      .post(Uri.parse(posthogApiUrl), headers: posthogHeaders, body: jsonEncode(payload))
-      .timeout(const Duration(seconds: 5));
-  if (req.statusCode != 200) {
-    debugPrint('Error posting to PostHog: ${req.body}');
+  try {
+    final req = await http
+        .post(Uri.parse(posthogApiUrl), headers: posthogHeaders, body: jsonEncode(payload))
+        .timeout(const Duration(seconds: 5));
+    if (req.statusCode != 200) {
+      debugPrint('Error posting to PostHog: ${req.body}');
+    }
+  } catch (e) {
+    debugPrint(e.toString());
   }
 }
