@@ -23,7 +23,8 @@ class _SettingsRouteState extends State<SettingsRoute> {
     return Scaffold(
       appBar: AppBar(foregroundColor: Colors.black, backgroundColor: lightBrown, title: const Text('Settings')),
       body: Center(
-          child: SettingsList(sections: [
+          child: SafeArea(
+              child: SettingsList(sections: [
         SettingsSection(title: Text('Numbers', style: TextStyle(color: localGreen)), tiles: [
           CustomSettingsTile(
               child: Container(
@@ -436,7 +437,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
             },
           ),
         ])
-      ])),
+      ]))),
     );
   }
 }
