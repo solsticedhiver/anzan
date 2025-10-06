@@ -67,6 +67,15 @@
     .loader:before {
       content:"Loading..."
     }
+    .msg {
+      padding: 25px 15px 25px 15px;
+      font-style: italic;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .msg a {
+      color: #168362;
+    }
     @keyframes l2 {to{background-size: 100% 3px}}
     @media screen and (max-width: 512px) {
       .img {
@@ -82,11 +91,17 @@
         background: #FFF;
         color: #333;
       }
+      .msg a {
+        color: #168362;
+      }
     }
     @media (prefers-color-scheme: dark) {
       body {
         background: #333;
         color: #FFF;
+      }
+      .msg a {
+        color: #25daa4;
       }
     }
   </style>
@@ -95,6 +110,9 @@
   <div id="loading_indicator" class="container">
     <img src="assets/assets/soroban-rounded-512x512.webp" alt="a close-up view of a soroban" class="img"/>
     <div class="loader"></div>
+    <div class="msg">
+      <p>Too slow ? Use the previous HTML/CSS/JS tool at <a href="/mentalcalculation.html?fullscreen=1">mentalcalculation.html</a></p>
+    </div>
   </div>
   <script src="flutter_bootstrap.js" async></script>
 </body>
