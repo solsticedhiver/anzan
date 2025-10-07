@@ -24,16 +24,13 @@ jobs:
       shell: bash
     - uses: snapcore/action-build@v1
       id: snapcraft
-    - name: Add linux in the snap name
-      id: newvarname
-      run: |
-        MYVARSNAP=${{ steps.snapcraft.outputs.snap }}
-        echo "mysnap=${MYVARSNAP/anzan_/anzan-linux_}" >> $GITHUB_OUTPUT
+    - name: Rename snap name with linux and no release
+      run: mv ${{ steps.snapcraft.outputs.snap }} anzan-linux_amd64.snap
     - name: Create a release in GitHub
       uses: ncipollo/release-action@v1
       with:
         allowUpdates: true
-        artifacts: ${{ steps.newvarname.outputs.mysnap }}
+        artifacts: anzan-linux_amd64.snap
         token: "${{ secrets.GH_TOKEN }}"
         tag: "v${{ steps.version.outputs.version }}"
         commit: "${{ github.sha }}"
