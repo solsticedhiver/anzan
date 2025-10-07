@@ -30,9 +30,14 @@ jobs:
         Copy-Item "${env:SystemRoot}\System32\msvcp140.dll" -Destination build\windows\x64\runner\Release
         Copy-Item "${env:SystemRoot}\System32\vcruntime140.dll" -Destination build\windows\x64\runner\Release
         Copy-Item "${env:SystemRoot}\System32\vcruntime140_1.dll" -Destination build\windows\x64\runner\Release
-      env:
-        VCINSTALLDIR: "${{ steps.vcinstalldir.outputs.vcid }}"
-    - name: Create setup.exe with Inno
+    - name: Install Inno Setup if missing
+      run: |
+        $InnoSetup = Join-Path ${env:ProgramFiles(x86)} -ChildPath 'Inno Setup 6\iscc.exe'
+        if (!(Test-Path $InnoSetup)) {
+            Invoke-WebRequest -Uri "https://jrsoftware.org/download.php/is.exe" -OutFile "D:\\is.exe"
+            Start-Process -FilePath "D:\\is.exe" -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART" -Wait
+        }
+    - name: Create setup.exe with Inno Setup
       run: iex "& '${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe' .\windows\inno\anzan.iss"
     - name: Rename setup.exe
       run: Rename-Item .\windows\inno\Output\mysetup.exe anzan-windows-setup.exe
