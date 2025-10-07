@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 typedef Run = ({List<int> op, bool? success});
 
 class AppConfig {
-  static const String appVersion = '0.6.0';
+  static const String appVersion = '0.6.1';
   static String host = 'https://www.sorobanexam.org';
   static String userAgent = 'Anzan/$appVersion (platform)';
   static String platform = '';
