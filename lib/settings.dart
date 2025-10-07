@@ -256,7 +256,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
                                 ? Theme.of(context).colorScheme.onSurface
                                 : Theme.of(context).disabledColor)),
                       ),
-                      Text('in ms (between each operation)',
+                      Text('in ms\nbetween operations',
                           style: TextStyle(
                               color: (AppConfig.useContinuousMode
                                   ? Theme.of(context).colorScheme.onSurface
