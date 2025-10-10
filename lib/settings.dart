@@ -97,8 +97,8 @@ class _SettingsRouteState extends State<SettingsRoute> {
                     SizedBox(
                         width: 150,
                         child: SpinBox(
-                          min: 1,
-                          max: 15,
+                          min: 2,
+                          max: 25,
                           value: AppConfig.numRowInt.toDouble(),
                           iconColor: WidgetStateProperty.resolveWith((states) {
                             if (states.contains(WidgetState.disabled)) {
@@ -141,7 +141,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
                         width: 150,
                         child: SpinBox(
                           min: 50,
-                          max: 1000,
+                          max: 5000,
                           step: 50,
                           pageStep: 100,
                           value: AppConfig.timeFlash.toDouble(),
@@ -183,7 +183,7 @@ class _SettingsRouteState extends State<SettingsRoute> {
                     SizedBox(
                         width: 150,
                         child: SpinBox(
-                          min: 100,
+                          min: 50,
                           max: 5000,
                           step: 50,
                           pageStep: 100,
