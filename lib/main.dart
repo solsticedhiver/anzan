@@ -541,7 +541,7 @@ class _MyHomePageState extends State<MyHomePage> {
       isReplayable = false;
     });
     if (context.mounted) {
-      FocusScope.of(context).unfocus();
+      myFocusNode.unfocus();
       Provider.of<NumberModel>(context, listen: false).setNumber('');
     }
     Future.delayed(Duration(milliseconds: AppConfig.timeout), () async {

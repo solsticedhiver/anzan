@@ -7,19 +7,19 @@
         {
             "name": "anzan",
             "request": "launch",
-            "type": "dart",
+            "type": "dart"
         },
         {
             "name": "anzan (profile mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "profile",
+            "flutterMode": "profile"
         },
         {
             "name": "anzan (release mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "release",
+            "flutterMode": "release"
         }
     ]
 }
