@@ -732,7 +732,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 iconSize: 32.0,
                 icon: Icon(Icons.replay, color: isReplayable ? Colors.white : Colors.black),
                 style: IconButton.styleFrom(
-                    backgroundColor: green, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0))),
+                    backgroundColor: green,
+                    disabledBackgroundColor: lightBrown,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0))),
                 onPressed: isReplayable
                     ? () {
                         setState(() {
@@ -741,7 +743,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         Provider.of<NumberModel>(context, listen: false).setVisible(false);
                         _replay();
                       }
-                    : () {},
+                    : null,
               ),
               SizedBox(
                   width: 150,
@@ -764,11 +766,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   )),
               IconButton(
                 iconSize: 32.0,
-                icon: Icon(Icons.input, color: isReplayable ? Colors.white : Colors.black),
+                icon: Icon(Icons.input,
+                    color: !(isPlaying || _indx != AppConfig.numRowInt) ? Colors.white : Colors.black),
                 style: IconButton.styleFrom(
-                    backgroundColor: green, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0))),
+                    backgroundColor: green,
+                    disabledBackgroundColor: lightBrown,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0))),
                 onPressed: (isPlaying || _indx != AppConfig.numRowInt)
-                    ? () {}
+                    ? null
                     : () {
                         if (isPlaying) return;
                         final sum = numbers.fold<int>(0, (p, c) => p + c);
@@ -811,7 +816,7 @@ class _MyHomePageState extends State<MyHomePage> {
           backgroundColor: green,
           foregroundColor: Colors.white,
           onPressed: isPlayButtonDisabled
-              ? () {}
+              ? null
               : () {
                   setState(() {
                     isPlaying = !isPlaying;
