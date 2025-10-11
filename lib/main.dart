@@ -786,15 +786,15 @@ class _MyHomePageState extends State<MyHomePage> {
                             icon = const Icon(Icons.check_box, color: Colors.green);
                             AppConfig.history[AppConfig.history.length - 1] =
                                 (op: AppConfig.history[AppConfig.history.length - 1].op, success: true);
+                            setState(() {
+                              answerText = currentOperation(numbers.sublist(0, _indx), true);
+                            });
                           } else {
                             msg = 'The answer is incorrect';
                             icon = const Icon(Icons.close, color: Colors.red);
                             AppConfig.history[AppConfig.history.length - 1] =
                                 (op: AppConfig.history[AppConfig.history.length - 1].op, success: false);
                           }
-                          setState(() {
-                            answerText = currentOperation(numbers.sublist(0, _indx), true);
-                          });
                         } catch (e) {
                           msg = 'The answer is not a number';
                           icon = const Icon(Icons.error, color: Colors.red);
