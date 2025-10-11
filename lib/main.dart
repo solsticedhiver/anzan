@@ -549,6 +549,62 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _checkAnswer(BuildContext context) {
+    final sum = numbers.fold<int>(0, (p, c) => p + c);
+    String msg;
+    Icon icon = const Icon(null);
+    try {
+      final sol = int.parse(textEditingController.text);
+      if (sol == sum) {
+        msg = 'The answer is correct';
+        icon = const Icon(Icons.check_box, color: Colors.green);
+        AppConfig.history[AppConfig.history.length - 1] =
+            (op: AppConfig.history[AppConfig.history.length - 1].op, success: true);
+        setState(() {
+          answerText = currentOperation(numbers.sublist(0, _indx), true);
+        });
+      } else {
+        msg = 'The answer is incorrect';
+        icon = const Icon(Icons.close, color: Colors.red);
+        AppConfig.history[AppConfig.history.length - 1] =
+            (op: AppConfig.history[AppConfig.history.length - 1].op, success: false);
+      }
+    } catch (e) {
+      msg = 'The answer is not a number';
+      icon = const Icon(Icons.error, color: Colors.red);
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content:
+            Center(child: Row(mainAxisSize: MainAxisSize.min, children: [Text(msg), const SizedBox(width: 15), icon])),
+        showCloseIcon: true,
+      ),
+    );
+  }
+
+  void _togglePlayPause(BuildContext context) {
+    setState(() {
+      isPlaying = !isPlaying;
+      answerText = RichText(text: const TextSpan());
+    });
+    if (!isPlaying) {
+      isPlayButtonDisabled = true;
+      Future.delayed(const Duration(seconds: 1), () {
+        setState(() {
+          isPlayButtonDisabled = false;
+        });
+      });
+      Provider.of<NumberModel>(context, listen: false).setVisible(false);
+      player?.stop();
+      t1?.cancel();
+      t2?.cancel();
+    } else {
+      Provider.of<NumberModel>(context, listen: false).setVisible(false);
+      answerText = RichText(text: const TextSpan(text: ''));
+      _startPlay(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -754,6 +810,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     keyboardType: TextInputType.number,
                     maxLines: 1,
                     controller: textEditingController,
+                    onSubmitted: (value) => _checkAnswer(context),
                     decoration: const InputDecoration(
                       isDense: true,
                       border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
@@ -776,38 +833,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ? null
                     : () {
                         if (isPlaying) return;
-                        final sum = numbers.fold<int>(0, (p, c) => p + c);
-                        String msg;
-                        Icon icon = const Icon(null);
-                        try {
-                          final sol = int.parse(textEditingController.text);
-                          if (sol == sum) {
-                            msg = 'The answer is correct';
-                            icon = const Icon(Icons.check_box, color: Colors.green);
-                            AppConfig.history[AppConfig.history.length - 1] =
-                                (op: AppConfig.history[AppConfig.history.length - 1].op, success: true);
-                            setState(() {
-                              answerText = currentOperation(numbers.sublist(0, _indx), true);
-                            });
-                          } else {
-                            msg = 'The answer is incorrect';
-                            icon = const Icon(Icons.close, color: Colors.red);
-                            AppConfig.history[AppConfig.history.length - 1] =
-                                (op: AppConfig.history[AppConfig.history.length - 1].op, success: false);
-                          }
-                        } catch (e) {
-                          msg = 'The answer is not a number';
-                          icon = const Icon(Icons.error, color: Colors.red);
-                        }
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Center(
-                                child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [Text(msg), const SizedBox(width: 15), icon])),
-                            showCloseIcon: true,
-                          ),
-                        );
+                        _checkAnswer(context);
                       },
               ),
             ])),
@@ -815,30 +841,7 @@ class _MyHomePageState extends State<MyHomePage> {
         floatingActionButton: FloatingActionButton(
           backgroundColor: green,
           foregroundColor: Colors.white,
-          onPressed: isPlayButtonDisabled
-              ? null
-              : () {
-                  setState(() {
-                    isPlaying = !isPlaying;
-                    answerText = RichText(text: const TextSpan());
-                  });
-                  if (!isPlaying) {
-                    isPlayButtonDisabled = true;
-                    Future.delayed(const Duration(seconds: 1), () {
-                      setState(() {
-                        isPlayButtonDisabled = false;
-                      });
-                    });
-                    Provider.of<NumberModel>(context, listen: false).setVisible(false);
-                    player?.stop();
-                    t1?.cancel();
-                    t2?.cancel();
-                  } else {
-                    Provider.of<NumberModel>(context, listen: false).setVisible(false);
-                    answerText = RichText(text: const TextSpan(text: ''));
-                    _startPlay(context);
-                  }
-                },
+          onPressed: isPlayButtonDisabled ? null : () => _togglePlayPause(context),
           child: Icon(isPlaying ? Icons.stop : Icons.play_arrow),
         ),
       );
