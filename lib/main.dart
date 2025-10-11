@@ -161,7 +161,7 @@ class _MyHomePageState extends State<MyHomePage> {
   late Player? player;
   TextEditingController textEditingController = TextEditingController();
   late FocusNode myFocusNode;
-  Timer? t1, t2;
+  Timer? t1, t2, t3, t4, t5;
   bool isPlayButtonDisabled = false;
   RichText answerText = RichText(text: const TextSpan(text: ''));
   final _headers = {'X-Custom-Ua': AppConfig.userAgent, 'X-Distinct-ID': AppConfig.distinctId};
@@ -365,7 +365,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return answerText;
   }
 
-  Future<void> _nextRandomNumber() async {
+  Future<void> _nextRandomNumber(BuildContext context) async {
     if (!isPlaying) return;
 
     final numberModel = Provider.of<NumberModel>(context, listen: false);
@@ -386,26 +386,25 @@ class _MyHomePageState extends State<MyHomePage> {
         AppConfig.history.removeRange(0, AppConfig.history.length - AppConfig.maxHistoryLength);
       }
 
-      Future.delayed(Duration(milliseconds: AppConfig.timeout), () {
+      t3 = Timer(Duration(milliseconds: AppConfig.timeout), () {
         numberModel.setNumber('?');
         numberModel.setVisible(true);
         if (AppConfig.useContinuousMode) {
           setState(() {
             answerText = RichText(text: const TextSpan());
           });
-        }
-        if (!AppConfig.useContinuousMode) {
+        } else {
           textEditingController.clear();
           myFocusNode.requestFocus();
         }
 
-        Future.delayed(Duration(milliseconds: 2 * AppConfig.timeout), () {
+        t4 = Timer(Duration(milliseconds: 2 * AppConfig.timeout), () {
           if (AppConfig.useContinuousMode) {
             setState(() {
               answerText = currentOperation(numbers.sublist(0, _indx), true);
               isPlaying = true;
             });
-            Future.delayed(Duration(milliseconds: AppConfig.pause), () {
+            t5 = Timer(Duration(milliseconds: AppConfig.pause), () {
               // ignore: use_build_context_synchronously
               if (context.mounted) {
                 _startPlay(context);
@@ -440,7 +439,7 @@ class _MyHomePageState extends State<MyHomePage> {
       numberModel.setVisible(false);
       _indx++;
       t2 = Timer(Duration(milliseconds: AppConfig.timeout), () async {
-        await _nextRandomNumber();
+        await _nextRandomNumber(context);
       });
     });
   }
@@ -448,7 +447,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _replay() {
     _indx = 0;
     if (isPlaying) {
-      _nextRandomNumber();
+      _nextRandomNumber(context);
     }
   }
 
@@ -545,7 +544,7 @@ class _MyHomePageState extends State<MyHomePage> {
       Provider.of<NumberModel>(context, listen: false).setNumber('');
     }
     Future.delayed(Duration(milliseconds: AppConfig.timeout), () async {
-      await _nextRandomNumber();
+      await _nextRandomNumber(context);
     });
   }
 
@@ -786,17 +785,24 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Row(spacing: 10.0, mainAxisAlignment: MainAxisAlignment.center, children: [
               IconButton(
                 iconSize: 32.0,
-                icon: Icon(Icons.replay, color: isReplayable ? Colors.white : Colors.black),
+                icon: Icon(Icons.replay,
+                    color:
+                        (isReplayable && ((!isPlaying && !AppConfig.useContinuousMode) || AppConfig.useContinuousMode))
+                            ? Colors.white
+                            : Colors.black),
                 style: IconButton.styleFrom(
                     backgroundColor: green,
                     disabledBackgroundColor: lightBrown,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0))),
-                onPressed: isReplayable
+                onPressed: isReplayable && ((!isPlaying && !AppConfig.useContinuousMode) || AppConfig.useContinuousMode)
                     ? () {
                         setState(() {
                           isPlaying = true;
                         });
                         Provider.of<NumberModel>(context, listen: false).setVisible(false);
+                        t3?.cancel();
+                        t4?.cancel();
+                        t5?.cancel();
                         _replay();
                       }
                     : null,
@@ -810,6 +816,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     keyboardType: TextInputType.number,
                     maxLines: 1,
                     controller: textEditingController,
+                    enabled: !isPlaying && _indx == AppConfig.numRowInt,
                     onSubmitted: (value) => _checkAnswer(context),
                     decoration: const InputDecoration(
                       isDense: true,
