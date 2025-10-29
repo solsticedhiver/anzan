@@ -281,53 +281,59 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // dart Random.nextInt() can't handle int bigger than 2^32
-  int _generateRandomBigInteger(int startInt, int maxInt) {
+  int _generateRandomBigInteger(int startInt, int maxInt, Random rnd) {
     final minLength = startInt.toString().length;
     final maxLength = maxInt.toString().length;
-    final random = Random();
 
     if (minLength < 1 || maxLength < minLength) {
       throw ArgumentError('Invalid length parameters ($minLength, $maxLength)');
     }
 
-    final randomLength = random.nextInt(maxLength - minLength + 1) + minLength;
+    final randomLength = rnd.nextInt(maxLength - minLength + 1) + minLength;
 
     StringBuffer randomNumber;
     int rn;
     do {
       randomNumber = StringBuffer();
-      randomNumber.write(random.nextInt(9) + 1);
+      randomNumber.write(rnd.nextInt(9) + 1);
       for (int i = 1; i < randomLength; i++) {
-        randomNumber.write(random.nextInt(10));
+        randomNumber.write(rnd.nextInt(10));
       }
       rn = int.parse(randomNumber.toString());
     } while (rn < startInt || rn > maxInt);
     return rn;
   }
 
-  int _generateRandomInteger(int startInt, int maxInt) {
+  int _generateRandomInteger(int startInt, int maxInt, Random rnd) {
     final minLength = startInt.toString().length;
     // if more than 9 digits or > 2^32, don't use dart Random()
     if (minLength > 9) {
-      return _generateRandomBigInteger(startInt, maxInt);
+      return _generateRandomBigInteger(startInt, maxInt, rnd);
     } else {
-      return Random().nextInt(maxInt - startInt + 1) + startInt;
+      return rnd.nextInt(maxInt - startInt + 1) + startInt;
     }
   }
 
   void _generateNumbers(int length, int digits, bool allowNegative) {
-    final random = Random();
+    Random rnd;
+    try {
+      rnd = Random.secure();
+      debugPrint('Using Random.secure()');
+    } on UnsupportedError {
+      debugPrint('Random.secure() is not supported');
+      rnd = Random();
+    }
     int startInt = pow(10, digits - 1).toInt();
     int maxInt = pow(10, digits).toInt() - 1;
     //debugPrint('startInt=$startInt, maxInt=$maxInt');
     numbers = [];
     int sum = 0, nextNum;
     for (int i = 0; i < length; i++) {
-      nextNum = _generateRandomInteger(startInt, maxInt);
+      nextNum = _generateRandomInteger(startInt, maxInt, rnd);
       if (allowNegative && sum > startInt) {
-        bool isNegative = random.nextInt(2).toInt() == 1 ? true : false;
+        bool isNegative = rnd.nextInt(2) == 1 ? true : false;
         if (isNegative) {
-          nextNum = -1 * _generateRandomInteger(startInt, min(sum, maxInt));
+          nextNum = -1 * _generateRandomInteger(startInt, min(sum, maxInt), rnd);
         }
       }
       sum += nextNum;
