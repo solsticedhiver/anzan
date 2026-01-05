@@ -101,7 +101,8 @@ void main() async {
   if (const bool.fromEnvironment('dart.tool.dart2wasm')) {
     AppConfig.platform = '${AppConfig.platform}/Wasm';
   }
-  AppConfig.userAgent = AppConfig.userAgent.replaceAll('platform', AppConfig.platform);
+  AppConfig.userAgent =
+      AppConfig.userAgent.replaceAll('platform', AppConfig.platform);
 
   // check pref first
   if (AppConfig.distinctId.isEmpty && AppConfig.isTelemetryAllowed) {
@@ -110,7 +111,8 @@ void main() async {
   }
 
   if (kReleaseMode && AppConfig.isTelemetryAllowed) {
-    posthog(AppConfig.distinctId, 'app_started', {'source': source, 'version': AppConfig.appVersion});
+    posthog(AppConfig.distinctId, 'app_started',
+        {'source': source, 'version': AppConfig.appVersion});
   } else {
     debugPrint(
         "posthog('${AppConfig.distinctId}', 'app_started', {'source': $source, 'version': ${AppConfig.appVersion}});");
@@ -133,8 +135,12 @@ class MyApp extends StatelessWidget {
     return Consumer<ThemeModeModel>(builder: (context, tMM, child) {
       return MaterialApp(
         title: 'Mental Calculation',
-        theme: ThemeData(colorScheme: const ColorScheme.light(primary: green, secondary: lightBrown)),
-        darkTheme: ThemeData(colorScheme: const ColorScheme.dark(primary: lightGreen, secondary: lightBrown)),
+        theme: ThemeData(
+            colorScheme:
+                const ColorScheme.light(primary: green, secondary: lightBrown)),
+        darkTheme: ThemeData(
+            colorScheme: const ColorScheme.dark(
+                primary: lightGreen, secondary: lightBrown)),
         themeMode: tMM.themeMode,
         home: const MyHomePage(title: 'Anzan'),
       );
@@ -164,7 +170,10 @@ class _MyHomePageState extends State<MyHomePage> {
   Timer? t1, t2, t3, t4, t5;
   bool isPlayButtonDisabled = false;
   RichText answerText = RichText(text: const TextSpan(text: ''));
-  final _headers = {'X-Custom-Ua': AppConfig.userAgent, 'X-Distinct-ID': AppConfig.distinctId};
+  final _headers = {
+    'X-Custom-Ua': AppConfig.userAgent,
+    'X-Distinct-ID': AppConfig.distinctId
+  };
   String _cookieHeader = '';
   final Map<String, Uint8List> myCache = {};
 
@@ -181,15 +190,19 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      Provider.of<ThemeModeModel>(context, listen: false).setThemeMode(AppConfig.themeMode);
+      Provider.of<ThemeModeModel>(context, listen: false)
+          .setThemeMode(AppConfig.themeMode);
 
       try {
-        final req =
-            await httpClient.get(Uri.parse('${AppConfig.host}/tools/tts?lang_list=1&version=1'), headers: _headers);
+        final req = await httpClient.get(
+            Uri.parse('${AppConfig.host}/tools/tts?lang_list=1&version=1'),
+            headers: _headers);
         if (req.statusCode == 200) {
           // collect all cookies
           final cookies = [
-            for (var value in req.headersSplitValues['set-cookie'] ?? <String>[]) Cookie.fromSetCookieValue(value)
+            for (var value
+                in req.headersSplitValues['set-cookie'] ?? <String>[])
+              Cookie.fromSetCookieValue(value)
           ];
           // turn them into a string for later header
           _cookieHeader = cookies.map((c) => '${c.name}=${c.value}').join('; ');
@@ -199,18 +212,21 @@ class _MyHomePageState extends State<MyHomePage> {
           }
           //debugPrint(AppConfig.languages.toString());
           final version = resp['version'];
-          if (AppConfig.updateNotificationCount < 3 && compareVersion(AppConfig.appVersion, version) == 1) {
+          if (AppConfig.updateNotificationCount < 3 &&
+              compareVersion(AppConfig.appVersion, version) == 1) {
             // show a dialog about the new version
             if (context.mounted) {
               const redOnDark = Color.fromARGB(255, 0xF3, 0x74, 0x74);
               const redOnLight = Color.fromARGB(255, 0xBD, 0x37, 0x37);
               Color red = redOnDark;
-              if (Theme.of(context).scaffoldBackgroundColor.computeLuminance() < 0.179) {
+              if (Theme.of(context).scaffoldBackgroundColor.computeLuminance() <
+                  0.179) {
                 red = redOnLight;
               }
               if (!kIsWeb) {
                 AppConfig.updateNotificationCount += 1;
-                await prefs.setInt('updateNotificationCount', AppConfig.updateNotificationCount);
+                await prefs.setInt('updateNotificationCount',
+                    AppConfig.updateNotificationCount);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                       duration: const Duration(seconds: 30),
@@ -225,7 +241,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           label: 'Go to website',
                           textColor: red,
                           onPressed: () {
-                            launchUrl(Uri.parse('https://www.sorobanexam.org/anzan.html'));
+                            launchUrl(Uri.parse(
+                                'https://www.sorobanexam.org/anzan.html'));
                           })),
                 );
               }
@@ -237,16 +254,19 @@ class _MyHomePageState extends State<MyHomePage> {
         debugPrint(e.toString());
       }
 
-      if (!_hasWarningBeenShown && (AppConfig.languages.isEmpty || !_hasMediaKitBeenInitialized)) {
+      if (!_hasWarningBeenShown &&
+          (AppConfig.languages.isEmpty || !_hasMediaKitBeenInitialized)) {
         _hasWarningBeenShown = true;
         String title, content;
         if (!_hasMediaKitBeenInitialized) {
           title = 'Error initliazing MediaKit library';
-          content = 'This usually means the libmpv library was not found. Check your installation of libmpv.\n'
+          content =
+              'This usually means the libmpv library was not found. Check your installation of libmpv.\n'
               'TTS will be disabled';
         } else {
           title = 'Error fetching the TTS languages list';
-          content = 'There was a network error while retrieving the TTS language list. TTS will be disabled.\n'
+          content =
+              'There was a network error while retrieving the TTS language list. TTS will be disabled.\n'
               'Please relaunch or reload the app to retry once your internet connection is up and running.';
         }
         showDialog(
@@ -254,10 +274,12 @@ class _MyHomePageState extends State<MyHomePage> {
             builder: (context) {
               return AlertDialog(
                 title: Text(title),
-                content: Text(content, style: Theme.of(context).textTheme.bodyMedium),
+                content: Text(content,
+                    style: Theme.of(context).textTheme.bodyMedium),
                 actions: <Widget>[
                   TextButton(
-                    style: TextButton.styleFrom(textStyle: Theme.of(context).textTheme.labelLarge),
+                    style: TextButton.styleFrom(
+                        textStyle: Theme.of(context).textTheme.labelLarge),
                     child: const Text('OK'),
                     onPressed: () {
                       Navigator.of(context).pop();
@@ -333,7 +355,8 @@ class _MyHomePageState extends State<MyHomePage> {
       if (allowNegative && sum > startInt) {
         bool isNegative = rnd.nextInt(2) == 1 ? true : false;
         if (isNegative) {
-          nextNum = -1 * _generateRandomInteger(startInt, min(sum, maxInt), rnd);
+          nextNum =
+              -1 * _generateRandomInteger(startInt, min(sum, maxInt), rnd);
         }
       }
       sum += nextNum;
@@ -352,8 +375,12 @@ class _MyHomePageState extends State<MyHomePage> {
       n = op[i];
       textSpans.add(TextSpan(
           text: n > 0 ? ' + ' : ' - ',
-          style: textStyle.copyWith(fontWeight: FontWeight.bold, color: n > 0 ? Colors.grey[500] : Colors.grey[700])));
-      textSpans.add(TextSpan(text: NumberFormat.decimalPattern(AppConfig.locale).format(n.abs()), style: textStyle));
+          style: textStyle.copyWith(
+              fontWeight: FontWeight.bold,
+              color: n > 0 ? Colors.grey[500] : Colors.grey[700])));
+      textSpans.add(TextSpan(
+          text: NumberFormat.decimalPattern(AppConfig.locale).format(n.abs()),
+          style: textStyle));
     }
     if (showSum) {
       textSpans.add(TextSpan(text: ' = ', style: textStyle));
@@ -389,7 +416,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
       AppConfig.history.add((op: numbers, success: null));
       if (AppConfig.history.length > AppConfig.maxHistoryLength) {
-        AppConfig.history.removeRange(0, AppConfig.history.length - AppConfig.maxHistoryLength);
+        AppConfig.history.removeRange(
+            0, AppConfig.history.length - AppConfig.maxHistoryLength);
       }
 
       t3 = Timer(Duration(milliseconds: AppConfig.timeout), () {
@@ -422,7 +450,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
       return;
     }
-    final n = NumberFormat.decimalPattern(AppConfig.locale).format(numbers[_indx]);
+    final n =
+        NumberFormat.decimalPattern(AppConfig.locale).format(numbers[_indx]);
     String nm = n;
     if (AppConfig.useNegNumber && _indx > 0 && numbers[_indx] > 0) {
       nm = '+$n';
@@ -433,9 +462,11 @@ class _MyHomePageState extends State<MyHomePage> {
     if (AppConfig.useTTS && _hasMediaKitBeenInitialized && sounds.isNotEmpty) {
       final media = await Media.memory(sounds[_indx], type: 'audio/mpeg');
       if (player != null) {
-        await player!.seek(const Duration(minutes: 0, seconds: 0, milliseconds: 0));
+        await player!
+            .seek(const Duration(minutes: 0, seconds: 0, milliseconds: 0));
         await player!.open(media);
-        final duration = MP3Processor.fromBytes(sounds[_indx]).duration.inMilliseconds;
+        final duration =
+            MP3Processor.fromBytes(sounds[_indx]).duration.inMilliseconds;
         if (duration > timeFlash) {
           timeFlash = duration;
         }
@@ -486,14 +517,18 @@ class _MyHomePageState extends State<MyHomePage> {
         if (myCache.containsKey(key)) {
           future = Future.value(myCache[key]);
         } else {
-          future = httpClient.get(Uri.parse(uri), headers: headers).timeout(const Duration(seconds: 5));
+          future = httpClient
+              .get(Uri.parse(uri), headers: headers)
+              .timeout(const Duration(seconds: 5));
         }
       } else {
         /* DefaultCacheManager() does not work on web:
           - does not use the browser's cache and does not cache
           - does not send the headers, hence the correct cookie
           */
-        future = DefaultCacheManager().getSingleFile(uri, headers: headers).timeout(const Duration(seconds: 5));
+        future = DefaultCacheManager()
+            .getSingleFile(uri, headers: headers)
+            .timeout(const Duration(seconds: 5));
       }
       futures.add(future);
     }
@@ -518,7 +553,9 @@ class _MyHomePageState extends State<MyHomePage> {
       debugPrint(e.toString());
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          duration: Duration(milliseconds: numbers.length * (AppConfig.timeFlash + AppConfig.timeout)),
+          duration: Duration(
+              milliseconds:
+                  numbers.length * (AppConfig.timeFlash + AppConfig.timeout)),
           content: const Center(
               child: Row(mainAxisSize: MainAxisSize.min, children: [
             Text('Error fetching some sound(s)'),
@@ -534,7 +571,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void _startPlay(BuildContext context) async {
     _indx = 0;
     textEditingController.clear();
-    _generateNumbers(AppConfig.numRowInt, AppConfig.numDigit, AppConfig.useNegNumber);
+    _generateNumbers(
+        AppConfig.numRowInt, AppConfig.numDigit, AppConfig.useNegNumber);
     sounds.clear();
     if (_hasMediaKitBeenInitialized &&
         AppConfig.languages.isNotEmpty &&
@@ -563,16 +601,20 @@ class _MyHomePageState extends State<MyHomePage> {
       if (sol == sum) {
         msg = 'The answer is correct';
         icon = const Icon(Icons.check_box, color: Colors.green);
-        AppConfig.history[AppConfig.history.length - 1] =
-            (op: AppConfig.history[AppConfig.history.length - 1].op, success: true);
+        AppConfig.history[AppConfig.history.length - 1] = (
+          op: AppConfig.history[AppConfig.history.length - 1].op,
+          success: true
+        );
         setState(() {
           answerText = currentOperation(numbers.sublist(0, _indx), true);
         });
       } else {
         msg = 'The answer is incorrect';
         icon = const Icon(Icons.close, color: Colors.red);
-        AppConfig.history[AppConfig.history.length - 1] =
-            (op: AppConfig.history[AppConfig.history.length - 1].op, success: false);
+        AppConfig.history[AppConfig.history.length - 1] = (
+          op: AppConfig.history[AppConfig.history.length - 1].op,
+          success: false
+        );
       }
     } catch (e) {
       msg = 'The answer is not a number';
@@ -580,8 +622,10 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content:
-            Center(child: Row(mainAxisSize: MainAxisSize.min, children: [Text(msg), const SizedBox(width: 15), icon])),
+        content: Center(
+            child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [Text(msg), const SizedBox(width: 15), icon])),
         showCloseIcon: true,
       ),
     );
@@ -621,15 +665,29 @@ class _MyHomePageState extends State<MyHomePage> {
           child: RichText(
             text: TextSpan(
               children: <TextSpan>[
-                TextSpan(text: 'Flash Anzan', style: textStyle.copyWith(fontWeight: FontWeight.bold)),
+                TextSpan(
+                    text: 'Flash Anzan',
+                    style: textStyle.copyWith(fontWeight: FontWeight.bold)),
                 TextSpan(text: ' is a ', style: textStyle),
-                TextSpan(text: 'flutter', style: textStyle.copyWith(fontStyle: FontStyle.italic)),
-                TextSpan(text: ' based GUI made to help you practice ', style: textStyle),
-                TextSpan(text: 'anzan', style: textStyle.copyWith(fontStyle: FontStyle.italic)),
-                TextSpan(text: ', i.e. mental calculation while visualising a ', style: textStyle),
-                TextSpan(text: 'soroban', style: textStyle.copyWith(fontStyle: FontStyle.italic)),
+                TextSpan(
+                    text: 'flutter',
+                    style: textStyle.copyWith(fontStyle: FontStyle.italic)),
+                TextSpan(
+                    text: ' based GUI made to help you practice ',
+                    style: textStyle),
+                TextSpan(
+                    text: 'anzan',
+                    style: textStyle.copyWith(fontStyle: FontStyle.italic)),
+                TextSpan(
+                    text: ', i.e. mental calculation while visualising a ',
+                    style: textStyle),
+                TextSpan(
+                    text: 'soroban',
+                    style: textStyle.copyWith(fontStyle: FontStyle.italic)),
                 TextSpan(text: ' or an ', style: textStyle),
-                TextSpan(text: 'abacus', style: textStyle.copyWith(fontStyle: FontStyle.italic)),
+                TextSpan(
+                    text: 'abacus',
+                    style: textStyle.copyWith(fontStyle: FontStyle.italic)),
                 TextSpan(
                     text:
                         '. You can also just practice mental calculation, or practice with a real soroban, if you like.\n\n'
@@ -640,13 +698,18 @@ class _MyHomePageState extends State<MyHomePage> {
                     text: 'https://www.sorobanexam.org',
                     recognizer: TapGestureRecognizer()
                       ..onTap = () async {
-                        await launchUrl(Uri.parse('https://www.sorobanexam.org'));
+                        await launchUrl(
+                            Uri.parse('https://www.sorobanexam.org'));
                       }),
                 TextSpan(style: textStyle, text: ' for more information and '),
                 TextSpan(
                     text: 'exercices exam',
-                    style: textStyle.copyWith(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold)),
-                TextSpan(text: ' to help you improve on using the soroban.', style: textStyle),
+                    style: textStyle.copyWith(
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.bold)),
+                TextSpan(
+                    text: ' to help you improve on using the soroban.',
+                    style: textStyle),
               ],
             ),
           )),
@@ -657,7 +720,10 @@ class _MyHomePageState extends State<MyHomePage> {
               textAlign: TextAlign.justify,
               text: TextSpan(
                   text: GPL3,
-                  style: textStyle.copyWith(fontFamily: 'mono', fontSize: 12, fontWeight: FontWeight.w600)))),
+                  style: textStyle.copyWith(
+                      fontFamily: 'mono',
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600)))),
     ];
 
     return LayoutBuilder(builder: (context, constraints) {
@@ -673,21 +739,26 @@ class _MyHomePageState extends State<MyHomePage> {
       }
 
       return Scaffold(
-        appBar: AppBar(backgroundColor: lightBrown, foregroundColor: Colors.black, title: Text(widget.title), actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => const HistoryRoute()));
-              },
-              icon: const Icon(Icons.history)),
-          IconButton(
-              onPressed: () async {
-                await Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const SettingsRoute(),
-                ));
-                await saveSettings(prefs);
-              },
-              icon: const Icon(Icons.settings))
-        ]),
+        appBar: AppBar(
+            backgroundColor: lightBrown,
+            foregroundColor: Colors.black,
+            title: Text(widget.title),
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const HistoryRoute()));
+                  },
+                  icon: const Icon(Icons.history)),
+              IconButton(
+                  onPressed: () async {
+                    await Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const SettingsRoute(),
+                    ));
+                    await saveSettings(prefs);
+                  },
+                  icon: const Icon(Icons.settings))
+            ]),
         drawer: Drawer(
             child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -707,14 +778,24 @@ class _MyHomePageState extends State<MyHomePage> {
                         width: 96,
                       )),
                       const SizedBox(width: 15),
-                      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Text('Flash Anzan',
-                            style: TextStyle(
-                                color: Colors.black, fontSize: Theme.of(context).textTheme.headlineMedium!.fontSize)),
-                        Text(AppConfig.appVersion,
-                            style: TextStyle(
-                                color: Colors.black, fontSize: Theme.of(context).textTheme.labelLarge!.fontSize))
-                      ]),
+                      Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Flash Anzan',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: Theme.of(context)
+                                        .textTheme
+                                        .headlineMedium!
+                                        .fontSize)),
+                            Text(AppConfig.appVersion,
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: Theme.of(context)
+                                        .textTheme
+                                        .labelLarge!
+                                        .fontSize))
+                          ]),
                     ]),
                     const SizedBox(
                       height: 15,
@@ -723,10 +804,13 @@ class _MyHomePageState extends State<MyHomePage> {
                         flex: 1,
                         child: InkWell(
                           onTap: () async {
-                            await launchUrl(Uri.parse('https://www.sorobanexam.org'));
+                            await launchUrl(
+                                Uri.parse('https://www.sorobanexam.org'));
                           },
                           child: const Text('sorobanexam.org',
-                              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold)),
                         )),
                   ]),
             ),
@@ -766,7 +850,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       height: aboutImageSize,
                     ),
                     applicationName: 'Flash Anzan',
-                    applicationVersion: '${AppConfig.appVersion} (${AppConfig.commit}) [${AppConfig.platform}]',
+                    applicationVersion:
+                        '${AppConfig.appVersion} (${AppConfig.commit}) [${AppConfig.platform}]',
                     applicationLegalese:
                         "Copyright © 2025\nsolsTiCe d'Hiver <solstice.dhiver@sorobanexam.org>\nGPL-3.0-or-later",
                     aboutBoxChildren: aboutBoxChildren,
@@ -782,79 +867,99 @@ class _MyHomePageState extends State<MyHomePage> {
                 bottom: 32.0,
                 left: 0.0,
                 child: Container(
-                    width: MediaQuery.sizeOf(context).width, margin: const EdgeInsets.all(16.0), child: answerText)),
+                    width: MediaQuery.sizeOf(context).width,
+                    margin: const EdgeInsets.all(16.0),
+                    child: answerText)),
             const Positioned.fill(child: MyDisplay()),
           ],
         ),
         bottomNavigationBar: BottomAppBar(
             color: lightBrown,
-            child: Row(spacing: 10.0, mainAxisAlignment: MainAxisAlignment.center, children: [
-              IconButton(
-                iconSize: 32.0,
-                icon: Icon(Icons.replay,
-                    color:
-                        (isReplayable && ((!isPlaying && !AppConfig.useContinuousMode) || AppConfig.useContinuousMode))
+            child: Row(
+                spacing: 10.0,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    iconSize: 32.0,
+                    icon: Icon(Icons.replay,
+                        color: (isReplayable &&
+                                ((!isPlaying && !AppConfig.useContinuousMode) ||
+                                    AppConfig.useContinuousMode))
                             ? Colors.white
                             : Colors.black),
-                style: IconButton.styleFrom(
-                    backgroundColor: green,
-                    disabledBackgroundColor: lightBrown,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0))),
-                onPressed: isReplayable && ((!isPlaying && !AppConfig.useContinuousMode) || AppConfig.useContinuousMode)
-                    ? () {
-                        setState(() {
-                          isPlaying = true;
-                        });
-                        Provider.of<NumberModel>(context, listen: false).setVisible(false);
-                        t3?.cancel();
-                        t4?.cancel();
-                        t5?.cancel();
-                        _replay();
-                      }
-                    : null,
-              ),
-              SizedBox(
-                  width: 150,
-                  child: TextField(
-                    focusNode: myFocusNode,
-                    cursorColor: Colors.black,
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.black),
-                    keyboardType: TextInputType.number,
-                    maxLines: 1,
-                    controller: textEditingController,
-                    enabled: !isPlaying && _indx == AppConfig.numRowInt,
-                    onSubmitted: (value) => _checkAnswer(context),
-                    decoration: const InputDecoration(
-                      isDense: true,
-                      border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
-                      enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
-                      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
-                      labelText: 'Your answer',
-                      labelStyle: TextStyle(color: Colors.black),
-                      hintStyle: TextStyle(color: Colors.black),
-                    ),
-                  )),
-              IconButton(
-                iconSize: 32.0,
-                icon: Icon(Icons.input,
-                    color: !(isPlaying || _indx != AppConfig.numRowInt) ? Colors.white : Colors.black),
-                style: IconButton.styleFrom(
-                    backgroundColor: green,
-                    disabledBackgroundColor: lightBrown,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0))),
-                onPressed: (isPlaying || _indx != AppConfig.numRowInt)
-                    ? null
-                    : () {
-                        if (isPlaying) return;
-                        _checkAnswer(context);
-                      },
-              ),
-            ])),
+                    style: IconButton.styleFrom(
+                        backgroundColor: green,
+                        disabledBackgroundColor: lightBrown,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0))),
+                    onPressed: isReplayable &&
+                            ((!isPlaying && !AppConfig.useContinuousMode) ||
+                                AppConfig.useContinuousMode)
+                        ? () {
+                            setState(() {
+                              isPlaying = true;
+                            });
+                            Provider.of<NumberModel>(context, listen: false)
+                                .setVisible(false);
+                            t3?.cancel();
+                            t4?.cancel();
+                            t5?.cancel();
+                            _replay();
+                          }
+                        : null,
+                  ),
+                  SizedBox(
+                      width: 150,
+                      child: TextField(
+                        focusNode: myFocusNode,
+                        cursorColor: Colors.black,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyLarge!
+                            .copyWith(color: Colors.black),
+                        keyboardType: TextInputType.number,
+                        maxLines: 1,
+                        controller: textEditingController,
+                        enabled: !isPlaying && _indx == AppConfig.numRowInt,
+                        onSubmitted: (value) => _checkAnswer(context),
+                        decoration: const InputDecoration(
+                          isDense: true,
+                          border: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black)),
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black)),
+                          focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black)),
+                          labelText: 'Your answer',
+                          labelStyle: TextStyle(color: Colors.black),
+                          hintStyle: TextStyle(color: Colors.black),
+                        ),
+                      )),
+                  IconButton(
+                    iconSize: 32.0,
+                    icon: Icon(Icons.input,
+                        color: !(isPlaying || _indx != AppConfig.numRowInt)
+                            ? Colors.white
+                            : Colors.black),
+                    style: IconButton.styleFrom(
+                        backgroundColor: green,
+                        disabledBackgroundColor: lightBrown,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0))),
+                    onPressed: (isPlaying || _indx != AppConfig.numRowInt)
+                        ? null
+                        : () {
+                            if (isPlaying) return;
+                            _checkAnswer(context);
+                          },
+                  ),
+                ])),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: FloatingActionButton(
           backgroundColor: green,
           foregroundColor: Colors.white,
-          onPressed: isPlayButtonDisabled ? null : () => _togglePlayPause(context),
+          onPressed:
+              isPlayButtonDisabled ? null : () => _togglePlayPause(context),
           child: Icon(isPlaying ? Icons.stop : Icons.play_arrow),
         ),
       );
