@@ -55,10 +55,11 @@ class _HistoryRouteState extends State<HistoryRoute> {
                           Icon icon = const Icon(null);
                           if (AppConfig.history[index].success != null) {
                             if (AppConfig.history[index].success!) {
-                              icon =
-                                  const Icon(Icons.check, color: Colors.green);
+                              icon = const Icon(Icons.check_circle_rounded,
+                                  color: Colors.green);
                             } else {
-                              icon = const Icon(Icons.close, color: Colors.red);
+                              icon = const Icon(Icons.cancel_rounded,
+                                  color: Colors.red);
                             }
                           }
                           return ListTile(

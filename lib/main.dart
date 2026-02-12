@@ -600,7 +600,7 @@ class _MyHomePageState extends State<MyHomePage> {
       final sol = int.parse(textEditingController.text);
       if (sol == sum) {
         msg = 'The answer is correct';
-        icon = const Icon(Icons.check_box, color: Colors.green);
+        icon = const Icon(Icons.check_circle_rounded, color: Colors.green);
         AppConfig.history[AppConfig.history.length - 1] = (
           op: AppConfig.history[AppConfig.history.length - 1].op,
           success: true
@@ -610,7 +610,7 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       } else {
         msg = 'The answer is incorrect';
-        icon = const Icon(Icons.close, color: Colors.red);
+        icon = const Icon(Icons.cancel_rounded, color: Colors.red);
         AppConfig.history[AppConfig.history.length - 1] = (
           op: AppConfig.history[AppConfig.history.length - 1].op,
           success: false
