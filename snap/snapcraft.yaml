@@ -24,7 +24,7 @@ parts:
     plugin: flutter
     flutter-target: lib/main.dart
     flutter-channel: stable
-    build-packages: [pkg-config, ninja-build, cmake, libgtk-3-dev, clang, libstdc++-12-dev]
+    build-packages: [pkg-config, ninja-build, cmake, libgtk-3-dev, clang, libstdc++-12-dev, llvm, lld]
     stage-packages: [libmpv2, libblas3, liblapack3]
   cleanup:
     after:
