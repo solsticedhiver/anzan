@@ -176,6 +176,7 @@ class _MyHomePageState extends State<MyHomePage> {
   };
   String _cookieHeader = '';
   final Map<String, Uint8List> myCache = {};
+  bool isDownloadingSounds = false;
 
   @override
   void initState() {
@@ -491,6 +492,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _getSounds(BuildContext context) async {
     var futures = <Future>[];
     var keys = <String>[];
+
+    setState(() => isDownloadingSounds = true);
+
     for (var i = 0; i < numbers.length; i++) {
       String n = numbers[i].abs().toString();
       if (AppConfig.useNegNumber) {
@@ -548,8 +552,11 @@ class _MyHomePageState extends State<MyHomePage> {
         }
         count++;
       }
+      setState(() => isDownloadingSounds = false);
     } catch (e) {
+      setState(() => isDownloadingSounds = false);
       sounds.clear();
+
       debugPrint(e.toString());
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -862,6 +869,24 @@ class _MyHomePageState extends State<MyHomePage> {
         body: Stack(
           alignment: AlignmentDirectional.center,
           children: [
+            // using Visibility() seems to conflict with the Visibility() inside myDisplay()
+            if (AppConfig.useTTS &&
+                AppConfig.languages.isNotEmpty &&
+                _hasMediaKitBeenInitialized)
+              Positioned(
+                top: 0.0,
+                left: 0.0,
+                child: SizedBox(
+                    height: 3.0,
+                    width: MediaQuery.sizeOf(context).width,
+                    child: isDownloadingSounds
+                        ? LinearProgressIndicator(
+                            backgroundColor:
+                                Theme.of(context).secondaryHeaderColor,
+                          )
+                        : Container(
+                            color: Theme.of(context).secondaryHeaderColor)),
+              ),
             Positioned(
                 top: 0.0,
                 bottom: 32.0,
