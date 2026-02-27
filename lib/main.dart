@@ -294,11 +294,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
-  void dispose() {
+  void dispose() async {
     textEditingController.dispose();
     myFocusNode.dispose();
     if (player != null) {
-      player!.dispose();
+      await player!.dispose();
       player = null;
     }
     super.dispose();
@@ -407,7 +407,7 @@ class _MyHomePageState extends State<MyHomePage> {
     //debugPrint(_indx.toString());
     if (_indx == numbers.length) {
       if (player != null) {
-        player!.stop();
+        await player!.stop();
       }
       setState(() {
         if (!AppConfig.useContinuousMode) {
@@ -639,7 +639,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _togglePlayPause(BuildContext context) {
+  void _togglePlayPause(BuildContext context) async {
     setState(() {
       isPlaying = !isPlaying;
       answerText = RichText(text: const TextSpan());
@@ -652,7 +652,7 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       });
       Provider.of<NumberModel>(context, listen: false).setVisible(false);
-      player?.stop();
+      await player?.stop();
       t1?.cancel();
       t2?.cancel();
     } else {
