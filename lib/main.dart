@@ -299,6 +299,7 @@ class _MyHomePageState extends State<MyHomePage> {
     myFocusNode.dispose();
     if (player != null) {
       player!.dispose();
+      player = null;
     }
     super.dispose();
   }
