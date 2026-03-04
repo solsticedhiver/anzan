@@ -604,6 +604,9 @@ class _MyHomePageState extends State<MyHomePage> {
     final sum = numbers.fold<int>(0, (p, c) => p + c);
     String msg;
     Icon icon = const Icon(null);
+
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+
     try {
       final sol = int.parse(textEditingController.text);
       if (sol == sum) {
@@ -628,6 +631,7 @@ class _MyHomePageState extends State<MyHomePage> {
       msg = 'The answer is not a number';
       icon = const Icon(Icons.error, color: Colors.red);
     }
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Center(
