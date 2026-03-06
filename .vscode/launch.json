@@ -10,12 +10,6 @@
             "type": "dart"
         },
         {
-            "name": "anzan [web/wasm]",
-            "request": "launch",
-            "type": "dart",
-            "args": ["--wasm"]
-        },
-        {
             "name": "anzan (profile mode)",
             "request": "launch",
             "type": "dart",
