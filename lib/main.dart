@@ -668,6 +668,9 @@ class _MyHomePageState extends State<MyHomePage> {
       await player?.stop();
       t1?.cancel();
       t2?.cancel();
+      t3?.cancel();
+      t4?.cancel();
+      t5?.cancel();
     } else {
       Provider.of<NumberModel>(context, listen: false).setVisible(false);
       answerText = RichText(text: const TextSpan(text: ''));
