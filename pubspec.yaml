@@ -48,6 +48,7 @@ dependencies:
   uuid: ^4.5.3
   flutter_html: ^3.0.0
   mp3_info: ^0.2.1
+  wakelock_plus: ^1.4.0
 
 dev_dependencies:
   flutter_test:

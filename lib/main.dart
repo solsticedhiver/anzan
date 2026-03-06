@@ -17,6 +17,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:mp3_info/mp3_info.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import 'config.dart';
 import 'locale_web.dart' if (dart.library.io) 'locale_platform.dart';
@@ -406,6 +407,8 @@ class _MyHomePageState extends State<MyHomePage> {
     final numberModel = Provider.of<NumberModel>(context, listen: false);
     //debugPrint(_indx.toString());
     if (_indx == numbers.length) {
+      WakelockPlus.disable();
+
       if (player != null) {
         await player!.stop();
       }
@@ -486,6 +489,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _replay() {
     _indx = 0;
     if (isPlaying) {
+      WakelockPlus.enable();
       _nextRandomNumber(context);
     }
   }
@@ -595,6 +599,9 @@ class _MyHomePageState extends State<MyHomePage> {
       myFocusNode.unfocus();
       Provider.of<NumberModel>(context, listen: false).setNumber('');
     }
+
+    WakelockPlus.enable();
+
     Future.delayed(Duration(milliseconds: AppConfig.timeout), () async {
       await _nextRandomNumber(context);
     });
@@ -649,6 +656,8 @@ class _MyHomePageState extends State<MyHomePage> {
       answerText = RichText(text: const TextSpan());
     });
     if (!isPlaying) {
+      WakelockPlus.disable();
+
       isPlayButtonDisabled = true;
       Future.delayed(const Duration(seconds: 1), () {
         setState(() {
