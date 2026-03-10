@@ -2,6 +2,7 @@
 commit=`git rev-parse --short HEAD`
 # update commit version to latest HEAD
 sed -i "/.*commit/s/HEAD/$commit/" lib/config.dart
+flutter clean
 flutter build web --wasm --base-href "/anzan.app/" --no-source-maps
 # also add a version to js to force reload, just in case
 sed -i "/flutter_bootstrap.js/s/js/js?$commit/" build/web/index.html
