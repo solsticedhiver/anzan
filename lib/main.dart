@@ -256,7 +256,8 @@ class _MyHomePageState extends State<MyHomePage> {
         String title, content;
         if (!_hasPlayerBeenInitialized) {
           title = 'Error initliazing audio library';
-          content = 'TTS will be disabled';
+          content =
+              'TTS will be disabled. On linux, this might be because you are missing the gstreamer package and/or its plugins';
         } else {
           title = 'Error fetching the TTS languages list';
           content =
