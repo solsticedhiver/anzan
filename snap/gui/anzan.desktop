@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Anzan
+Exec=anzan
+Icon=${SNAP}/meta/gui/anzan.png
+Type=Application
+Categories=Utility;
