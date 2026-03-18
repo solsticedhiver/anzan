@@ -10,7 +10,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:media_kit/media_kit.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
@@ -25,7 +25,7 @@ import 'posthog.dart';
 import 'settings.dart';
 
 bool _hasWarningBeenShown = false;
-bool _hasMediaKitBeenInitialized = false;
+bool _hasPlayerBeenInitialized = false;
 final prefs = SharedPreferencesAsync();
 
 int compareVersion(String v1, String v2) {
@@ -74,13 +74,6 @@ void main() async {
   AppConfig.locale = detectedSystemLocale;
 
   WidgetsFlutterBinding.ensureInitialized();
-
-  try {
-    MediaKit.ensureInitialized();
-    _hasMediaKitBeenInitialized = true;
-  } catch (e) {
-    debugPrint(e.toString());
-  }
 
   await getSettings(prefs);
 
@@ -165,7 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<int> numbers = [];
   List<Uint8List> sounds = [];
   late TextStyle style;
-  late Player? player;
+  late AudioPlayer? player;
   TextEditingController textEditingController = TextEditingController();
   late FocusNode myFocusNode;
   Timer? t1, t2, t3, t4, t5;
@@ -184,9 +177,10 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
 
     myFocusNode = FocusNode();
-    if (_hasMediaKitBeenInitialized) {
-      player = Player();
-    } else {
+    try {
+      player = AudioPlayer();
+      _hasPlayerBeenInitialized = true;
+    } catch (e) {
       player = null;
       AppConfig.useTTS = false;
     }
@@ -257,14 +251,12 @@ class _MyHomePageState extends State<MyHomePage> {
       }
 
       if (!_hasWarningBeenShown &&
-          (AppConfig.languages.isEmpty || !_hasMediaKitBeenInitialized)) {
+          (AppConfig.languages.isEmpty || !_hasPlayerBeenInitialized)) {
         _hasWarningBeenShown = true;
         String title, content;
-        if (!_hasMediaKitBeenInitialized) {
-          title = 'Error initliazing MediaKit library';
-          content =
-              'This usually means the libmpv library was not found. Check your installation of libmpv.\n'
-              'TTS will be disabled';
+        if (!_hasPlayerBeenInitialized) {
+          title = 'Error initliazing audio library';
+          content = 'TTS will be disabled';
         } else {
           title = 'Error fetching the TTS languages list';
           content =
@@ -464,17 +456,16 @@ class _MyHomePageState extends State<MyHomePage> {
     numberModel.setNumber(nm);
     numberModel.setVisible(true);
     int timeFlash = AppConfig.timeFlash;
-    if (AppConfig.useTTS && _hasMediaKitBeenInitialized && sounds.isNotEmpty) {
-      final media = await Media.memory(sounds[_indx], type: 'audio/mpeg');
+    if (AppConfig.useTTS && _hasPlayerBeenInitialized && sounds.isNotEmpty) {
+      final media = BytesSource(sounds[_indx], mimeType: 'audio/mpeg');
       if (player != null) {
-        await player!
-            .seek(const Duration(minutes: 0, seconds: 0, milliseconds: 0));
-        await player!.open(media);
+        await player!.setSource(media);
         final duration =
             MP3Processor.fromBytes(sounds[_indx]).duration.inMilliseconds;
         if (duration > timeFlash) {
           timeFlash = duration;
         }
+        await player!.resume();
       }
     }
     t1 = Timer(Duration(milliseconds: timeFlash), () async {
@@ -586,7 +577,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _generateNumbers(
         AppConfig.numRowInt, AppConfig.numDigit, AppConfig.useNegNumber);
     sounds.clear();
-    if (_hasMediaKitBeenInitialized &&
+    if (_hasPlayerBeenInitialized &&
         AppConfig.languages.isNotEmpty &&
         AppConfig.languages.contains(AppConfig.ttsLocale) &&
         AppConfig.useTTS) {
@@ -889,7 +880,7 @@ class _MyHomePageState extends State<MyHomePage> {
             // using Visibility() seems to conflict with the Visibility() inside myDisplay()
             if (AppConfig.useTTS &&
                 AppConfig.languages.isNotEmpty &&
-                _hasMediaKitBeenInitialized)
+                _hasPlayerBeenInitialized)
               Positioned(
                 top: 0.0,
                 left: 0.0,

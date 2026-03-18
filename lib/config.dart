@@ -14,8 +14,8 @@ class AppConfig {
 
   static int numRowInt = 5;
   static int numDigit = 1;
-  static int timeFlash = 500;
-  static int timeout = 1000;
+  static int timeFlash = 500; // in milliseconds
+  static int timeout = 1000; // ins milliseconds
   static bool useNegNumber = false;
   static bool useContinuousMode = false;
   static int pause = 2500;

@@ -37,8 +37,6 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_settings_ui: ^3.0.1
   http: ^1.6.0
-  media_kit: ^1.2.6
-  media_kit_libs_audio: ^1.0.7
   flutter_spinbox: ^0.13.1
   url_launcher: ^6.1.14
   provider: ^6.1.5
@@ -49,6 +47,7 @@ dependencies:
   flutter_html: ^3.0.0
   mp3_info: ^0.2.1
   wakelock_plus: ^1.4.0
+  audioplayers: ^6.6.0
 
 dev_dependencies:
   flutter_test:
