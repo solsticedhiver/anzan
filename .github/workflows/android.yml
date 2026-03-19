@@ -23,7 +23,7 @@ jobs:
       run: sed -i "/commit/s/HEAD/${{ steps.short_sha.outputs.short_sha }}/" lib/config.dart
       shell: bash
     - name: update cache
-      run: apt update
+      run: sudo apt update
     - name: install dependencies for flutter
       uses: awalsh128/cache-apt-pkgs-action@latest
       with:
