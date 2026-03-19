@@ -42,14 +42,14 @@ modules:
       - cp org.sorobanexam.anzan.metainfo.xml /app/share/metainfo/
     sources:
       - type: git
-        url: https://github.com/solsticedhiver/anzan.git
-        commit: e481c45e0f81760224a5868ee17cd2c8e65f7a25
-      - generated/sources/pubspec.json
+        url: file:///home/solstice/prog/dvcs/anzan/.git
+        commit: b844592eac364c935def4b1466b9d354cc0c19c4
       - type: file
         path: org.sorobanexam.anzan.png
       - type: file
         path: org.sorobanexam.anzan.metainfo.xml
       - type: file
         path: org.sorobanexam.anzan.desktop
+      - generated/sources/pubspec.json
     modules:
-      - generated/modules/flutter-sdk-3.41.4.json
+      - generated/modules/flutter-sdk-3.41.5.json
