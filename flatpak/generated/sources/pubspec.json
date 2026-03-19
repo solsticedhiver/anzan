@@ -590,16 +590,16 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://pub.dev/api/archives/mp3_info-0.2.2.tar.gz",
-        "sha256": "22aed021aaa0c857da176f0c44bb545bffc3bae79ec8e764753658e002974911",
+        "url": "https://pub.dev/api/archives/mp3_info-0.2.3.tar.gz",
+        "sha256": "e0ac277f26b54f36666cc47167f542e9ee29414e89dced71ff5d19c5cba1d265",
         "strip-components": 0,
-        "dest": ".pub-cache/hosted/pub.dev/mp3_info-0.2.2"
+        "dest": ".pub-cache/hosted/pub.dev/mp3_info-0.2.3"
     },
     {
         "type": "inline",
-        "contents": "22aed021aaa0c857da176f0c44bb545bffc3bae79ec8e764753658e002974911",
+        "contents": "e0ac277f26b54f36666cc47167f542e9ee29414e89dced71ff5d19c5cba1d265",
         "dest": ".pub-cache/hosted-hashes/pub.dev",
-        "dest-filename": "mp3_info-0.2.2.sha256"
+        "dest-filename": "mp3_info-0.2.3.sha256"
     },
     {
         "type": "archive",
