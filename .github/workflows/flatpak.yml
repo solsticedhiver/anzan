@@ -30,6 +30,7 @@ jobs:
         bundle: anzan-linux-x86_64.flatpak
         manifest-path: flatpak/org.sorobanexam.anzan.yml
         cache-key: flatpak-builder-${{ github.sha }}
+        upload-artifact: false
     - name: Create a release in GitHub
       if: ${{ !env.ACT }}
       uses: ncipollo/release-action@v1
