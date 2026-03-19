@@ -30,7 +30,7 @@ migrate_working_dir/
 .packages
 .pub-cache/
 .pub/
-pubspec.lock
+#pubspec.lock
 /build/
 
 # Symbolication related
@@ -46,8 +46,6 @@ app.*.map.json
 
 /android/app/.cxx
 /flatpak/.flatpak-builder
-/flatpak/.python-version
-/flatpak/pyproject.toml
-/flatpak/uv.lock
-/flatpak/anzan
+/flatpak/repo
+/flatpak/build
 
