@@ -54,6 +54,7 @@ jobs:
     - name: Rename main folder
       run: Rename-Item build\windows\x64\runner\Release anzan-${{ steps.version.outputs.version }}
     - name: Archive Release
+      if: ${{ !env.ACT }}
       uses: thedoctor0/zip-release@0.7.5
       with:
         type: 'zip'
