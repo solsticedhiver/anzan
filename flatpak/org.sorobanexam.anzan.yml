@@ -42,7 +42,7 @@ modules:
       - cp org.sorobanexam.anzan.metainfo.xml /app/share/metainfo/
     sources:
       - type: git
-        url: file:///home/solstice/prog/dvcs/anzan/.git
+        url: https://github.com/solsticedhiver/anzan.git
         commit: 13f437f48794f463790b0eba84d45d20212c01b5
       - type: file
         path: org.sorobanexam.anzan.png
