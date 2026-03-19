@@ -1,7 +1,7 @@
 name: anzan
 title: Anzan or mental calculation app
 base: core24
-version: '0.6.1'
+version: '0.6.2'
 icon: snap/gui/anzan.png
 summary: Exercise your mental calculation skills (by visualising a soroban or not)
 description: |

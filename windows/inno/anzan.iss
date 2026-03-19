@@ -9,8 +9,8 @@ Name: "tr"; MessagesFile: "compiler:Languages\Turkish.isl"
 
 [Setup]
 AppName="Anzan"
-AppVersion=0.6.1
-AppCopyright="Copyright 2025 @ solsTiCe d'Hiver <solstice.dhiver@sorobanexam.org>"
+AppVersion=0.6.2
+AppCopyright="Copyright 2026 @ solsTiCe d'Hiver <solstice.dhiver@sorobanexam.org>"
 AppPublisherURL="https://www.sorobanexam.org/anzan.html"
 ArchitecturesInstallIn64BitMode=x64os
 DefaultDirName="{commonpf}\Anzan"
