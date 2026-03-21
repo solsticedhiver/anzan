@@ -8,8 +8,6 @@ jobs:
   snap:
     name: Build and create snap
     runs-on: ubuntu-latest
-    outputs:
-      output1: ${{ steps.version.outputs.version }}
     steps:
     - uses: actions/checkout@v6
     - name: Create version

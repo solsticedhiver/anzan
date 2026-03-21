@@ -7,8 +7,6 @@ jobs:
   flatpak:
     name: "Flatpak"
     runs-on: ubuntu-latest
-    outputs:
-      output1: ${{ steps.version.outputs.version }}
     container:
       image: ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-25.08
       options: --privileged
