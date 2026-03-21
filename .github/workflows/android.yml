@@ -28,22 +28,32 @@ jobs:
       uses: awalsh128/cache-apt-pkgs-action@latest
       with:
         packages: ninja-build libgtk-3-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
-        version: 1.0
+        execute_install_scripts: true
     - name: install missing tools [act] 1/2
       if: ${{ env.ACT }}
       uses: awalsh128/cache-apt-pkgs-action@latest
       with:
         packages: cmake clang libstdc++-12-dev lld android-sdk openjdk-17-jdk
+        execute_install_scripts: true
     - name: install missing tools [act] 2/2
+      env:
+        JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+        JAVACMD: /usr/lib/jvm/java-17-openjdk-amd64/bin/java
       if: ${{ env.ACT }}
-      run: |
+      run: | # install the same tools as in <flutterSDK>/engine/src/flutter/tools/android_sdk/packages.txt
+        if [ ! -d /usr/lib/android-sdk/cmdline-tools/latest ] ; then
+        sudo apt install cmake clang libstdc++-12-dev lld android-sdk openjdk-17-jdk # rerun because cache-apt-pkgs-action defect
         sudo wget https://dl.google.com/android/repository/commandlinetools-linux-14742923_latest.zip
         sudo unzip commandlinetools-linux-14742923_latest.zip -d /usr/lib/android-sdk
         sudo mkdir -p /usr/lib/android-sdk/cmdline-tools/latest
         sudo mv /usr/lib/android-sdk/cmdline-tools/* /usr/lib/android-sdk/cmdline-tools/latest || true
-        sudo /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "build-tools;35.0.1"
-        sudo /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "platforms;android-35"
+        sudo /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "build-tools;36.1.0"
+        sudo /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "platforms;android-36"
+        sudo /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "cmake;3.22.1"
+        sudo /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "platform-tools"
+        sudo /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "ndk;28.2.13676358"
         yes | sudo /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+        fi
     - uses: subosito/flutter-action@v2
       with:
         channel : 'stable'
