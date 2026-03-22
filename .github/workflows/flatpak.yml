@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-25.08
-      options: --privileged
+      options: ${{ vars.ACT != 'jqbMdBDRwb' && '--privileged' || '' }}
     steps:
     - name: Checkout repo
       uses: actions/checkout@v6
@@ -30,8 +30,8 @@ jobs:
         cache-key: flatpak-builder-${{ github.sha }}
         upload-artifact: false
     - name: Create a release in GitHub
-      if: ${{ !env.ACT }}
       uses: ncipollo/release-action@v1
+      if: ${{ vars.ACT != 'jqbMdBDRwb' }}
       with:
         allowUpdates: true
         artifacts: "anzan-linux-x86_64.flatpak"
