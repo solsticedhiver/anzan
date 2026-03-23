@@ -32,19 +32,20 @@ jobs:
     - name: install missing tools [act]
       if: ${{ env.ACT }}
       run: |
-        sudo apt install -y cmake clang libstdc++-12-dev lld android-sdk openjdk-21-jdk
-        if [ ! -d /usr/lib/android-sdk/cmdline-tools/latest ] ; then
+        sudo apt install -y cmake clang libstdc++-12-dev lld openjdk-21-jdk
+        if [ ! -d /opt/android-sdk/cmdline-tools/latest ] ; then
+        mkdir /opt/android-sdk/
         sudo wget https://dl.google.com/android/repository/commandlinetools-linux-14742923_latest.zip
-        sudo unzip commandlinetools-linux-14742923_latest.zip -d /usr/lib/android-sdk
-        sudo mkdir -p /usr/lib/android-sdk/cmdline-tools/latest
-        sudo mv /usr/lib/android-sdk/cmdline-tools/* /usr/lib/android-sdk/cmdline-tools/latest || true
+        sudo unzip commandlinetools-linux-14742923_latest.zip -d /opt/android-sdk
+        sudo mkdir -p /opt/android-sdk/cmdline-tools/latest
+        sudo mv /opt/android-sdk/cmdline-tools/* /opt/android-sdk/cmdline-tools/latest || true
         # install the same tools as in <flutterSDK>/engine/src/flutter/tools/android_sdk/packages.txt
-        yes | sudo /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
-        sudo /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "build-tools;36.1.0"
-        sudo /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "platforms;android-36"
-        sudo /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "cmake;3.22.1"
-        sudo /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "platform-tools"
-        sudo /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "ndk;28.2.13676358"
+        yes | sudo /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+        sudo /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "build-tools;35.0.0"
+        sudo /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "platforms;android-35"
+        sudo /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "cmake;3.22.1"
+        sudo /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "platform-tools"
+        sudo /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "ndk;28.2.13676358"
         fi
     - uses: subosito/flutter-action@v2
       with:
@@ -55,13 +56,16 @@ jobs:
       run: |
         git config --global --add safe.directory /opt/hostedtoolcache/flutter/stable-*
         flutter config --jdk-dir=/usr/lib/jvm/java-21-openjdk-amd64
-        flutter config --android-sdk=/usr/lib/android-sdk
+        flutter config --android-sdk=/opt/android-sdk
         yes | flutter doctor --android-licenses &>/dev/null
         flutter clean
-    - run: flutter pub get
-    - run: flutter config --enable-android
-    - run: flutter build apk --release --split-per-abi
-    - run: |
+    - name: Get flutter env to debug
+      run: flutter doctor -v
+    - name: Build with flutter
+      run: |
+        flutter pub get
+        flutter config --enable-android
+        flutter build apk --release --split-per-abi
         mv build/app/outputs/apk/release/app-armeabi-v7a-release.apk build/app/outputs/apk/release/anzan-android-armeabi-v7a.apk
         mv build/app/outputs/apk/release/app-arm64-v8a-release.apk build/app/outputs/apk/release/anzan-android-arm64-v8a.apk
         mv build/app/outputs/apk/release/app-x86_64-release.apk build/app/outputs/apk/release/anzan-android-x86_64.apk
