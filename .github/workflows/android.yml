@@ -59,8 +59,18 @@ jobs:
         flutter config --android-sdk=/opt/android-sdk
         yes | flutter doctor --android-licenses &>/dev/null
         flutter clean
+    - name: Use JDK 21
+      if: ${{ !env.ACT }}
+      run: flutter config --jdk-dir=${{ env.JAVA_HOME_21_X64 }}
     - name: Get flutter env to debug
       run: flutter doctor -v
+    - name: Install keystore and key.properties to sign apk
+      run: |
+        echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > upload-keystore.jks
+        echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/key.properties
+        echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+        echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+        echo "storeFile=../../upload-keystore.jks" >> android/key.properties
     - name: Build with flutter
       run: |
         flutter pub get

@@ -49,3 +49,6 @@ app.*.map.json
 /flatpak/repo
 /flatpak/build
 
+/android/key.properties
+upload-keystore.jks
+/.secrets
