@@ -61,7 +61,7 @@ jobs:
         flutter clean
     - name: Use JDK 21
       if: ${{ !env.ACT }}
-      run: flutter config --jdk-dir=${{ env.JAVA_HOME_21_X64 }}
+      run: flutter config --jdk-dir=$JAVA_HOME_21_X64
     - name: Get flutter env to debug
       run: flutter doctor -v
     - name: Install keystore and key.properties to sign apk
