@@ -27,6 +27,7 @@ Source: "..\..\build\windows\x64\runner\Release\vcruntime140.dll"; DestDir: "{ap
 Source: "..\..\build\windows\x64\runner\Release\vcruntime140_1.dll"; DestDir: "{app}\"; Flags: ignoreversion
 Source: "..\..\build\windows\x64\runner\Release\flutter_windows.dll"; DestDir: "{app}\"; Flags: ignoreversion
 Source: "..\..\build\windows\x64\runner\Release\url_launcher_windows_plugin.dll"; DestDir: "{app}\"; Flags: ignoreversion
+Source: "..\..\build\windows\x64\runner\Release\audioplayers_windows_plugin.dll"; DestDir: "{app}\"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\Run Anzan"; Filename: "{app}\anzan.exe"; WorkingDir: "{app}"
