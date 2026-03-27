@@ -155,6 +155,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _indx = 0;
   bool isReplayable = false;
   bool isPlaying = false;
+  bool showAnswer = false;
   List<int> numbers = [];
   List<Uint8List> sounds = [];
   late TextStyle style;
@@ -421,14 +422,13 @@ class _MyHomePageState extends State<MyHomePage> {
       t3 = Timer(Duration(milliseconds: AppConfig.timeout), () {
         numberModel.setNumber('?');
         numberModel.setVisible(true);
-        if (AppConfig.useContinuousMode) {
-          setState(() {
-            answerText = RichText(text: const TextSpan());
-          });
-        } else {
+        if (!showAnswer && !AppConfig.useContinuousMode) {
           textEditingController.clear();
           myFocusNode.requestFocus();
         }
+        setState(() {
+          answerText = currentOperation(numbers.sublist(0, _indx), true);
+        });
 
         t4 = Timer(Duration(milliseconds: 2 * AppConfig.timeout), () {
           if (AppConfig.useContinuousMode) {
@@ -615,9 +615,6 @@ class _MyHomePageState extends State<MyHomePage> {
           op: AppConfig.history[AppConfig.history.length - 1].op,
           success: true
         );
-        setState(() {
-          answerText = currentOperation(numbers.sublist(0, _indx), true);
-        });
       } else {
         msg = 'The answer is incorrect';
         icon = const Icon(Icons.cancel_rounded, color: Colors.red);
@@ -645,7 +642,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void _togglePlayPause(BuildContext context) async {
     setState(() {
       isPlaying = !isPlaying;
-      answerText = RichText(text: const TextSpan());
     });
     if (!isPlaying) {
       WakelockPlus.disable();
@@ -760,6 +756,25 @@ class _MyHomePageState extends State<MyHomePage> {
             foregroundColor: Colors.black,
             title: Text(widget.title),
             actions: [
+              IconButton(
+                  onPressed: () {
+                    debugPrint('answerText=${answerText.text.toPlainText()}');
+                    if (answerText.text.toPlainText().isEmpty) {
+                      answerText = RichText(
+                          text: TextSpan(
+                              text: 'Operation will be visible here',
+                              style: TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
+                                  fontStyle: FontStyle.italic)));
+                    }
+                    setState(() {
+                      showAnswer = !showAnswer;
+                    });
+                  },
+                  icon: Icon(
+                    showAnswer ? Icons.visibility : Icons.visibility_off,
+                  )),
               IconButton(
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(
@@ -903,7 +918,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Container(
                     width: MediaQuery.sizeOf(context).width,
                     margin: const EdgeInsets.all(16.0),
-                    child: answerText)),
+                    child: Visibility(visible: showAnswer, child: answerText))),
             const Positioned.fill(child: MyDisplay()),
           ],
         ),
@@ -917,7 +932,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     iconSize: 32.0,
                     icon: Icon(Icons.replay,
                         color: (isReplayable &&
-                                ((!isPlaying && !AppConfig.useContinuousMode) ||
+                                ((!showAnswer &&
+                                        !isPlaying &&
+                                        !AppConfig.useContinuousMode) ||
                                     AppConfig.useContinuousMode))
                             ? Colors.white
                             : Colors.black),
@@ -927,7 +944,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0))),
                     onPressed: isReplayable &&
-                            ((!isPlaying && !AppConfig.useContinuousMode) ||
+                            ((!showAnswer &&
+                                    !isPlaying &&
+                                    !AppConfig.useContinuousMode) ||
                                 AppConfig.useContinuousMode)
                         ? () {
                             setState(() {
@@ -954,7 +973,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         keyboardType: TextInputType.number,
                         maxLines: 1,
                         controller: textEditingController,
-                        enabled: !isPlaying && _indx == AppConfig.numRowInt,
+                        enabled: !showAnswer &&
+                            !isPlaying &&
+                            _indx == AppConfig.numRowInt,
                         onSubmitted: (value) => _checkAnswer(context),
                         decoration: const InputDecoration(
                           isDense: true,
@@ -972,7 +993,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   IconButton(
                     iconSize: 32.0,
                     icon: Icon(Icons.input,
-                        color: !(isPlaying || _indx != AppConfig.numRowInt)
+                        color: !(showAnswer ||
+                                isPlaying ||
+                                _indx != AppConfig.numRowInt)
                             ? Colors.white
                             : Colors.black),
                     style: IconButton.styleFrom(
@@ -980,7 +1003,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         disabledBackgroundColor: lightBrown,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0))),
-                    onPressed: (isPlaying || _indx != AppConfig.numRowInt)
+                    onPressed: (showAnswer ||
+                            isPlaying ||
+                            _indx != AppConfig.numRowInt)
                         ? null
                         : () {
                             if (isPlaying) return;
