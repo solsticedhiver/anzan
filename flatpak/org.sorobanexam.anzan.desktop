@@ -4,7 +4,7 @@ Type=Application
 
 Name=Anzan
 Comment=Practice anzan or mental calculation
-Categories=Game;
+Categories=Game;Education
 
 Icon=org.sorobanexam.anzan
 Exec=anzan

@@ -1,41 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2026 solstice.dhiver@sorobanexam.org -->
 <component type="desktop-application">
   <id>org.sorobanexam.anzan</id>
 
   <name>Anzan</name>
-  <summary>Exercise your mental calculation skills (by visualising a soroban or not)</summary>
+  <summary>Exercise your mental calculation skills</summary>
   <metadata_license>MIT</metadata_license>
   <project_license>GPL-3.0-or-later</project_license>
 
+  <developer id="org.sorobanexam">
+    <name>solsTiCe d'Hiver</name>
+  </developer>
+
   <description>
-    <p>
-      An app to help you excercise your mental calculation skill by flashing numbers
-      on screen that you have to sum, or subtract (or more ...)
-    </p>
+    <p>Add, or subtract flashing numbers</p>
   </description>
 
   <launchable type="desktop-id">org.sorobanexam.anzan.desktop</launchable>
   <screenshots>
     <screenshot type="default">
-      <image>https://cdn.githubraw.com/solsticedhiver/anzan/main/screenshots/2025-04-11T23-21.png</image>
-    </screenshot>
-  <!-- TODO: add some screenshots
-    <screenshot>
-      <image>https://cdn.githubraw.com/solsticedhiver/anzan/main/screenshots/2023-05-18T23-37-52.png</image>
+      <image>https://cdn.githubraw.com/solsticedhiver/anzan/main/flatpak/2025-04-11T23-21.png</image>
     </screenshot>
     <screenshot>
-      <image>https://cdn.githubraw.com/solsticedhiver/anzan/main/screenshots/2023-05-18T23-38-09.png</image>
+      <image>https://cdn.githubraw.com/solsticedhiver/anzan/main/flatpak/2025-04-15T23-47.png</image>
     </screenshot>
-    <screenshot>
-      <image>https://cdn.githubraw.com/solsticedhiver/anzan/main/screenshots/2023-05-18T23-38-35.png</image>
-    </screenshot>
-    <screenshot>
-      <image>https://cdn.githubraw.com/solsticedhiver/anzan/main/screenshots/2023-05-18T23-39-02.png</image>
-    </screenshot>
-  -->
   </screenshots>
 
   <url type="homepage">https://github.com/solsticedhiver/anzan</url>
   <url type="bugtracker">https://github.com/solsticedhiver/anzan/issues</url>
   <update_contact>solstice.dhiver@sorobanexam.org</update_contact>
+
+  <content_rating type="oars-1.1" />
+
+  <icon type="stock">org.sorobanexam.anzan</icon>
+
+  <categories>
+    <category>Education</category>
+    <category>Game</category>
+  </categories>
+
+  <releases>
+    <release version="0.6.2" date="2026-03-19">
+      <description>
+        <p>Release description</p>
+        <ul>
+          <li>Switch audio library to audioplayers</li>
+        </ul>
+      </description>
+    </release>
+  </releases>
+
+  <supports>
+    <control>keyboard</control>
+    <control>pointing</control>
+    <control>touch</control>
+  </supports>
+  <requires>
+    <display_length compare="ge">360</display_length>
+  </requires>
 </component>
