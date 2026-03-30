@@ -43,7 +43,7 @@ modules:
     sources:
       - type: git
         url: https://github.com/solsticedhiver/anzan.git
-        commit: bf8bdb1941b27733f150995861bc9087ee4688b1
+        commit: dd0cafab4de500c725f454f49721f30bf3ab157c
       - type: file
         path: org.sorobanexam.anzan.png
       - type: file
