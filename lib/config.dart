@@ -114,6 +114,8 @@ Future<void> saveSettings(SharedPreferencesAsync prefs) async {
       themeMode = 'system';
   }
   await prefs.setString('themeMode', themeMode);
+  await prefs.setInt(
+      'updateNotificationCount', AppConfig.updateNotificationCount);
 }
 
 const green = Color(0xFF168362);
