@@ -3,10 +3,11 @@ title: Anzan or mental calculation app
 base: core24
 version: '0.6.2'
 icon: snap/gui/anzan.png
-summary: Exercise your mental calculation skills (by visualising a soroban or not)
+summary: Exercise your mental calculation skills
 description: |
-  An app to help you practice mental calculation by flashing numbers
-  on screen that you must sum, or subtract
+  Add or subtract the flashing numbers displayed on screen or voiced over by a TTS API.
+  This was designed to help you exercise mental math while visualizing a soroban in your head,
+  but you can also use it to train your soroban skills.
 
 contact: solstice.dhiver@sorobanexam.org
 issues: https://github.com/solsticedhiver/anzan/issues
