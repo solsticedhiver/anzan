@@ -12,12 +12,7 @@ sed -i "/commit:/s|: .*$|: $long_sha|" org.sorobanexam.anzan.yml
 
 # build flatpak
 echo ':: running flatpak-builder'
-if systemd-detect-virt --quiet; then
-	opts="--disable-cache --disable-rofiles-fuse"
-else
-	opts="--ccache"
-fi
-flatpak-builder "$opts" --force-clean build-dir org.sorobanexam.anzan.yml
+flatpak-builder --force-clean build-dir org.sorobanexam.anzan.yml
 
 rm -f anzan-*.flatpak
 # check for llvm20 extension
