@@ -1,6 +1,7 @@
 #!/bin/bash
-#set -e
+# build a flatpak from local repo
 
+#set -e
 #version=`grep ^version ../pubspec.yaml |cut -f 2 -d ' '|cut -f 1 -d '+'`
 sha=`git rev-parse --short main`
 long_sha=`git rev-parse main`
