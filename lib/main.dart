@@ -99,12 +99,12 @@ void main() async {
       AppConfig.userAgent.replaceAll('platform', AppConfig.platform);
 
   // check pref first
-  if (AppConfig.distinctId.isEmpty && AppConfig.isTelemetryAllowed) {
+  if (AppConfig.distinctId.isEmpty && AppConfig.isAnalyticsAllowed) {
     AppConfig.distinctId = getDistinctId();
     await prefs.setString('distinctId', AppConfig.distinctId);
   }
 
-  if (kReleaseMode && AppConfig.isTelemetryAllowed) {
+  if (kReleaseMode && AppConfig.isAnalyticsAllowed) {
     posthog(AppConfig.distinctId, 'app_started',
         {'source': source, 'version': AppConfig.appVersion});
   } else {

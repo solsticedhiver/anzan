@@ -63,10 +63,10 @@ You can submit PR to imporove the iOS/macOS support. Please use small commits wi
 ### Source
 You can built it yourself from source. You have to have a working *flutter* installation. You run it with `flutter run`.
 
-## Telemetry
-If telemetry is allowed, a unique random ID is generated, and used along side each TTS request to our server **sorobanexam.org**. It is kept for all next runs of the app.
+## Analytics
+If *Analytics* is allowed, a unique random ID is generated, and used along side each TTS request to our server **sorobanexam.org**. It is kept for all next runs of the app.
 This helps us to keep track of the number of users of our app.
 
-So calling it telemetry is a little far-fetched. The option was made at first with the idea of tracking more use of the app, like button clicked and so on; but it was later dropped.
+So calling it analytics is a little far-fetched. The option was made at first with the idea of tracking more use of the app, like button clicked and so on; but it was later dropped.
 
 If it is disabled, a unique ID is created at each start of the app, instead.

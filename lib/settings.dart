@@ -502,14 +502,14 @@ class _SettingsRouteState extends State<SettingsRoute> {
                   title: const Text('App locale'),
                   value: Text(AppConfig.locale)),
               SettingsTile.switchTile(
-                initialValue: AppConfig.isTelemetryAllowed,
+                initialValue: AppConfig.isAnalyticsAllowed,
                 activeSwitchColor: localGreen,
                 leading: const Icon(Icons.data_exploration),
-                title: const Text('Telemetry'),
+                title: const Text('Analytics'),
                 description: const Text('Use a unique random ID'),
                 onToggle: (value) {
                   setState(() {
-                    AppConfig.isTelemetryAllowed = value;
+                    AppConfig.isAnalyticsAllowed = value;
                     if (value) {
                       AppConfig.distinctId = getDistinctId();
                     } else {

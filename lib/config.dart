@@ -25,7 +25,7 @@ class AppConfig {
   static bool useTTS = false;
   static String locale = 'en_US';
   static List<String> languages = [];
-  static bool isTelemetryAllowed = true;
+  static bool isAnalyticsAllowed = true;
   static ThemeMode themeMode = ThemeMode.system;
   static int updateNotificationCount = 0;
 }
@@ -63,9 +63,9 @@ Future<void> getSettings(SharedPreferencesAsync prefs) async {
   if (pause != null) {
     AppConfig.pause = pause;
   }
-  bool? isTelemetryAllowed = await prefs.getBool('isTelemetryAllowed');
-  if (isTelemetryAllowed != null) {
-    AppConfig.isTelemetryAllowed = isTelemetryAllowed;
+  bool? isAnalyticsAllowed = await prefs.getBool('isAnalyticsAllowed');
+  if (isAnalyticsAllowed != null) {
+    AppConfig.isAnalyticsAllowed = isAnalyticsAllowed;
   }
   String? ttsLocale = await prefs.getString('ttsLocale');
   if (ttsLocale != null) {
@@ -103,7 +103,7 @@ Future<void> saveSettings(SharedPreferencesAsync prefs) async {
   await prefs.setInt('pause', AppConfig.pause);
   await prefs.setString('ttsLocale', AppConfig.ttsLocale);
   await prefs.setString('distinctId', AppConfig.distinctId);
-  await prefs.setBool('isTelemetryAllowed', AppConfig.isTelemetryAllowed);
+  await prefs.setBool('isAnalyticsAllowed', AppConfig.isAnalyticsAllowed);
   String themeMode;
   switch (AppConfig.themeMode) {
     case ThemeMode.light:
