@@ -520,7 +520,7 @@ class _MyHomePageState extends State<MyHomePage> {
         } else {
           future = httpClient
               .get(Uri.parse(uri), headers: headers)
-              .timeout(const Duration(seconds: 5));
+              .timeout(const Duration(seconds: 20));
         }
       } else {
         /* DefaultCacheManager() does not work on web:
@@ -529,7 +529,7 @@ class _MyHomePageState extends State<MyHomePage> {
           */
         future = DefaultCacheManager()
             .getSingleFile(uri, headers: headers)
-            .timeout(const Duration(seconds: 5));
+            .timeout(const Duration(seconds: 20));
       }
       futures.add(future);
     }
